@@ -13,15 +13,17 @@ import { Loader2 } from "lucide-react";
 export default function Home() {
   const { user, isAuthenticated, loading: authLoading } = useAuth();
   const [activeTab, setActiveTab] = useState<"overview" | "sales" | "workshop" | "staff">("overview");
+  const [salesFilters, setSalesFilters] = useState({});
+  const [workshopFilters, setWorkshopFilters] = useState({});
 
   // Fetch KPIs
   const { data: kpiData, isLoading: kpiLoading } = trpc.dashboard.getKPIs.useQuery({});
 
-  // Fetch sales transactions
-  const { data: salesData, isLoading: salesLoading } = trpc.sales.list.useQuery({});
+  // Fetch sales transactions with filters
+  const { data: salesData, isLoading: salesLoading } = trpc.sales.list.useQuery(salesFilters);
 
-  // Fetch workshop jobs
-  const { data: workshopData, isLoading: workshopLoading } = trpc.workshop.list.useQuery({});
+  // Fetch workshop jobs with filters
+  const { data: workshopData, isLoading: workshopLoading } = trpc.workshop.list.useQuery(workshopFilters);
 
   // Fetch staff attendance
   const { data: staffData, isLoading: staffLoading } = trpc.staff.listAttendance.useQuery({});
@@ -105,13 +107,13 @@ export default function Home() {
               />
 
               <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
-                <SalesTable data={salesData || []} isLoading={salesLoading} />
+                <SalesTable data={salesData || []} isLoading={salesLoading} onFilterChange={setSalesFilters} />
                 <WorkshopTable data={workshopData || []} isLoading={workshopLoading} />
               </div>
             </div>
           )}
 
-          {activeTab === "sales" && <SalesTable data={salesData || []} isLoading={salesLoading} />}
+          {activeTab === "sales" && <SalesTable data={salesData || []} isLoading={salesLoading} onFilterChange={setSalesFilters} />}
 
           {activeTab === "workshop" && (
             <WorkshopTable data={workshopData || []} isLoading={workshopLoading} />

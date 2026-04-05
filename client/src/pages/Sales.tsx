@@ -6,7 +6,8 @@ import { Card } from "@/components/ui/card";
 import { BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, Legend, ResponsiveContainer, PieChart, Pie, Cell } from "recharts";
 
 export default function Sales() {
-  const { data: salesData, isLoading } = trpc.sales.list.useQuery({});
+  const [filters, setFilters] = useState({});
+  const { data: salesData, isLoading } = trpc.sales.list.useQuery(filters);
 
   // Calculate sales by channel
   const salesByChannel = salesData?.reduce((acc: any, tx: any) => {

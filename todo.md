@@ -1,58 +1,58 @@
 # AGL Command Center - Project TODO
 
 ## Phase 1: Core Dashboard Infrastructure
-- [ ] Set up database schema for operational data (sales, workshop, staff, finance)
+- [x] Set up database schema for operational data (sales, workshop, staff, finance)
 - [ ] Implement Google Sheets data sync service (fetch and parse Excel data)
-- [ ] Create tRPC procedures for data fetching and caching
-- [ ] Build dashboard layout with sidebar navigation and responsive design
-- [ ] Implement dark theme with red accent colors (preserve existing style)
+- [x] Create tRPC procedures for data fetching and caching
+- [x] Build dashboard layout with sidebar navigation and responsive design
+- [x] Implement dark theme with red accent colors (preserve existing style)
 
 ## Phase 2: KPI & Summary Cards
-- [ ] Create KPI card components (revenue, transactions, vehicles serviced, net position)
-- [ ] Implement real-time KPI calculations from synced data
+- [x] Create KPI card components (revenue, transactions, vehicles serviced, net position)
+- [x] Implement real-time KPI calculations from synced data
 - [ ] Add monthly summary display with auto-calculated metrics
-- [ ] Build financial overview cards (revenue, expenses, net position)
+- [x] Build financial overview cards (revenue, expenses, net position)
 
 ## Phase 3: Sales & Customer Management
-- [ ] Build sales transaction log table with real-time data display
-- [ ] Implement filtering by channel (Walk-In, WhatsApp, Phone, Instagram, TikTok, Boss)
-- [ ] Add payment method filtering (Cash, MoMo, Bank Transfer, Credit, POS)
-- [ ] Implement status filtering (Completed, Pending Payment, etc.)
+- [x] Build sales transaction log table with real-time data display
+- [x] Implement filtering by channel (Walk-In, WhatsApp, Phone, Instagram, TikTok, Boss)
+- [x] Add payment method filtering (Cash, MoMo, Bank Transfer, Credit, POS)
+- [x] Implement status filtering (Completed, Pending Payment, etc.)
 - [ ] Add date range filtering for transaction searches
-- [ ] Build search functionality across customer names and transaction details
-- [ ] Create sales by channel breakdown view
-- [ ] Implement sales by payment method breakdown view
+- [x] Build search functionality across customer names and transaction details
+- [x] Create sales by channel breakdown view
+- [x] Implement sales by payment method breakdown view
 
 ## Phase 4: Workshop Management
-- [ ] Build workshop daily log table with vehicle service records
-- [ ] Implement mechanic assignment display and filtering
-- [ ] Add job description and status tracking
+- [x] Build workshop daily log table with vehicle service records
+- [x] Implement mechanic assignment display and filtering
+- [x] Add job description and status tracking
 - [ ] Create vehicle registration number search
-- [ ] Build mechanic workload distribution view
+- [x] Build mechanic workload distribution view
 - [ ] Implement job completion tracking and status updates
 
 ## Phase 5: Staff Management & Attendance
-- [ ] Build staff attendance tracking table
-- [ ] Display clock-in times, late days, and total hours worked
+- [x] Build staff attendance tracking table
+- [x] Display clock-in times, late days, and total hours worked
 - [ ] Create mechanic performance metrics (jobs completed, average time per job)
-- [ ] Implement staff performance comparison charts
+- [x] Implement staff performance comparison charts
 - [ ] Add attendance target tracking (late days vs. target)
 - [ ] Build staff roster view with role assignments
 
 ## Phase 6: Financial Management
-- [ ] Build expense log table with filtering and search
-- [ ] Create purchase order management interface
-- [ ] Implement revenue tracking by channel and payment method
+- [x] Build expense log table with filtering and search
+- [x] Create purchase order management interface
+- [x] Implement revenue tracking by channel and payment method
 - [ ] Build creditors and credit sales tracking module
-- [ ] Add expense categorization and breakdown
+- [x] Add expense categorization and breakdown
 - [ ] Create financial summary reports
 
 ## Phase 7: Data Visualization & Charts
 - [ ] Implement sales trend chart (daily/weekly/monthly)
-- [ ] Create mechanic performance comparison chart
-- [ ] Build revenue distribution by channel pie chart
-- [ ] Add revenue by payment method chart
-- [ ] Implement expense trend visualization
+- [x] Create mechanic performance comparison chart
+- [x] Build revenue distribution by channel pie chart
+- [x] Add revenue by payment method chart
+- [x] Implement expense trend visualization
 - [ ] Create staff performance leaderboard
 
 ## Phase 8: Reporting & Export
