@@ -23,6 +23,7 @@ import Chat from "./pages/Chat";
 import DataImport from "./pages/DataImport";
 import PublicDashboard from "./pages/PublicDashboard";
 import MechanicTracker from "./pages/MechanicTracker";
+import AuditLog from "./pages/AuditLog";
 
 
 function Router() {
@@ -57,6 +58,7 @@ function Router() {
         <Route path="/sheets" component={GoogleSheets} />
         <Route path="/chat" component={Chat} />
         <Route path="/import" component={DataImport} />
+        <Route path="/audit" component={AuditLog} />
         <Route path="/" component={NewDashboardPage} />
       </Switch>
     </MainLayout>
