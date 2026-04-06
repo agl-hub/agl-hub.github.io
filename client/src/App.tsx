@@ -25,6 +25,7 @@ import PublicDashboard from "./pages/PublicDashboard";
 import MechanicTracker from "./pages/MechanicTracker";
 import AuditLog from "./pages/AuditLog";
 import Settings from "./pages/Settings";
+import ShareLinks from "./pages/ShareLinks";
 
 
 function Router() {
@@ -61,6 +62,7 @@ function Router() {
         <Route path="/import" component={DataImport} />
         <Route path="/audit" component={AuditLog} />
         <Route path="/settings" component={Settings} />
+        <Route path="/share" component={ShareLinks} />
         <Route path="/" component={NewDashboardPage} />
       </Switch>
     </MainLayout>

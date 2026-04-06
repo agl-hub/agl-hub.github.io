@@ -6,6 +6,7 @@ import { sheetsRouter } from "./routers/sheets";
 import { reportsRouter } from "./routers/reports";
 import { auditRouter } from "./routers/audit";
 import { configRouter } from "./routers/config";
+import { shareRouter } from "./routers/share";
 import { publicProcedure, router, protectedProcedure } from "./_core/trpc";
 import { aiRouter } from "./routers/ai";
 import {
@@ -38,6 +39,7 @@ export const appRouter = router({
   reports: reportsRouter,
   audit: auditRouter,
   config: configRouter,
+  share: shareRouter,
   auth: router({
     me: publicProcedure.query((opts) => opts.ctx.user),
     logout: publicProcedure.mutation(({ ctx }) => {
