@@ -109,40 +109,41 @@ export default function AppLayout({ children, currentPage }: AppLayoutProps) {
               const IconComponent = item.icon;
               const isActive = currentPage === item.id;
               return (
-                <Link key={item.id} href={`/${item.id}`}>
-                  <a
-                    style={{
-                      display: "flex",
-                      alignItems: "center",
-                      gap: "var(--spacing-md)",
-                      padding: "var(--spacing-md) var(--spacing-lg)",
-                      borderRadius: "var(--radius-md)",
-                      color: isActive ? "var(--primary)" : "var(--text-secondary)",
-                      textDecoration: "none",
-                      transition: "all 0.2s ease",
-                      backgroundColor: isActive ? "rgba(227, 6, 19, 0.1)" : "transparent",
-                      borderLeft: isActive ? "3px solid var(--primary)" : "3px solid transparent",
-                      paddingLeft: isActive ? "calc(var(--spacing-lg) - 3px)" : "var(--spacing-lg)",
-                    }}
-                    onMouseEnter={(e) => {
-                      if (!isActive) {
-                        e.currentTarget.style.backgroundColor = "var(--bg-tertiary)";
-                        e.currentTarget.style.color = "var(--text-primary)";
-                      }
-                    }}
-                    onMouseLeave={(e) => {
-                      if (!isActive) {
-                        e.currentTarget.style.backgroundColor = "transparent";
-                        e.currentTarget.style.color = "var(--text-secondary)";
-                      }
-                    }}
-                  >
-                    <IconComponent size={18} />
-                    <span style={{ fontSize: "var(--text-sm)", fontWeight: "var(--font-medium)" }}>
-                      {item.label}
-                    </span>
-                  </a>
-                </Link>
+                <div
+                  key={item.id}
+                  onClick={() => window.location.href = `/${item.id}`}
+                  style={{
+                    display: "flex",
+                    alignItems: "center",
+                    gap: "var(--spacing-md)",
+                    padding: "var(--spacing-md) var(--spacing-lg)",
+                    borderRadius: "var(--radius-md)",
+                    color: isActive ? "var(--primary)" : "var(--text-secondary)",
+                    textDecoration: "none",
+                    transition: "all 0.2s ease",
+                    backgroundColor: isActive ? "rgba(227, 6, 19, 0.1)" : "transparent",
+                    borderLeft: isActive ? "3px solid var(--primary)" : "3px solid transparent",
+                    paddingLeft: isActive ? "calc(var(--spacing-lg) - 3px)" : "var(--spacing-lg)",
+                    cursor: "pointer",
+                  }}
+                  onMouseEnter={(e) => {
+                    if (!isActive) {
+                      e.currentTarget.style.backgroundColor = "var(--bg-tertiary)";
+                      e.currentTarget.style.color = "var(--text-primary)";
+                    }
+                  }}
+                  onMouseLeave={(e) => {
+                    if (!isActive) {
+                      e.currentTarget.style.backgroundColor = "transparent";
+                      e.currentTarget.style.color = "var(--text-secondary)";
+                    }
+                  }}
+                >
+                  <IconComponent size={18} />
+                  <span style={{ fontSize: "var(--text-sm)", fontWeight: "var(--font-medium)" }}>
+                    {item.label}
+                  </span>
+                </div>
               );
             })}
           </div>
