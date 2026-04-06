@@ -2,6 +2,27 @@ import { useState } from "react";
 import { useAuth } from "@/_core/hooks/useAuth";
 import { getLoginUrl } from "@/const";
 import { Link } from "wouter";
+import {
+  LayoutDashboard,
+  FileText,
+  Wrench,
+  ShoppingCart,
+  Users,
+  DollarSign,
+  Kanban,
+  TrendingUp,
+  Clock,
+  BookOpen,
+  Package,
+  FileBarChart,
+  CreditCard,
+  Sheet,
+  Menu,
+  Bell,
+  Download,
+  Printer,
+  LogOut,
+} from "lucide-react";
 
 interface AppLayoutProps {
   children: React.ReactNode;
@@ -9,20 +30,20 @@ interface AppLayoutProps {
 }
 
 const NAVIGATION_ITEMS = [
-  { id: "dashboard", label: "Live Dashboard", icon: "📊" },
-  { id: "entry", label: "Daily Entry", icon: "📝" },
-  { id: "workshop", label: "Workshop Log", icon: "🔧" },
-  { id: "sales", label: "Sales Log", icon: "💳" },
-  { id: "mechanics", label: "Mechanic Tracker", icon: "⭐" },
-  { id: "finance", label: "Finance Summary", icon: "💰" },
-  { id: "kanban", label: "Project Board", icon: "📋" },
-  { id: "kpi", label: "KPI Tracker", icon: "📈" },
-  { id: "clockin", label: "Staff Clock-In", icon: "🕐" },
-  { id: "training", label: "Staff Training", icon: "🎓" },
-  { id: "inventory", label: "Inventory / POS", icon: "📦" },
-  { id: "reports", label: "Reports", icon: "📄" },
-  { id: "creditors", label: "Creditors & Loans", icon: "💳" },
-  { id: "sheets", label: "Google Sheets", icon: "📊" },
+  { id: "dashboard", label: "Dashboard", icon: LayoutDashboard },
+  { id: "entry", label: "Daily Entry", icon: FileText },
+  { id: "workshop", label: "Workshop", icon: Wrench },
+  { id: "sales", label: "Sales", icon: ShoppingCart },
+  { id: "mechanics", label: "Mechanics", icon: Users },
+  { id: "finance", label: "Finance", icon: DollarSign },
+  { id: "kanban", label: "Tasks", icon: Kanban },
+  { id: "kpi", label: "KPI Tracker", icon: TrendingUp },
+  { id: "clockin", label: "Attendance", icon: Clock },
+  { id: "training", label: "Training", icon: BookOpen },
+  { id: "inventory", label: "Inventory", icon: Package },
+  { id: "reports", label: "Reports", icon: FileBarChart },
+  { id: "creditors", label: "Creditors", icon: CreditCard },
+  { id: "sheets", label: "Data Sync", icon: Sheet },
 ];
 
 export default function AppLayout({ children, currentPage }: AppLayoutProps) {
@@ -31,10 +52,14 @@ export default function AppLayout({ children, currentPage }: AppLayoutProps) {
 
   if (!isAuthenticated) {
     return (
-      <div className="flex items-center justify-center min-h-screen bg-bg-primary">
-        <div className="text-center">
-          <h1 className="text-4xl font-bold mb-lg">AGL Command Center</h1>
-          <p className="text-text-tertiary mb-2xl">Automotive Operations Dashboard</p>
+      <div style={{ display: "flex", alignItems: "center", justifyContent: "center", minHeight: "100vh", backgroundColor: "var(--bg-primary)" }}>
+        <div style={{ textAlign: "center" }}>
+          <h1 style={{ fontSize: "var(--text-3xl)", fontWeight: "var(--font-bold)", marginBottom: "var(--spacing-lg)" }}>
+            AGL Command Center
+          </h1>
+          <p style={{ color: "var(--text-tertiary)", marginBottom: "var(--spacing-2xl)" }}>
+            Automotive Operations Management System
+          </p>
           <a href={getLoginUrl()} className="btn btn-primary btn-lg">
             Login with Manus
           </a>
@@ -48,44 +73,101 @@ export default function AppLayout({ children, currentPage }: AppLayoutProps) {
       {/* Sidebar */}
       <aside className={`sidebar ${sidebarOpen ? "open" : ""}`}>
         {/* Logo */}
-        <div className="p-lg border-b border-border-color">
-          <div className="flex items-center gap-md mb-md">
-            <div className="w-10 h-10 bg-gradient-primary rounded-lg flex items-center justify-center font-bold text-white">
+        <div style={{ padding: "var(--spacing-lg)", borderBottom: "1px solid var(--border-color)" }}>
+          <div style={{ display: "flex", alignItems: "center", gap: "var(--spacing-md)", marginBottom: "var(--spacing-md)" }}>
+            <div
+              style={{
+                width: "40px",
+                height: "40px",
+                backgroundColor: "var(--primary)",
+                borderRadius: "var(--radius-lg)",
+                display: "flex",
+                alignItems: "center",
+                justifyContent: "center",
+                fontWeight: "var(--font-bold)",
+                color: "white",
+                fontSize: "var(--text-lg)",
+              }}
+            >
               AGL
             </div>
             <div>
-              <h2 className="font-bold text-lg">AGL OPS</h2>
-              <p className="text-xs text-text-tertiary">COMMAND CENTER</p>
+              <h2 style={{ fontWeight: "var(--font-bold)", fontSize: "var(--text-lg)", color: "var(--text-primary)" }}>
+                AGL OPS
+              </h2>
+              <p style={{ fontSize: "var(--text-xs)", color: "var(--text-tertiary)" }}>
+                COMMAND CENTER
+              </p>
             </div>
           </div>
         </div>
 
         {/* Navigation */}
-        <nav className="flex-1 overflow-y-auto p-md">
-          <div className="flex flex-col gap-sm">
-            {NAVIGATION_ITEMS.map((item) => (
-              <Link key={item.id} href={`/${item.id}`} className={`flex items-center gap-md px-md py-sm rounded-md transition-all ${
-                  currentPage === item.id
-                    ? "bg-primary/20 text-primary-light border-l-2 border-primary"
-                    : "text-text-secondary hover:bg-bg-tertiary"
-                }`}>
-                  <span className="text-lg">{item.icon}</span>
-                  <span className="text-sm font-medium">{item.label}</span>
-              </Link>
-            ))}
+        <nav style={{ flex: 1, overflowY: "auto", padding: "var(--spacing-md)" }}>
+          <div style={{ display: "flex", flexDirection: "column", gap: "var(--spacing-sm)" }}>
+            {NAVIGATION_ITEMS.map((item) => {
+              const IconComponent = item.icon;
+              const isActive = currentPage === item.id;
+              return (
+                <Link key={item.id} href={`/${item.id}`}>
+                  <a
+                    style={{
+                      display: "flex",
+                      alignItems: "center",
+                      gap: "var(--spacing-md)",
+                      padding: "var(--spacing-md) var(--spacing-lg)",
+                      borderRadius: "var(--radius-md)",
+                      color: isActive ? "var(--primary)" : "var(--text-secondary)",
+                      textDecoration: "none",
+                      transition: "all 0.2s ease",
+                      backgroundColor: isActive ? "rgba(227, 6, 19, 0.1)" : "transparent",
+                      borderLeft: isActive ? "3px solid var(--primary)" : "3px solid transparent",
+                      paddingLeft: isActive ? "calc(var(--spacing-lg) - 3px)" : "var(--spacing-lg)",
+                    }}
+                    onMouseEnter={(e) => {
+                      if (!isActive) {
+                        e.currentTarget.style.backgroundColor = "var(--bg-tertiary)";
+                        e.currentTarget.style.color = "var(--text-primary)";
+                      }
+                    }}
+                    onMouseLeave={(e) => {
+                      if (!isActive) {
+                        e.currentTarget.style.backgroundColor = "transparent";
+                        e.currentTarget.style.color = "var(--text-secondary)";
+                      }
+                    }}
+                  >
+                    <IconComponent size={18} />
+                    <span style={{ fontSize: "var(--text-sm)", fontWeight: "var(--font-medium)" }}>
+                      {item.label}
+                    </span>
+                  </a>
+                </Link>
+              );
+            })}
           </div>
         </nav>
 
         {/* Footer */}
-        <div className="p-lg border-t border-border-color">
-          <div className="text-xs text-text-muted font-mono font-bold tracking-wider mb-sm">
+        <div style={{ padding: "var(--spacing-lg)", borderTop: "1px solid var(--border-color)" }}>
+          <div style={{ fontSize: "var(--text-xs)", color: "var(--text-muted)", fontFamily: "monospace", fontWeight: "var(--font-bold)", letterSpacing: "0.5px", marginBottom: "var(--spacing-sm)" }}>
             AUTOMOBILES GHANA LTD
           </div>
-          <div className="text-xs text-text-muted mb-lg">v4.0 — Command Center</div>
+          <div style={{ fontSize: "var(--text-xs)", color: "var(--text-muted)", marginBottom: "var(--spacing-lg)" }}>
+            v4.0 — Command Center
+          </div>
           <button
             onClick={() => logout()}
-            className="w-full btn btn-secondary btn-sm text-xs"
+            style={{
+              width: "100%",
+              display: "flex",
+              alignItems: "center",
+              justifyContent: "center",
+              gap: "var(--spacing-sm)",
+            }}
+            className="btn btn-secondary btn-sm"
           >
+            <LogOut size={16} />
             Logout
           </button>
         </div>
@@ -95,36 +177,63 @@ export default function AppLayout({ children, currentPage }: AppLayoutProps) {
       <main className="main">
         {/* Header */}
         <header className="header">
-          <div className="flex items-center gap-lg">
+          <div style={{ display: "flex", alignItems: "center", gap: "var(--spacing-lg)" }}>
             <button
               onClick={() => setSidebarOpen(!sidebarOpen)}
-              className="btn btn-secondary btn-sm md:hidden"
+              className="btn btn-secondary btn-sm"
+              style={{ display: "none" }}
             >
-              ☰
+              <Menu size={18} />
             </button>
             <div>
-              <h1 className="text-2xl font-bold">
+              <h1 style={{ margin: 0, fontSize: "var(--text-2xl)", fontWeight: "var(--font-bold)" }}>
                 {NAVIGATION_ITEMS.find((item) => item.id === currentPage)?.label || "Dashboard"}
               </h1>
-              <div className="text-text-tertiary text-sm font-mono" id="clock"></div>
+              <div style={{ color: "var(--text-tertiary)", fontSize: "var(--text-sm)", fontFamily: "monospace" }} id="clock"></div>
             </div>
           </div>
 
-          <div className="flex items-center gap-lg">
+          <div style={{ display: "flex", alignItems: "center", gap: "var(--spacing-lg)" }}>
             <input
               type="text"
-              placeholder="Search anything..."
-              className="form-control hidden md:block max-w-xs"
+              placeholder="Search..."
+              className="form-control"
+              style={{ maxWidth: "300px", display: "none" }}
             />
-            <button className="btn btn-secondary btn-sm">🔔</button>
-            <button className="btn btn-secondary btn-sm">📥 Export CSV</button>
-            <button className="btn btn-primary btn-sm">🖨️ Print</button>
-            <div className="flex items-center gap-md">
-              <div className="text-right">
-                <div className="text-sm font-bold">{user?.name}</div>
-                <div className="text-xs text-text-tertiary">{user?.email}</div>
+            <button className="btn btn-secondary btn-sm">
+              <Bell size={16} />
+            </button>
+            <button className="btn btn-secondary btn-sm">
+              <Download size={16} />
+              Export
+            </button>
+            <button className="btn btn-secondary btn-sm">
+              <Printer size={16} />
+              Print
+            </button>
+            <div style={{ display: "flex", alignItems: "center", gap: "var(--spacing-md)" }}>
+              <div style={{ textAlign: "right" }}>
+                <div style={{ fontSize: "var(--text-sm)", fontWeight: "var(--font-bold)" }}>
+                  {user?.name}
+                </div>
+                <div style={{ fontSize: "var(--text-xs)", color: "var(--text-tertiary)" }}>
+                  {user?.email}
+                </div>
               </div>
-              <div className="w-8 h-8 bg-gradient-primary rounded-full flex items-center justify-center text-white font-bold text-sm">
+              <div
+                style={{
+                  width: "32px",
+                  height: "32px",
+                  backgroundColor: "var(--primary)",
+                  borderRadius: "50%",
+                  display: "flex",
+                  alignItems: "center",
+                  justifyContent: "center",
+                  color: "white",
+                  fontWeight: "var(--font-bold)",
+                  fontSize: "var(--text-sm)",
+                }}
+              >
                 {user?.name?.charAt(0) || "U"}
               </div>
             </div>

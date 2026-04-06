@@ -4,7 +4,7 @@ import { Route, Switch, useLocation } from "wouter";
 import ErrorBoundary from "./components/ErrorBoundary";
 import { ThemeProvider } from "./contexts/ThemeContext";
 import AppLayout from "./components/AppLayout";
-import Dashboard from "./pages/Dashboard";
+import DashboardPage from "./pages/DashboardPage";
 import DailyEntry from "./pages/DailyEntry";
 import Workshop from "./pages/Workshop";
 import Sales from "./pages/Sales";
@@ -38,7 +38,7 @@ function Router() {
   return (
     <AppLayout currentPage={currentPage}>
       <Switch>
-        <Route path="/dashboard" component={Dashboard} />
+        <Route path="/dashboard" component={DashboardPage} />
         <Route path="/entry" component={DailyEntry} />
         <Route path="/workshop" component={Workshop} />
         <Route path="/sales" component={Sales} />
@@ -55,7 +55,7 @@ function Router() {
         <Route path="/chat" component={Chat} />
         <Route path="/import" component={DataImport} />
         <Route path="/public" component={PublicDashboard} />
-        <Route path="/" component={Dashboard} />
+        <Route path="/" component={DashboardPage} />
       </Switch>
     </AppLayout>
   );
