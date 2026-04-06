@@ -3,6 +3,7 @@ import { TooltipProvider } from "@/components/ui/tooltip";
 import { Route, Switch, useLocation } from "wouter";
 import ErrorBoundary from "./components/ErrorBoundary";
 import { ThemeProvider } from "./contexts/ThemeContext";
+import { AccessProvider } from "./contexts/AccessContext";
 import MainLayout from "./components/MainLayout";
 import NewDashboardPage from "./pages/NewDashboardPage";
 import DailyEntry from "./pages/DailyEntry";
@@ -27,13 +28,15 @@ import MechanicTracker from "./pages/MechanicTracker";
 function Router() {
   const [location] = useLocation();
 
-  // Extract current page from location
-  const getCurrentPage = () => {
-    const path = location.split("/")[1] || "dashboard";
-    return path;
-  };
-
-  // const currentPage = getCurrentPage();
+  // Public dashboard renders without sidebar/main layout
+  if (location.startsWith("/public")) {
+    return (
+      <Switch>
+        <Route path="/public" component={PublicDashboard} />
+        <Route path="/public/:rest*" component={PublicDashboard} />
+      </Switch>
+    );
+  }
 
   return (
     <MainLayout>
@@ -54,7 +57,6 @@ function Router() {
         <Route path="/sheets" component={GoogleSheets} />
         <Route path="/chat" component={Chat} />
         <Route path="/import" component={DataImport} />
-        <Route path="/public" component={PublicDashboard} />
         <Route path="/" component={NewDashboardPage} />
       </Switch>
     </MainLayout>
@@ -65,10 +67,12 @@ function App() {
   return (
     <ErrorBoundary>
       <ThemeProvider defaultTheme="dark">
-        <TooltipProvider>
-          <Toaster />
-          <Router />
-        </TooltipProvider>
+        <AccessProvider>
+          <TooltipProvider>
+            <Toaster />
+            <Router />
+          </TooltipProvider>
+        </AccessProvider>
       </ThemeProvider>
     </ErrorBoundary>
   );

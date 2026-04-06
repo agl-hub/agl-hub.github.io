@@ -68,7 +68,7 @@ export const sheetsRouter = router({
   }),
 
   /**
-   * Get business metrics and insights
+   * Get business metrics and insights (mutation form, kept for backwards compat)
    */
   getInsights: protectedProcedure.mutation(async () => {
     try {
@@ -84,6 +84,19 @@ export const sheetsRouter = router({
         success: false,
         error: (error as Error).message,
       };
+    }
+  }),
+
+  /**
+   * Cached query form: pulls from cached sheet data, regenerates metrics each call
+   */
+  insights: protectedProcedure.query(async () => {
+    try {
+      const data = await syncAllSheetData();
+      const metrics = generateBusinessMetrics(data);
+      return { success: true, metrics };
+    } catch (error) {
+      return { success: false, error: (error as Error).message };
     }
   }),
 });
