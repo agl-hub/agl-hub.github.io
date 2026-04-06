@@ -1,49 +1,67 @@
 import { Toaster } from "@/components/ui/sonner";
 import { TooltipProvider } from "@/components/ui/tooltip";
-import NotFound from "@/pages/NotFound";
-import { Route, Switch } from "wouter";
+import { Route, Switch, useLocation } from "wouter";
 import ErrorBoundary from "./components/ErrorBoundary";
 import { ThemeProvider } from "./contexts/ThemeContext";
-import Home from "./pages/Home";
-import Chat from "./pages/Chat";
-import Sales from "./pages/Sales";
+import AppLayout from "./components/AppLayout";
+import Dashboard from "./pages/Dashboard";
+import DailyEntry from "./pages/DailyEntry";
 import Workshop from "./pages/Workshop";
+import Sales from "./pages/Sales";
 import Staff from "./pages/Staff";
 import Finances from "./pages/Finances";
-import DataImport from "./pages/DataImport";
+import Kanban from "./pages/Kanban";
+import KPITracker from "./pages/KPITracker";
+import ClockIn from "./pages/ClockIn";
+import Training from "./pages/Training";
+import Inventory from "./pages/Inventory";
 import Reports from "./pages/Reports";
+import Creditors from "./pages/Creditors";
+import GoogleSheets from "./pages/GoogleSheets";
+import Chat from "./pages/Chat";
+import DataImport from "./pages/DataImport";
+import "./styles/theme.css";
 
 function Router() {
-  // make sure to consider if you need authentication for certain routes
+  const [location] = useLocation();
+
+  // Extract current page from location
+  const getCurrentPage = () => {
+    const path = location.split("/")[1] || "dashboard";
+    return path;
+  };
+
+  const currentPage = getCurrentPage();
+
   return (
-    <Switch>
-      <Route path={"/"} component={Home} />
-      <Route path="/sales" component={Sales} />
-      <Route path="/workshop" component={Workshop} />
-      <Route path="/staff" component={Staff} />
-      <Route path="/finances" component={Finances} />
-      <Route path="/chat" component={Chat} />
-      <Route path="/import" component={DataImport} />
-      <Route path="/reports" component={Reports} />
-      <Route path={"/404"} component={NotFound} />
-      {/* Final fallback route */}
-      <Route component={NotFound} />
-    </Switch>
+    <AppLayout currentPage={currentPage}>
+      <Switch>
+        <Route path="/dashboard" component={Dashboard} />
+        <Route path="/entry" component={DailyEntry} />
+        <Route path="/workshop" component={Workshop} />
+        <Route path="/sales" component={Sales} />
+        <Route path="/mechanics" component={Staff} />
+        <Route path="/finance" component={Finances} />
+        <Route path="/kanban" component={Kanban} />
+        <Route path="/kpi" component={KPITracker} />
+        <Route path="/clockin" component={ClockIn} />
+        <Route path="/training" component={Training} />
+        <Route path="/inventory" component={Inventory} />
+        <Route path="/reports" component={Reports} />
+        <Route path="/creditors" component={Creditors} />
+        <Route path="/sheets" component={GoogleSheets} />
+        <Route path="/chat" component={Chat} />
+        <Route path="/import" component={DataImport} />
+        <Route path="/" component={Dashboard} />
+      </Switch>
+    </AppLayout>
   );
 }
-
-// NOTE: About Theme
-// - First choose a default theme according to your design style (dark or light bg), than change color palette in index.css
-//   to keep consistent foreground/background color across components
-// - If you want to make theme switchable, pass `switchable` ThemeProvider and use `useTheme` hook
 
 function App() {
   return (
     <ErrorBoundary>
-      <ThemeProvider
-        defaultTheme="light"
-        // switchable
-      >
+      <ThemeProvider defaultTheme="dark">
         <TooltipProvider>
           <Toaster />
           <Router />

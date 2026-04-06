@@ -1,116 +1,78 @@
-# AGL Command Center - Project TODO
+# AGL Command Center - Complete Redesign TODO
 
-## Phase 1: Core Dashboard Infrastructure
-- [x] Set up database schema for operational data (sales, workshop, staff, finance)
-- [ ] Implement Google Sheets data sync service (fetch and parse Excel data)
-- [x] Create tRPC procedures for data fetching and caching
-- [x] Build dashboard layout with sidebar navigation and responsive design
-- [x] Implement dark theme with red accent colors (preserve existing style)
+## Phase 1: Google Sheets Integration
+- [ ] Install Google Sheets API client library
+- [ ] Create Google Sheets sync service
+- [ ] Implement data fetching from all sheets (Monthly Summary, Sales, Workshop, Staff, Expenses, POs)
+- [ ] Set up automatic data refresh (real-time or scheduled)
+- [ ] Create data transformation/normalization layer
+- [ ] Add error handling and retry logic for API calls
+- [ ] Implement data caching strategy
 
-## Phase 2: KPI & Summary Cards
-- [x] Create KPI card components (revenue, transactions, vehicles serviced, net position)
-- [x] Implement real-time KPI calculations from synced data
-- [ ] Add monthly summary display with auto-calculated metrics
-- [x] Build financial overview cards (revenue, expenses, net position)
+## Phase 2: UI/UX Redesign
+- [ ] Update global CSS with enhanced color palette
+- [ ] Create responsive grid-based layout system
+- [ ] Design compact card components
+- [ ] Implement glass morphism effects
+- [ ] Add smooth transitions and animations
+- [ ] Create reusable component library
+- [ ] Ensure mobile responsiveness
+- [ ] Add dark mode theme system
 
-## Phase 3: Sales & Customer Management
-- [x] Build sales transaction log table with real-time data display
-- [x] Implement filtering by channel (Walk-In, WhatsApp, Phone, Instagram, TikTok, Boss)
-- [x] Add payment method filtering (Cash, MoMo, Bank Transfer, Credit, POS)
-- [x] Implement status filtering (Completed, Pending Payment, etc.)
-- [ ] Add date range filtering for transaction searches
-- [x] Build search functionality across customer names and transaction details
-- [x] Create sales by channel breakdown view
-- [x] Implement sales by payment method breakdown view
+## Phase 3: Core Modules
+- [ ] Rebuild Live Dashboard with financial KPIs
+- [ ] Create Daily Entry form with validation
+- [ ] Build Workshop Log with vehicle tracking
+- [ ] Implement Finance Summary with expense breakdown
+- [ ] Create Mechanic Tracker with performance metrics
+- [ ] Build Kanban Project Board
+- [ ] Add global filter bar (Period, Staff, Channel, Payment)
 
-## Phase 4: Workshop Management
-- [x] Build workshop daily log table with vehicle service records
-- [x] Implement mechanic assignment display and filtering
-- [x] Add job description and status tracking
-- [ ] Create vehicle registration number search
-- [x] Build mechanic workload distribution view
-- [ ] Implement job completion tracking and status updates
+## Phase 4: Business Insights Engine
+- [ ] Create insights calculation engine
+- [ ] Implement trend analysis (revenue, expenses, sales)
+- [ ] Build action items generator
+- [ ] Create best sellers analysis module
+- [ ] Implement performance alerts
+- [ ] Add mechanic efficiency scoring
+- [ ] Create vehicle turnaround time tracking
+- [ ] Build revenue target tracking with progress indicators
 
-## Phase 5: Staff Management & Attendance
-- [x] Build staff attendance tracking table
-- [x] Display clock-in times, late days, and total hours worked
-- [ ] Create mechanic performance metrics (jobs completed, average time per job)
-- [x] Implement staff performance comparison charts
-- [ ] Add attendance target tracking (late days vs. target)
-- [ ] Build staff roster view with role assignments
+## Phase 5: Reporting System
+- [ ] Create Daily CEO Report template
+- [ ] Build Weekly Management Report
+- [ ] Implement Monthly Financial Report
+- [ ] Create Full Operations Report
+- [ ] Add report generation engine
+- [ ] Implement email scheduling for reports
+- [ ] Add PDF export functionality
+- [ ] Create report preview interface
 
-## Phase 6: Financial Management
-- [x] Build expense log table with filtering and search
-- [x] Create purchase order management interface
-- [x] Implement revenue tracking by channel and payment method
-- [ ] Build creditors and credit sales tracking module
-- [x] Add expense categorization and breakdown
-- [ ] Create financial summary reports
+## Phase 6: Dual Access Modes
+- [ ] Implement public/guest access mode
+- [ ] Create shareable dashboard links
+- [ ] Build view-only permission system
+- [ ] Add admin authentication
+- [ ] Implement role-based access control
+- [ ] Create access management interface
+- [ ] Add audit logging for access
 
-## Phase 7: Data Visualization & Charts
-- [ ] Implement sales trend chart (daily/weekly/monthly)
-- [x] Create mechanic performance comparison chart
-- [x] Build revenue distribution by channel pie chart
-- [x] Add revenue by payment method chart
-- [x] Implement expense trend visualization
-- [ ] Create staff performance leaderboard
+## Phase 7: Additional Modules
+- [ ] Build Staff Training module
+- [ ] Create Inventory/POS system
+- [ ] Implement Creditors & Loans tracking
+- [ ] Build KPI Tracker with drill-down
+- [ ] Create Staff Clock-In system
+- [ ] Add notification system
+- [ ] Build Google Sheets sync status page
 
-## Phase 8: Reporting & Export
-- [ ] Implement CSV export for Sales table (DONE) - need Workshop, Staff, Finances, Inventory
-- [ ] Implement proper Excel export (currently CSV with .xlsx extension)
-- [ ] Create concrete daily business report template with real data
-- [ ] Build weekly summary report with aggregated metrics
-- [ ] Implement monthly financial report with breakdowns
-- [x] Add printing capability for reports
-- [ ] Create CEO-specific daily report format
-
-## Phase 9: Data Import
-- [x] Create Excel file upload interface
-- [ ] Implement data parsing from Excel sheets
-- [ ] Build data validation and error handling
-- [ ] Create data sync mechanism to database
-- [ ] Add import status tracking and logging
-
-## Phase 11: Inventory & Stock Management
-- [ ] Build inventory tracking interface
-- [ ] Implement stock level monitoring
-- [ ] Add low-stock alerts
-- [ ] Create inventory adjustment forms
-- [ ] Build stock movement history
-
-## Phase 10: Notifications & Alerts
-- [ ] Implement critical threshold notifications (revenue targets, attendance issues)
-- [ ] Build vehicle pending completion alerts (SLA tracking)
-- [ ] Create payment pending notifications
-- [ ] Add mechanic assignment notifications
-- [ ] Implement notification center UI
-
-## Phase 11: AI Chat Interface
-- [ ] Build natural language chat interface component
-- [ ] Implement query parsing for operational data
-- [ ] Create AI-powered insights generation
-- [ ] Add recommendation engine (e.g., mechanic efficiency suggestions)
-- [ ] Build chat history and context management
-- [ ] Implement response streaming for real-time feedback
-
-## Phase 12: Advanced Features
-- [ ] Build staff training modules interface
-- [ ] Create project board for training management
-- [ ] Implement business insights dashboard
-- [ ] Build sales login and POS-like sales tracker
-- [ ] Add role-based access control (admin, manager, staff)
-- [ ] Implement audit logging for critical operations
-
-## Phase 13: Testing & Optimization
-- [ ] Write vitest tests for data fetching procedures
-- [ ] Test filtering and search functionality
-- [ ] Validate chart rendering and data accuracy
-- [ ] Test export functionality
-- [ ] Performance optimization for large datasets
-- [ ] Cross-browser and responsive design testing
-
-## Phase 14: Deployment & Handoff
-- [ ] Final UI polish and consistency check
-- [ ] Documentation for data sync and maintenance
-- [ ] User training materials
-- [ ] Create checkpoint for production deployment
+## Phase 8: Testing & Deployment
+- [ ] Write comprehensive tests
+- [ ] Test Google Sheets integration
+- [ ] Validate all reports
+- [ ] Test dual access modes
+- [ ] Performance optimization
+- [ ] Cross-browser testing
+- [ ] Mobile responsiveness testing
+- [ ] Prepare Manus hosting deployment
+- [ ] Create deployment documentation
