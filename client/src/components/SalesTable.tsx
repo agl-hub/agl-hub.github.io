@@ -91,12 +91,12 @@ export default function SalesTable({ data, isLoading, onFilterChange }: SalesTab
           onChange={(e) => handleFilterChange("searchTerm", e.target.value)}
           className="border-gray-300"
         />
-        <Select value={filters.channel} onValueChange={(v) => handleFilterChange("channel", v)}>
+        <Select value={filters.channel || "all"} onValueChange={(v) => handleFilterChange("channel", v === "all" ? "" : v)}>
           <SelectTrigger>
             <SelectValue placeholder="Channel" />
           </SelectTrigger>
           <SelectContent>
-            <SelectItem value="">All Channels</SelectItem>
+            <SelectItem value="all">All Channels</SelectItem>
             {CHANNELS.map((ch) => (
               <SelectItem key={ch} value={ch}>
                 {ch}
@@ -105,12 +105,12 @@ export default function SalesTable({ data, isLoading, onFilterChange }: SalesTab
           </SelectContent>
         </Select>
 
-        <Select value={filters.paymentMethod} onValueChange={(v) => handleFilterChange("paymentMethod", v)}>
+        <Select value={filters.paymentMethod || "all"} onValueChange={(v) => handleFilterChange("paymentMethod", v === "all" ? "" : v)}>
           <SelectTrigger>
             <SelectValue placeholder="Payment Method" />
           </SelectTrigger>
           <SelectContent>
-            <SelectItem value="">All Methods</SelectItem>
+            <SelectItem value="all">All Methods</SelectItem>
             {PAYMENT_METHODS.map((pm) => (
               <SelectItem key={pm} value={pm}>
                 {pm}
@@ -119,12 +119,12 @@ export default function SalesTable({ data, isLoading, onFilterChange }: SalesTab
           </SelectContent>
         </Select>
 
-        <Select value={filters.status} onValueChange={(v) => handleFilterChange("status", v)}>
+        <Select value={filters.status || "all"} onValueChange={(v) => handleFilterChange("status", v === "all" ? "" : v)}>
           <SelectTrigger>
             <SelectValue placeholder="Status" />
           </SelectTrigger>
           <SelectContent>
-            <SelectItem value="">All Statuses</SelectItem>
+            <SelectItem value="all">All Statuses</SelectItem>
             {STATUSES.map((st) => (
               <SelectItem key={st} value={st}>
                 {st}

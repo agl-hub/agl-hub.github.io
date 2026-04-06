@@ -74,19 +74,19 @@ export default function DashboardNav() {
 
         <nav className="space-y-2 flex-1">
           {navItems.map((item) => (
-            <Link key={item.href} href={item.href}>
-              <a
-                className="flex items-center gap-3 px-4 py-3 rounded-lg hover:bg-red-600/20 hover:text-red-400 transition-colors group"
-                onClick={() => setMobileMenuOpen(false)}
-              >
-                <span className="text-gray-400 group-hover:text-red-400">{item.icon}</span>
-                <span className="text-sm font-medium">{item.label}</span>
-                {item.badge && (
-                  <span className="ml-auto bg-red-600 text-white text-xs rounded-full px-2 py-1">
-                    {item.badge}
-                  </span>
-                )}
-              </a>
+            <Link
+              key={item.href}
+              href={item.href}
+              className="flex items-center gap-3 px-4 py-3 rounded-lg hover:bg-red-600/20 hover:text-red-400 transition-colors group"
+              onClick={() => setMobileMenuOpen(false)}
+            >
+              <span className="text-gray-400 group-hover:text-red-400">{item.icon}</span>
+              <span className="text-sm font-medium">{item.label}</span>
+              {item.badge && (
+                <span className="ml-auto bg-red-600 text-white text-xs rounded-full px-2 py-1">
+                  {item.badge}
+                </span>
+              )}
             </Link>
           ))}
         </nav>

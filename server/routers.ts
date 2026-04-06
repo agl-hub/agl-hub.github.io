@@ -3,6 +3,7 @@ import { COOKIE_NAME } from "@shared/const";
 import { getSessionCookieOptions } from "./_core/cookies";
 import { systemRouter } from "./_core/systemRouter";
 import { publicProcedure, router, protectedProcedure } from "./_core/trpc";
+import { aiRouter } from "./routers/ai";
 import {
   getSalesTransactions,
   getWorkshopJobs,
@@ -16,7 +17,16 @@ import {
   calculateKPIs,
   getDb,
 } from "./db";
-import { insertSalesTransaction, insertWorkshopJob, insertExpense, insertPurchaseOrder, insertInventory, insertCreditSale, insertNotification } from "./db.mutations";
+import {
+  insertSalesTransaction,
+  insertWorkshopJob,
+  insertExpense,
+  insertPurchaseOrder,
+  insertInventory,
+  insertCreditSale,
+  insertNotification,
+} from "./db.insert";
+
 
 export const appRouter = router({
   system: systemRouter,
@@ -285,6 +295,9 @@ export const appRouter = router({
         return await insertNotification(input);
       }),
   }),
+
+  // AI Chat
+  ai: aiRouter,
 });
 
 export type AppRouter = typeof appRouter;

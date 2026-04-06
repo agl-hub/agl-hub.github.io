@@ -28,7 +28,7 @@ export default function Chat() {
   const messagesEndRef = useRef<HTMLDivElement>(null);
 
   const { mutate: queryAI } = trpc.ai.chat.useMutation({
-    onSuccess: (response) => {
+    onSuccess: (response: any) => {
       setMessages((prev) => [
         ...prev,
         {
@@ -40,7 +40,7 @@ export default function Chat() {
       ]);
       setIsLoading(false);
     },
-    onError: (error) => {
+    onError: (error: any) => {
       setMessages((prev) => [
         ...prev,
         {
