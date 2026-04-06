@@ -20,6 +20,8 @@ import Creditors from "./pages/Creditors";
 import GoogleSheets from "./pages/GoogleSheets";
 import Chat from "./pages/Chat";
 import DataImport from "./pages/DataImport";
+import PublicDashboard from "./pages/PublicDashboard";
+import MechanicTracker from "./pages/MechanicTracker";
 import "./styles/theme.css";
 
 function Router() {
@@ -40,7 +42,7 @@ function Router() {
         <Route path="/entry" component={DailyEntry} />
         <Route path="/workshop" component={Workshop} />
         <Route path="/sales" component={Sales} />
-        <Route path="/mechanics" component={Staff} />
+        <Route path="/mechanics" component={MechanicTracker} />
         <Route path="/finance" component={Finances} />
         <Route path="/kanban" component={Kanban} />
         <Route path="/kpi" component={KPITracker} />
@@ -52,6 +54,7 @@ function Router() {
         <Route path="/sheets" component={GoogleSheets} />
         <Route path="/chat" component={Chat} />
         <Route path="/import" component={DataImport} />
+        <Route path="/public" component={PublicDashboard} />
         <Route path="/" component={Dashboard} />
       </Switch>
     </AppLayout>
