@@ -1,9 +1,35 @@
 import React, { useState } from 'react';
 import { useLocation, useRoute } from 'wouter';
 import '../styles/global.css';
+import NotificationBell from './NotificationBell';
+import QuickEntryDrawer from './QuickEntryDrawer';
+import { useAccess } from '@/contexts/AccessContext';
 
 interface MainLayoutProps {
   children: React.ReactNode;
+}
+
+function TopBar() {
+  const access = useAccess();
+  return (
+    <div
+      style={{
+        display: 'flex',
+        alignItems: 'center',
+        justifyContent: 'flex-end',
+        gap: 12,
+        marginBottom: 14,
+        padding: '6px 0',
+        borderBottom: '1px solid var(--card-border)',
+      }}
+    >
+      {access.canEdit && <QuickEntryDrawer />}
+      <NotificationBell />
+      <div style={{ fontSize: 11, opacity: 0.7 }}>
+        {access.user?.name || (access.role === 'guest' ? 'Guest' : 'User')} · {access.role}
+      </div>
+    </div>
+  );
 }
 
 export default function MainLayout({ children }: MainLayoutProps) {
@@ -213,6 +239,8 @@ export default function MainLayout({ children }: MainLayoutProps) {
           flex: 1,
         }}
       >
+        {/* Top bar */}
+        <TopBar />
         {children}
       </div>
     </div>
