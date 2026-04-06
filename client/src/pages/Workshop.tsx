@@ -1,5 +1,6 @@
 import DashboardNav from "@/components/DashboardNav";
 import WorkshopTable from "@/components/WorkshopTable";
+import LiveInsightsBanner from "@/components/LiveInsightsBanner";
 import { trpc } from "@/lib/trpc";
 import { Card } from "@/components/ui/card";
 import { BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, Legend, ResponsiveContainer } from "recharts";
@@ -39,6 +40,7 @@ export default function Workshop() {
       <main className="flex-1 p-4 md:p-8">
         <div className="max-w-7xl mx-auto">
           <h1 className="text-4xl font-bold text-slate-900 mb-8">Workshop Management</h1>
+          <LiveInsightsBanner categories={["workshop"]} />
 
           {/* Charts */}
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 mb-8">

@@ -1,6 +1,7 @@
 // import NewAppLayout from "@/components/NewAppLayout";
 import { TrendingUp, TrendingDown, AlertCircle, CheckCircle } from "lucide-react";
 import FilterBar from "@/components/FilterBar";
+import LiveInsightsBanner from "@/components/LiveInsightsBanner";
 
 // Color scheme: Red (#e30613), Teal (#14b8a6), Amber (#f59e0b), Indigo (#6366f1)
 
@@ -25,7 +26,9 @@ export default function NewDashboardPage() {
     <>
       <div style={{ display: "flex", flexDirection: "column", height: "100%", backgroundColor: "#0f172a" }}>
         <FilterBar showDateRange showStatus showChannel showPaymentMethod />
-        
+        <div style={{ padding: "0 2rem" }}>
+          <LiveInsightsBanner maxAlerts={3} />
+        </div>
         <div style={{ display: "flex", gap: "2rem", padding: "2rem", height: "100%", overflow: "auto", flex: 1 }}>
           {/* Main Panel */}
           <div style={{ flex: 1 }}>

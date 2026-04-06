@@ -1,5 +1,7 @@
 import { useState } from "react";
 import { BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, Legend, ResponsiveContainer, LineChart, Line } from "recharts";
+import LiveInsightsBanner from "@/components/LiveInsightsBanner";
+import { trpc } from "@/lib/trpc";
 
 interface Mechanic {
   id: string;
@@ -74,10 +76,38 @@ const performanceData = [
 
 export default function MechanicTracker() {
   const [selectedMechanic, setSelectedMechanic] = useState<Mechanic | null>(null);
+  const insights = trpc.sheets.insights.useQuery(undefined, { refetchInterval: 60_000 });
+  const liveMechanics =
+    insights.data?.success && insights.data.metrics ? insights.data.metrics.mechanicEfficiency : [];
 
   return (
     <div className="flex flex-col gap-lg">
       <h2 className="text-2xl font-bold">Mechanic Tracker</h2>
+      <LiveInsightsBanner categories={["workshop", "staff"]} />
+
+      {/* Live mechanic ratings */}
+      {liveMechanics.length > 0 && (
+        <div className="card">
+          <h3 className="text-lg font-bold mb-md">Live Mechanic Ratings (5-star)</h3>
+          <div className="grid grid-3 gap-md">
+            {liveMechanics.map((m) => (
+              <div key={m.mechanicName} className="p-md bg-bg-tertiary rounded-md">
+                <div className="font-bold">{m.mechanicName}</div>
+                <div className="text-sm" style={{ opacity: 0.8 }}>
+                  {m.jobsCompleted} jobs · {m.efficiency}% efficiency
+                </div>
+                <div style={{ marginTop: 4, fontSize: 16, color: "#fbbf24" }}>
+                  {"★".repeat(Math.round(m.score5Star))}
+                  <span style={{ color: "#4b5563" }}>{"★".repeat(5 - Math.round(m.score5Star))}</span>
+                  <span style={{ marginLeft: 6, fontSize: 11, color: "#9ca3af" }}>
+                    {m.score5Star.toFixed(1)}/5
+                  </span>
+                </div>
+              </div>
+            ))}
+          </div>
+        </div>
+      )}
 
       {/* Summary Stats */}
       <div className="grid grid-4 gap-md">
