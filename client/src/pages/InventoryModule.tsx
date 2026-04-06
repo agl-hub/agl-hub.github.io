@@ -55,8 +55,8 @@ export default function InventoryModule() {
         <div style={{ padding: "2rem", flex: 1, overflow: "auto" }}>
           {/* Header */}
           <div style={{ marginBottom: "2rem" }}>
-            <h1 style={{ fontSize: "1.875rem", fontWeight: "700", color: "#ffffff", margin: "0 0 0.5rem 0" }}>Inventory & POS</h1>
-            <p style={{ fontSize: "0.875rem", color: "#b0b8c8", margin: 0 }}>Manage stock levels, pricing, and inventory alerts</p>
+            <h1 style={{ fontSize: "0.4375rem", fontWeight: "700", color: "#ffffff", margin: "0 0 0.5rem 0" }}>Inventory & POS</h1>
+            <p style={{ fontSize: "0.4375rem", color: "#b0b8c8", margin: 0 }}>Manage stock levels, pricing, and inventory alerts</p>
           </div>
 
           {/* KPI Cards */}
@@ -68,7 +68,7 @@ export default function InventoryModule() {
               padding: "1.5rem",
               textAlign: "center",
             }}>
-              <div style={{ fontSize: "0.75rem", color: "#7a8294", marginBottom: "0.5rem", textTransform: "uppercase", letterSpacing: "0.5px" }}>
+              <div style={{ fontSize: "0.5rem", color: "#7a8294", marginBottom: "0.5rem", textTransform: "uppercase", letterSpacing: "0.5px" }}>
                 Total Inventory Value
               </div>
               <div style={{ fontSize: "2rem", fontWeight: "700", color: "#14b8a6" }}>
@@ -82,7 +82,7 @@ export default function InventoryModule() {
               padding: "1.5rem",
               textAlign: "center",
             }}>
-              <div style={{ fontSize: "0.75rem", color: "#7a8294", marginBottom: "0.5rem", textTransform: "uppercase", letterSpacing: "0.5px" }}>
+              <div style={{ fontSize: "0.5rem", color: "#7a8294", marginBottom: "0.5rem", textTransform: "uppercase", letterSpacing: "0.5px" }}>
                 Total Items
               </div>
               <div style={{ fontSize: "2rem", fontWeight: "700", color: "#ffffff" }}>
@@ -96,7 +96,7 @@ export default function InventoryModule() {
               padding: "1.5rem",
               textAlign: "center",
             }}>
-              <div style={{ fontSize: "0.75rem", color: "#7a8294", marginBottom: "0.5rem", textTransform: "uppercase", letterSpacing: "0.5px" }}>
+              <div style={{ fontSize: "0.5rem", color: "#7a8294", marginBottom: "0.5rem", textTransform: "uppercase", letterSpacing: "0.5px" }}>
                 Low Stock Alerts
               </div>
               <div style={{ fontSize: "2rem", fontWeight: "700", color: "#f59e0b" }}>
@@ -139,7 +139,7 @@ export default function InventoryModule() {
               <table style={{
                 width: "100%",
                 borderCollapse: "collapse",
-                fontSize: "0.875rem",
+                fontSize: "0.4375rem",
               }}>
                 <thead>
                   <tr style={{ backgroundColor: "#0f172a", borderBottom: "1px solid #2a3447" }}>
@@ -163,7 +163,7 @@ export default function InventoryModule() {
                           backgroundColor: `${getCategoryColor(item.category)}33`,
                           color: getCategoryColor(item.category),
                           borderRadius: "6px",
-                          fontSize: "0.75rem",
+                          fontSize: "0.5rem",
                           fontWeight: "600",
                         }}>
                           {item.category}
@@ -188,7 +188,7 @@ export default function InventoryModule() {
                           backgroundColor: `${getStatusColor(item.status)}33`,
                           color: getStatusColor(item.status),
                           borderRadius: "6px",
-                          fontSize: "0.75rem",
+                          fontSize: "0.5rem",
                           fontWeight: "600",
                           alignItems: "center",
                           gap: "0.25rem",
@@ -220,10 +220,10 @@ export default function InventoryModule() {
             }}>
               <AlertTriangle size={24} style={{ color: "#f59e0b", flexShrink: 0 }} />
               <div>
-                <h3 style={{ fontSize: "1rem", fontWeight: "600", color: "#f59e0b", margin: "0 0 0.5rem 0" }}>
+                <h3 style={{ fontSize: "0.5rem", fontWeight: "600", color: "#f59e0b", margin: "0 0 0.5rem 0" }}>
                   Low Stock Alert
                 </h3>
-                <p style={{ fontSize: "0.875rem", color: "#b0b8c8", margin: 0 }}>
+                <p style={{ fontSize: "0.4375rem", color: "#b0b8c8", margin: 0 }}>
                   {lowStockCount} item(s) are below reorder level. Please reorder soon to avoid stockouts.
                 </p>
               </div>

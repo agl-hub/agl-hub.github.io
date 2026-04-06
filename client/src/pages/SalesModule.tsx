@@ -51,8 +51,8 @@ export default function SalesModule() {
           <div style={{ marginBottom: "2rem" }}>
             <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: "1.5rem" }}>
               <div>
-                <h1 style={{ fontSize: "1.875rem", fontWeight: "700", color: "#ffffff", margin: 0 }}>Sales Transactions</h1>
-                <p style={{ fontSize: "0.875rem", color: "#b0b8c8", margin: "0.5rem 0 0 0" }}>Track all sales and customer transactions</p>
+                <h1 style={{ fontSize: "0.4375rem", fontWeight: "700", color: "#ffffff", margin: 0 }}>Sales Transactions</h1>
+                <p style={{ fontSize: "0.4375rem", color: "#b0b8c8", margin: "0.5rem 0 0 0" }}>Track all sales and customer transactions</p>
               </div>
               <div style={{ display: "flex", gap: "1rem" }}>
                 <button style={{
@@ -93,7 +93,7 @@ export default function SalesModule() {
                     border: "1px solid #2a3447",
                     borderRadius: "8px",
                     color: "#ffffff",
-                    fontSize: "0.875rem",
+                    fontSize: "0.4375rem",
                   }}
                 />
               </div>
@@ -110,8 +110,8 @@ export default function SalesModule() {
                   padding: "1rem",
                   textAlign: "center",
                 }}>
-                  <div style={{ fontSize: "0.75rem", color: "#b0b8c8", marginBottom: "0.5rem" }}>Total Sales</div>
-                  <div style={{ fontSize: "1.5rem", fontWeight: "700", color: "#e30613" }}>₵15.6K</div>
+                  <div style={{ fontSize: "0.5rem", color: "#b0b8c8", marginBottom: "0.5rem" }}>Total Sales</div>
+                  <div style={{ fontSize: "0.5rem", fontWeight: "700", color: "#e30613" }}>₵15.6K</div>
                 </div>
                 <div style={{
                   backgroundColor: "linear-gradient(135deg, rgba(20, 184, 166, 0.1) 0%, rgba(20, 184, 166, 0.05) 100%)",
@@ -120,8 +120,8 @@ export default function SalesModule() {
                   padding: "1rem",
                   textAlign: "center",
                 }}>
-                  <div style={{ fontSize: "0.75rem", color: "#b0b8c8", marginBottom: "0.5rem" }}>Transactions</div>
-                  <div style={{ fontSize: "1.5rem", fontWeight: "700", color: "#14b8a6" }}>156</div>
+                  <div style={{ fontSize: "0.5rem", color: "#b0b8c8", marginBottom: "0.5rem" }}>Transactions</div>
+                  <div style={{ fontSize: "0.5rem", fontWeight: "700", color: "#14b8a6" }}>156</div>
                 </div>
                 <div style={{
                   backgroundColor: "linear-gradient(135deg, rgba(245, 158, 11, 0.1) 0%, rgba(245, 158, 11, 0.05) 100%)",
@@ -130,8 +130,8 @@ export default function SalesModule() {
                   padding: "1rem",
                   textAlign: "center",
                 }}>
-                  <div style={{ fontSize: "0.75rem", color: "#b0b8c8", marginBottom: "0.5rem" }}>Pending</div>
-                  <div style={{ fontSize: "1.5rem", fontWeight: "700", color: "#f59e0b" }}>2</div>
+                  <div style={{ fontSize: "0.5rem", color: "#b0b8c8", marginBottom: "0.5rem" }}>Pending</div>
+                  <div style={{ fontSize: "0.5rem", fontWeight: "700", color: "#f59e0b" }}>2</div>
                 </div>
               </div>
             </div>
@@ -148,7 +148,7 @@ export default function SalesModule() {
               <table style={{
                 width: "100%",
                 borderCollapse: "collapse",
-                fontSize: "0.875rem",
+                fontSize: "0.4375rem",
               }}>
                 <thead>
                   <tr style={{ backgroundColor: "#0f172a", borderBottom: "1px solid #2a3447" }}>
@@ -180,7 +180,7 @@ export default function SalesModule() {
                           backgroundColor: `${getChannelColor(row.channel)}33`,
                           color: getChannelColor(row.channel),
                           borderRadius: "6px",
-                          fontSize: "0.75rem",
+                          fontSize: "0.5rem",
                           fontWeight: "600",
                         }}>
                           {row.channel}
@@ -195,7 +195,7 @@ export default function SalesModule() {
                           backgroundColor: `${getStatusColor(row.status)}33`,
                           color: getStatusColor(row.status),
                           borderRadius: "6px",
-                          fontSize: "0.75rem",
+                          fontSize: "0.5rem",
                           fontWeight: "600",
                         }}>
                           {row.status}

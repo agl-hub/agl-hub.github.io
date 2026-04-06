@@ -78,8 +78,8 @@ export default function ProjectBoardModule() {
         <div style={{ padding: "2rem", flex: 1, overflow: "auto" }}>
           {/* Header */}
           <div style={{ marginBottom: "2rem" }}>
-            <h1 style={{ fontSize: "1.875rem", fontWeight: "700", color: "#ffffff", margin: "0 0 0.5rem 0" }}>Project Board</h1>
-            <p style={{ fontSize: "0.875rem", color: "#b0b8c8", margin: 0 }}>Manage workshop tasks and vehicle service projects</p>
+            <h1 style={{ fontSize: "0.4375rem", fontWeight: "700", color: "#ffffff", margin: "0 0 0.5rem 0" }}>Project Board</h1>
+            <p style={{ fontSize: "0.4375rem", color: "#b0b8c8", margin: 0 }}>Manage workshop tasks and vehicle service projects</p>
           </div>
 
           {/* Kanban Board */}
@@ -108,7 +108,7 @@ export default function ProjectBoardModule() {
                       borderRadius: "50%",
                       backgroundColor: column.color,
                     }} />
-                    <h3 style={{ fontSize: "1rem", fontWeight: "600", color: "#ffffff", margin: 0 }}>
+                    <h3 style={{ fontSize: "0.5rem", fontWeight: "600", color: "#ffffff", margin: 0 }}>
                       {column.title}
                     </h3>
                     <span style={{
@@ -116,7 +116,7 @@ export default function ProjectBoardModule() {
                       backgroundColor: "#2a3447",
                       color: "#7a8294",
                       borderRadius: "4px",
-                      fontSize: "0.75rem",
+                      fontSize: "0.5rem",
                       fontWeight: "600",
                     }}>
                       {tasks[column.key as keyof typeof tasks].length}
@@ -184,7 +184,7 @@ export default function ProjectBoardModule() {
                     >
                       {/* Task Header */}
                       <div style={{ display: "flex", justifyContent: "space-between", alignItems: "start", marginBottom: "0.75rem" }}>
-                        <h4 style={{ fontSize: "0.95rem", fontWeight: "600", color: "#ffffff", margin: 0, flex: 1 }}>
+                        <h4 style={{ fontSize: "0.65rem", fontWeight: "600", color: "#ffffff", margin: 0, flex: 1 }}>
                           {task.title}
                         </h4>
                         <button
@@ -209,7 +209,7 @@ export default function ProjectBoardModule() {
                       </div>
 
                       {/* Task Details */}
-                      <div style={{ fontSize: "0.75rem", color: "#b0b8c8", marginBottom: "0.75rem" }}>
+                      <div style={{ fontSize: "0.5rem", color: "#b0b8c8", marginBottom: "0.75rem" }}>
                         {task.customer}
                       </div>
 
@@ -221,12 +221,12 @@ export default function ProjectBoardModule() {
                           backgroundColor: `${getPriorityColor(task.priority)}33`,
                           color: getPriorityColor(task.priority),
                           borderRadius: "4px",
-                          fontSize: "0.7rem",
+                          fontSize: "0.475rem",
                           fontWeight: "600",
                         }}>
                           {task.priority}
                         </span>
-                        <div style={{ display: "flex", alignItems: "center", gap: "0.25rem", fontSize: "0.7rem", color: "#7a8294" }}>
+                        <div style={{ display: "flex", alignItems: "center", gap: "0.25rem", fontSize: "0.475rem", color: "#7a8294" }}>
                           <Clock size={12} />
                           {task.dueDate}
                         </div>
@@ -241,7 +241,7 @@ export default function ProjectBoardModule() {
                       alignItems: "center",
                       justifyContent: "center",
                       color: "#7a8294",
-                      fontSize: "0.875rem",
+                      fontSize: "0.4375rem",
                       textAlign: "center",
                     }}>
                       No tasks yet

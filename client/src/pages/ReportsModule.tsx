@@ -57,8 +57,8 @@ export default function ReportsModule() {
         <div style={{ padding: "2rem", flex: 1, overflow: "auto" }}>
           {/* Header */}
           <div style={{ marginBottom: "2rem" }}>
-            <h1 style={{ fontSize: "1.875rem", fontWeight: "700", color: "#ffffff", margin: "0 0 0.5rem 0" }}>Reports & Analytics</h1>
-            <p style={{ fontSize: "0.875rem", color: "#b0b8c8", margin: 0 }}>Generate and view operational, financial, and performance reports</p>
+            <h1 style={{ fontSize: "0.4375rem", fontWeight: "700", color: "#ffffff", margin: "0 0 0.5rem 0" }}>Reports & Analytics</h1>
+            <p style={{ fontSize: "0.4375rem", color: "#b0b8c8", margin: 0 }}>Generate and view operational, financial, and performance reports</p>
           </div>
 
           {/* Report Selector */}
@@ -88,7 +88,7 @@ export default function ReportsModule() {
                 }}
               >
                 <div style={{ display: "flex", justifyContent: "space-between", alignItems: "start", marginBottom: "0.75rem" }}>
-                  <div style={{ fontSize: "1rem", fontWeight: "600", color: selectedReport === report.id ? "#ffffff" : "#ffffff" }}>
+                  <div style={{ fontSize: "0.5rem", fontWeight: "600", color: selectedReport === report.id ? "#ffffff" : "#ffffff" }}>
                     {report.name}
                   </div>
                   <div style={{
@@ -96,16 +96,16 @@ export default function ReportsModule() {
                     backgroundColor: selectedReport === report.id ? "#ffffff33" : "#14b8a633",
                     color: selectedReport === report.id ? "#ffffff" : "#14b8a6",
                     borderRadius: "4px",
-                    fontSize: "0.7rem",
+                    fontSize: "0.475rem",
                     fontWeight: "600",
                   }}>
                     {report.status}
                   </div>
                 </div>
-                <div style={{ fontSize: "0.75rem", color: selectedReport === report.id ? "#e0e0e0" : "#b0b8c8", marginBottom: "0.5rem" }}>
+                <div style={{ fontSize: "0.5rem", color: selectedReport === report.id ? "#e0e0e0" : "#b0b8c8", marginBottom: "0.5rem" }}>
                   {report.frequency}
                 </div>
-                <div style={{ fontSize: "0.7rem", color: selectedReport === report.id ? "#d0d0d0" : "#7a8294" }}>
+                <div style={{ fontSize: "0.475rem", color: selectedReport === report.id ? "#d0d0d0" : "#7a8294" }}>
                   Generated: {report.lastGenerated}
                 </div>
               </button>
@@ -122,10 +122,10 @@ export default function ReportsModule() {
               padding: "2rem",
             }}>
               <div style={{ marginBottom: "2rem", paddingBottom: "2rem", borderBottom: "1px solid #2a3447" }}>
-                <h2 style={{ fontSize: "1.5rem", fontWeight: "700", color: "#ffffff", margin: "0 0 0.5rem 0" }}>
+                <h2 style={{ fontSize: "0.5rem", fontWeight: "700", color: "#ffffff", margin: "0 0 0.5rem 0" }}>
                   {currentReport.title}
                 </h2>
-                <div style={{ display: "flex", alignItems: "center", gap: "0.5rem", color: "#7a8294", fontSize: "0.875rem" }}>
+                <div style={{ display: "flex", alignItems: "center", gap: "0.5rem", color: "#7a8294", fontSize: "0.4375rem" }}>
                   <Calendar size={16} />
                   {currentReport.date}
                 </div>
@@ -140,10 +140,10 @@ export default function ReportsModule() {
                     borderRadius: "8px",
                     padding: "1.5rem",
                   }}>
-                    <h3 style={{ fontSize: "1rem", fontWeight: "600", color: "#e30613", marginBottom: "0.75rem", margin: "0 0 0.75rem 0" }}>
+                    <h3 style={{ fontSize: "0.5rem", fontWeight: "600", color: "#e30613", marginBottom: "0.75rem", margin: "0 0 0.75rem 0" }}>
                       {section.title}
                     </h3>
-                    <p style={{ fontSize: "0.875rem", color: "#b0b8c8", lineHeight: "1.6", margin: 0 }}>
+                    <p style={{ fontSize: "0.4375rem", color: "#b0b8c8", lineHeight: "1.6", margin: 0 }}>
                       {section.content}
                     </p>
                   </div>
@@ -205,7 +205,7 @@ export default function ReportsModule() {
                 borderRadius: "12px",
                 padding: "1.5rem",
               }}>
-                <h3 style={{ fontSize: "1rem", fontWeight: "600", color: "#ffffff", marginBottom: "1rem", margin: "0 0 1rem 0" }}>
+                <h3 style={{ fontSize: "0.5rem", fontWeight: "600", color: "#ffffff", marginBottom: "1rem", margin: "0 0 1rem 0" }}>
                   Quick Actions
                 </h3>
 
@@ -219,7 +219,7 @@ export default function ReportsModule() {
                     cursor: "pointer",
                     fontWeight: "500",
                     transition: "all 0.3s ease",
-                    fontSize: "0.875rem",
+                    fontSize: "0.4375rem",
                   }}
                     onMouseEnter={(e) => e.currentTarget.style.backgroundColor = "#b80410"}
                     onMouseLeave={(e) => e.currentTarget.style.backgroundColor = "#e30613"}
@@ -235,7 +235,7 @@ export default function ReportsModule() {
                     cursor: "pointer",
                     fontWeight: "500",
                     transition: "all 0.3s ease",
-                    fontSize: "0.875rem",
+                    fontSize: "0.4375rem",
                   }}
                     onMouseEnter={(e) => e.currentTarget.style.opacity = "0.8"}
                     onMouseLeave={(e) => e.currentTarget.style.opacity = "1"}
@@ -251,7 +251,7 @@ export default function ReportsModule() {
                     cursor: "pointer",
                     fontWeight: "500",
                     transition: "all 0.3s ease",
-                    fontSize: "0.875rem",
+                    fontSize: "0.4375rem",
                   }}
                     onMouseEnter={(e) => e.currentTarget.style.opacity = "0.8"}
                     onMouseLeave={(e) => e.currentTarget.style.opacity = "1"}
@@ -262,19 +262,19 @@ export default function ReportsModule() {
 
                 {/* Report Stats */}
                 <div style={{ marginTop: "1.5rem", paddingTop: "1.5rem", borderTop: "1px solid #2a3447" }}>
-                  <div style={{ fontSize: "0.75rem", color: "#7a8294", textTransform: "uppercase", letterSpacing: "0.5px", marginBottom: "0.75rem", fontWeight: "600" }}>
+                  <div style={{ fontSize: "0.5rem", color: "#7a8294", textTransform: "uppercase", letterSpacing: "0.5px", marginBottom: "0.75rem", fontWeight: "600" }}>
                     Report Statistics
                   </div>
                   <div style={{ display: "flex", flexDirection: "column", gap: "0.75rem" }}>
-                    <div style={{ display: "flex", justifyContent: "space-between", fontSize: "0.875rem" }}>
+                    <div style={{ display: "flex", justifyContent: "space-between", fontSize: "0.4375rem" }}>
                       <span style={{ color: "#b0b8c8" }}>Generated</span>
                       <span style={{ color: "#ffffff", fontWeight: "600" }}>24</span>
                     </div>
-                    <div style={{ display: "flex", justifyContent: "space-between", fontSize: "0.875rem" }}>
+                    <div style={{ display: "flex", justifyContent: "space-between", fontSize: "0.4375rem" }}>
                       <span style={{ color: "#b0b8c8" }}>Downloaded</span>
                       <span style={{ color: "#ffffff", fontWeight: "600" }}>18</span>
                     </div>
-                    <div style={{ display: "flex", justifyContent: "space-between", fontSize: "0.875rem" }}>
+                    <div style={{ display: "flex", justifyContent: "space-between", fontSize: "0.4375rem" }}>
                       <span style={{ color: "#b0b8c8" }}>Shared</span>
                       <span style={{ color: "#ffffff", fontWeight: "600" }}>12</span>
                     </div>

@@ -42,8 +42,8 @@ export default function WorkshopModule() {
         <div style={{ padding: "2rem", flex: 1, overflow: "auto" }}>
           {/* Header */}
           <div style={{ marginBottom: "2rem" }}>
-            <h1 style={{ fontSize: "1.875rem", fontWeight: "700", color: "#ffffff", margin: "0 0 0.5rem 0" }}>Workshop Daily Log</h1>
-            <p style={{ fontSize: "0.875rem", color: "#b0b8c8", margin: 0 }}>Track vehicle services and mechanic assignments</p>
+            <h1 style={{ fontSize: "0.4375rem", fontWeight: "700", color: "#ffffff", margin: "0 0 0.5rem 0" }}>Workshop Daily Log</h1>
+            <p style={{ fontSize: "0.4375rem", color: "#b0b8c8", margin: 0 }}>Track vehicle services and mechanic assignments</p>
           </div>
 
           {/* Status Filter */}
@@ -92,10 +92,10 @@ export default function WorkshopModule() {
                 {/* Header */}
                 <div style={{ display: "flex", justifyContent: "space-between", alignItems: "start", marginBottom: "1rem" }}>
                   <div>
-                    <div style={{ fontSize: "0.75rem", color: "#7a8294", textTransform: "uppercase", letterSpacing: "0.5px", marginBottom: "0.25rem" }}>
+                    <div style={{ fontSize: "0.5rem", color: "#7a8294", textTransform: "uppercase", letterSpacing: "0.5px", marginBottom: "0.25rem" }}>
                       Registration
                     </div>
-                    <div style={{ fontSize: "1.25rem", fontWeight: "700", color: "#ffffff" }}>
+                    <div style={{ fontSize: "0.4375rem", fontWeight: "700", color: "#ffffff" }}>
                       {vehicle.regNum}
                     </div>
                   </div>
@@ -107,7 +107,7 @@ export default function WorkshopModule() {
                     backgroundColor: `${getStatusColor(vehicle.status)}33`,
                     color: getStatusColor(vehicle.status),
                     borderRadius: "6px",
-                    fontSize: "0.75rem",
+                    fontSize: "0.5rem",
                     fontWeight: "600",
                   }}>
                     {getStatusIcon(vehicle.status)}
@@ -118,34 +118,34 @@ export default function WorkshopModule() {
                 {/* Details */}
                 <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: "1rem", marginBottom: "1rem", paddingBottom: "1rem", borderBottom: "1px solid #2a3447" }}>
                   <div>
-                    <div style={{ fontSize: "0.75rem", color: "#7a8294", marginBottom: "0.25rem" }}>Customer</div>
-                    <div style={{ fontSize: "0.875rem", color: "#ffffff", fontWeight: "500" }}>{vehicle.customer}</div>
+                    <div style={{ fontSize: "0.5rem", color: "#7a8294", marginBottom: "0.25rem" }}>Customer</div>
+                    <div style={{ fontSize: "0.4375rem", color: "#ffffff", fontWeight: "500" }}>{vehicle.customer}</div>
                   </div>
                   <div>
-                    <div style={{ fontSize: "0.75rem", color: "#7a8294", marginBottom: "0.25rem" }}>Vehicle</div>
-                    <div style={{ fontSize: "0.875rem", color: "#ffffff", fontWeight: "500" }}>{vehicle.vehicle}</div>
+                    <div style={{ fontSize: "0.5rem", color: "#7a8294", marginBottom: "0.25rem" }}>Vehicle</div>
+                    <div style={{ fontSize: "0.4375rem", color: "#ffffff", fontWeight: "500" }}>{vehicle.vehicle}</div>
                   </div>
                   <div>
-                    <div style={{ fontSize: "0.75rem", color: "#7a8294", marginBottom: "0.25rem" }}>Mechanic</div>
-                    <div style={{ fontSize: "0.875rem", color: "#ffffff", fontWeight: "500" }}>{vehicle.mechanic}</div>
+                    <div style={{ fontSize: "0.5rem", color: "#7a8294", marginBottom: "0.25rem" }}>Mechanic</div>
+                    <div style={{ fontSize: "0.4375rem", color: "#ffffff", fontWeight: "500" }}>{vehicle.mechanic}</div>
                   </div>
                   <div>
-                    <div style={{ fontSize: "0.75rem", color: "#7a8294", marginBottom: "0.25rem" }}>Est. Days</div>
-                    <div style={{ fontSize: "0.875rem", color: "#ffffff", fontWeight: "500" }}>{vehicle.estimatedDays} days</div>
+                    <div style={{ fontSize: "0.5rem", color: "#7a8294", marginBottom: "0.25rem" }}>Est. Days</div>
+                    <div style={{ fontSize: "0.4375rem", color: "#ffffff", fontWeight: "500" }}>{vehicle.estimatedDays} days</div>
                   </div>
                 </div>
 
                 {/* Job */}
                 <div style={{ marginBottom: "1rem" }}>
-                  <div style={{ fontSize: "0.75rem", color: "#7a8294", marginBottom: "0.5rem" }}>Job Description</div>
-                  <div style={{ fontSize: "0.875rem", color: "#b0b8c8" }}>{vehicle.job}</div>
+                  <div style={{ fontSize: "0.5rem", color: "#7a8294", marginBottom: "0.5rem" }}>Job Description</div>
+                  <div style={{ fontSize: "0.4375rem", color: "#b0b8c8" }}>{vehicle.job}</div>
                 </div>
 
                 {/* Progress Bar */}
                 <div style={{ marginBottom: "0.5rem" }}>
                   <div style={{ display: "flex", justifyContent: "space-between", marginBottom: "0.5rem" }}>
-                    <div style={{ fontSize: "0.75rem", color: "#7a8294" }}>Progress</div>
-                    <div style={{ fontSize: "0.75rem", fontWeight: "600", color: "#ffffff" }}>{vehicle.progress}%</div>
+                    <div style={{ fontSize: "0.5rem", color: "#7a8294" }}>Progress</div>
+                    <div style={{ fontSize: "0.5rem", fontWeight: "600", color: "#ffffff" }}>{vehicle.progress}%</div>
                   </div>
                   <div style={{
                     width: "100%",

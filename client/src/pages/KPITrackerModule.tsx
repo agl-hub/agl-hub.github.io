@@ -32,8 +32,8 @@ export default function KPITrackerModule() {
         <div style={{ padding: "2rem", flex: 1, overflow: "auto" }}>
           {/* Header */}
           <div style={{ marginBottom: "2rem" }}>
-            <h1 style={{ fontSize: "1.875rem", fontWeight: "700", color: "#ffffff", margin: "0 0 0.5rem 0" }}>KPI Tracker</h1>
-            <p style={{ fontSize: "0.875rem", color: "#b0b8c8", margin: 0 }}>Monitor key performance indicators and business metrics</p>
+            <h1 style={{ fontSize: "0.4375rem", fontWeight: "700", color: "#ffffff", margin: "0 0 0.5rem 0" }}>KPI Tracker</h1>
+            <p style={{ fontSize: "0.4375rem", color: "#b0b8c8", margin: 0 }}>Monitor key performance indicators and business metrics</p>
           </div>
 
           {/* Period Selector */}
@@ -82,7 +82,7 @@ export default function KPITrackerModule() {
               >
                 {/* Header */}
                 <div style={{ display: "flex", justifyContent: "space-between", alignItems: "start", marginBottom: "1rem" }}>
-                  <h3 style={{ fontSize: "0.95rem", fontWeight: "600", color: "#b0b8c8", margin: 0 }}>
+                  <h3 style={{ fontSize: "0.65rem", fontWeight: "600", color: "#b0b8c8", margin: 0 }}>
                     {kpi.name}
                   </h3>
                   <Target size={18} style={{ color: "#7a8294" }} />
@@ -93,7 +93,7 @@ export default function KPITrackerModule() {
                   <div style={{ fontSize: "2rem", fontWeight: "700", color: "#ffffff", marginBottom: "0.5rem" }}>
                     {kpi.value}
                   </div>
-                  <div style={{ display: "flex", alignItems: "center", gap: "0.5rem", fontSize: "0.875rem", color: kpi.positive ? "#14b8a6" : "#e30613" }}>
+                  <div style={{ display: "flex", alignItems: "center", gap: "0.5rem", fontSize: "0.4375rem", color: kpi.positive ? "#14b8a6" : "#e30613" }}>
                     {kpi.positive ? <TrendingUp size={16} /> : <TrendingDown size={16} />}
                     {kpi.change}
                   </div>
@@ -101,7 +101,7 @@ export default function KPITrackerModule() {
 
                 {/* Target Progress */}
                 <div style={{ marginBottom: "1rem", paddingBottom: "1rem", borderBottom: "1px solid #2a3447" }}>
-                  <div style={{ display: "flex", justifyContent: "space-between", marginBottom: "0.5rem", fontSize: "0.75rem" }}>
+                  <div style={{ display: "flex", justifyContent: "space-between", marginBottom: "0.5rem", fontSize: "0.5rem" }}>
                     <span style={{ color: "#7a8294" }}>Target: {kpi.target}</span>
                     <span style={{ color: getPerformanceColor(kpi.actual, kpi.target_val), fontWeight: "600" }}>
                       {((kpi.actual / kpi.target_val) * 100).toFixed(0)}%
@@ -151,7 +151,7 @@ export default function KPITrackerModule() {
 
           {/* Detailed Analysis */}
           <div style={{ marginTop: "2rem" }}>
-            <h2 style={{ fontSize: "1.25rem", fontWeight: "600", color: "#ffffff", marginBottom: "1.5rem", margin: "2rem 0 1.5rem 0" }}>
+            <h2 style={{ fontSize: "0.4375rem", fontWeight: "600", color: "#ffffff", marginBottom: "1.5rem", margin: "2rem 0 1.5rem 0" }}>
               Performance Analysis
             </h2>
 
@@ -163,7 +163,7 @@ export default function KPITrackerModule() {
                 borderRadius: "12px",
                 padding: "1.5rem",
               }}>
-                <h3 style={{ fontSize: "1rem", fontWeight: "600", color: "#14b8a6", marginBottom: "1rem", margin: "0 0 1rem 0" }}>
+                <h3 style={{ fontSize: "0.5rem", fontWeight: "600", color: "#14b8a6", marginBottom: "1rem", margin: "0 0 1rem 0" }}>
                   On Track KPIs
                 </h3>
                 <div style={{ display: "flex", flexDirection: "column", gap: "0.75rem" }}>
@@ -192,7 +192,7 @@ export default function KPITrackerModule() {
                 borderRadius: "12px",
                 padding: "1.5rem",
               }}>
-                <h3 style={{ fontSize: "1rem", fontWeight: "600", color: "#f59e0b", marginBottom: "1rem", margin: "0 0 1rem 0" }}>
+                <h3 style={{ fontSize: "0.5rem", fontWeight: "600", color: "#f59e0b", marginBottom: "1rem", margin: "0 0 1rem 0" }}>
                   Needs Attention
                 </h3>
                 <div style={{ display: "flex", flexDirection: "column", gap: "0.75rem" }}>

@@ -52,8 +52,8 @@ export default function TrainingModule() {
         <div style={{ padding: "2rem", flex: 1, overflow: "auto" }}>
           {/* Header */}
           <div style={{ marginBottom: "2rem" }}>
-            <h1 style={{ fontSize: "1.875rem", fontWeight: "700", color: "#ffffff", margin: "0 0 0.5rem 0" }}>Staff Training</h1>
-            <p style={{ fontSize: "0.875rem", color: "#b0b8c8", margin: 0 }}>Manage training courses and track staff development</p>
+            <h1 style={{ fontSize: "0.4375rem", fontWeight: "700", color: "#ffffff", margin: "0 0 0.5rem 0" }}>Staff Training</h1>
+            <p style={{ fontSize: "0.4375rem", color: "#b0b8c8", margin: 0 }}>Manage training courses and track staff development</p>
           </div>
 
           {/* Category Filter */}
@@ -102,7 +102,7 @@ export default function TrainingModule() {
                 {/* Header */}
                 <div style={{ display: "flex", justifyContent: "space-between", alignItems: "start", marginBottom: "1rem" }}>
                   <div style={{ flex: 1 }}>
-                    <h3 style={{ fontSize: "1rem", fontWeight: "700", color: "#ffffff", margin: "0 0 0.5rem 0" }}>
+                    <h3 style={{ fontSize: "0.5rem", fontWeight: "700", color: "#ffffff", margin: "0 0 0.5rem 0" }}>
                       {course.title}
                     </h3>
                     <div style={{ display: "flex", gap: "0.5rem", alignItems: "center", marginBottom: "0.5rem" }}>
@@ -112,7 +112,7 @@ export default function TrainingModule() {
                         backgroundColor: `${getCategoryColor(course.category)}33`,
                         color: getCategoryColor(course.category),
                         borderRadius: "6px",
-                        fontSize: "0.7rem",
+                        fontSize: "0.475rem",
                         fontWeight: "600",
                       }}>
                         {course.category}
@@ -123,7 +123,7 @@ export default function TrainingModule() {
                         backgroundColor: `${getStatusColor(course.status)}33`,
                         color: getStatusColor(course.status),
                         borderRadius: "6px",
-                        fontSize: "0.7rem",
+                        fontSize: "0.475rem",
                         fontWeight: "600",
                       }}>
                         {course.status}
@@ -135,28 +135,28 @@ export default function TrainingModule() {
                 {/* Details */}
                 <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: "1rem", marginBottom: "1rem", paddingBottom: "1rem", borderBottom: "1px solid #2a3447" }}>
                   <div>
-                    <div style={{ fontSize: "0.75rem", color: "#7a8294", marginBottom: "0.25rem" }}>Instructor</div>
-                    <div style={{ fontSize: "0.875rem", color: "#ffffff", fontWeight: "500" }}>{course.instructor}</div>
+                    <div style={{ fontSize: "0.5rem", color: "#7a8294", marginBottom: "0.25rem" }}>Instructor</div>
+                    <div style={{ fontSize: "0.4375rem", color: "#ffffff", fontWeight: "500" }}>{course.instructor}</div>
                   </div>
                   <div>
-                    <div style={{ fontSize: "0.75rem", color: "#7a8294", marginBottom: "0.25rem" }}>Duration</div>
-                    <div style={{ fontSize: "0.875rem", color: "#ffffff", fontWeight: "500" }}>{course.duration}</div>
+                    <div style={{ fontSize: "0.5rem", color: "#7a8294", marginBottom: "0.25rem" }}>Duration</div>
+                    <div style={{ fontSize: "0.4375rem", color: "#ffffff", fontWeight: "500" }}>{course.duration}</div>
                   </div>
                   <div>
-                    <div style={{ fontSize: "0.75rem", color: "#7a8294", marginBottom: "0.25rem" }}>Start Date</div>
-                    <div style={{ fontSize: "0.875rem", color: "#b0b8c8" }}>{course.startDate}</div>
+                    <div style={{ fontSize: "0.5rem", color: "#7a8294", marginBottom: "0.25rem" }}>Start Date</div>
+                    <div style={{ fontSize: "0.4375rem", color: "#b0b8c8" }}>{course.startDate}</div>
                   </div>
                   <div>
-                    <div style={{ fontSize: "0.75rem", color: "#7a8294", marginBottom: "0.25rem" }}>Participants</div>
-                    <div style={{ fontSize: "0.875rem", color: "#ffffff", fontWeight: "500" }}>{course.participants}</div>
+                    <div style={{ fontSize: "0.5rem", color: "#7a8294", marginBottom: "0.25rem" }}>Participants</div>
+                    <div style={{ fontSize: "0.4375rem", color: "#ffffff", fontWeight: "500" }}>{course.participants}</div>
                   </div>
                 </div>
 
                 {/* Progress */}
                 <div>
                   <div style={{ display: "flex", justifyContent: "space-between", marginBottom: "0.5rem" }}>
-                    <div style={{ fontSize: "0.75rem", color: "#7a8294" }}>Progress</div>
-                    <div style={{ fontSize: "0.75rem", fontWeight: "600", color: "#ffffff" }}>{course.progress}%</div>
+                    <div style={{ fontSize: "0.5rem", color: "#7a8294" }}>Progress</div>
+                    <div style={{ fontSize: "0.5rem", fontWeight: "600", color: "#ffffff" }}>{course.progress}%</div>
                   </div>
                   <div style={{
                     width: "100%",
@@ -179,7 +179,7 @@ export default function TrainingModule() {
 
           {/* Staff Progress */}
           <div>
-            <h2 style={{ fontSize: "1.25rem", fontWeight: "600", color: "#ffffff", marginBottom: "1.5rem", margin: "2rem 0 1.5rem 0" }}>
+            <h2 style={{ fontSize: "0.4375rem", fontWeight: "600", color: "#ffffff", marginBottom: "1.5rem", margin: "2rem 0 1.5rem 0" }}>
               Staff Training Progress
             </h2>
 
@@ -193,7 +193,7 @@ export default function TrainingModule() {
                 <table style={{
                   width: "100%",
                   borderCollapse: "collapse",
-                  fontSize: "0.875rem",
+                  fontSize: "0.4375rem",
                 }}>
                   <thead>
                     <tr style={{ backgroundColor: "#0f172a", borderBottom: "1px solid #2a3447" }}>
@@ -214,7 +214,7 @@ export default function TrainingModule() {
                             backgroundColor: "#14b8a633",
                             color: "#14b8a6",
                             borderRadius: "6px",
-                            fontSize: "0.75rem",
+                            fontSize: "0.5rem",
                             fontWeight: "600",
                           }}>
                             {staff.completed}
@@ -227,7 +227,7 @@ export default function TrainingModule() {
                             backgroundColor: "#f59e0b33",
                             color: "#f59e0b",
                             borderRadius: "6px",
-                            fontSize: "0.75rem",
+                            fontSize: "0.5rem",
                             fontWeight: "600",
                           }}>
                             {staff.inProgress}

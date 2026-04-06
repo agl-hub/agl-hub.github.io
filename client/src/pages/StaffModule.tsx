@@ -40,8 +40,8 @@ export default function StaffModule() {
         <div style={{ padding: "2rem", flex: 1, overflow: "auto" }}>
           {/* Header */}
           <div style={{ marginBottom: "2rem" }}>
-            <h1 style={{ fontSize: "1.875rem", fontWeight: "700", color: "#ffffff", margin: "0 0 0.5rem 0" }}>Staff Management</h1>
-            <p style={{ fontSize: "0.875rem", color: "#b0b8c8", margin: 0 }}>Track attendance, clock-in/out times, and staff performance</p>
+            <h1 style={{ fontSize: "0.4375rem", fontWeight: "700", color: "#ffffff", margin: "0 0 0.5rem 0" }}>Staff Management</h1>
+            <p style={{ fontSize: "0.4375rem", color: "#b0b8c8", margin: 0 }}>Track attendance, clock-in/out times, and staff performance</p>
           </div>
 
           {/* Status Filter */}
@@ -103,10 +103,10 @@ export default function StaffModule() {
                       <User size={24} />
                     </div>
                     <div>
-                      <div style={{ fontSize: "1rem", fontWeight: "700", color: "#ffffff" }}>
+                      <div style={{ fontSize: "0.5rem", fontWeight: "700", color: "#ffffff" }}>
                         {staff.name}
                       </div>
-                      <div style={{ fontSize: "0.75rem", color: "#7a8294" }}>
+                      <div style={{ fontSize: "0.5rem", color: "#7a8294" }}>
                         {staff.role}
                       </div>
                     </div>
@@ -116,7 +116,7 @@ export default function StaffModule() {
                     backgroundColor: `${getStatusColor(staff.status)}33`,
                     color: getStatusColor(staff.status),
                     borderRadius: "6px",
-                    fontSize: "0.75rem",
+                    fontSize: "0.5rem",
                     fontWeight: "600",
                   }}>
                     {staff.status}
@@ -126,18 +126,18 @@ export default function StaffModule() {
                 {/* Clock In/Out */}
                 <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: "1rem", marginBottom: "1rem", paddingBottom: "1rem", borderBottom: "1px solid #2a3447" }}>
                   <div>
-                    <div style={{ fontSize: "0.75rem", color: "#7a8294", marginBottom: "0.25rem", display: "flex", alignItems: "center", gap: "0.25rem" }}>
+                    <div style={{ fontSize: "0.5rem", color: "#7a8294", marginBottom: "0.25rem", display: "flex", alignItems: "center", gap: "0.25rem" }}>
                       <Clock size={14} /> Clock In
                     </div>
-                    <div style={{ fontSize: "0.95rem", fontWeight: "600", color: "#ffffff" }}>
+                    <div style={{ fontSize: "0.65rem", fontWeight: "600", color: "#ffffff" }}>
                       {staff.clockIn}
                     </div>
                   </div>
                   <div>
-                    <div style={{ fontSize: "0.75rem", color: "#7a8294", marginBottom: "0.25rem", display: "flex", alignItems: "center", gap: "0.25rem" }}>
+                    <div style={{ fontSize: "0.5rem", color: "#7a8294", marginBottom: "0.25rem", display: "flex", alignItems: "center", gap: "0.25rem" }}>
                       <Clock size={14} /> Clock Out
                     </div>
-                    <div style={{ fontSize: "0.95rem", fontWeight: "600", color: "#ffffff" }}>
+                    <div style={{ fontSize: "0.65rem", fontWeight: "600", color: "#ffffff" }}>
                       {staff.clockOut}
                     </div>
                   </div>
@@ -146,14 +146,14 @@ export default function StaffModule() {
                 {/* Hours and Attendance */}
                 <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: "1rem", marginBottom: "1rem" }}>
                   <div>
-                    <div style={{ fontSize: "0.75rem", color: "#7a8294", marginBottom: "0.5rem" }}>Hours Worked</div>
-                    <div style={{ fontSize: "1.25rem", fontWeight: "700", color: "#14b8a6" }}>
+                    <div style={{ fontSize: "0.5rem", color: "#7a8294", marginBottom: "0.5rem" }}>Hours Worked</div>
+                    <div style={{ fontSize: "0.4375rem", fontWeight: "700", color: "#14b8a6" }}>
                       {staff.hoursWorked}h
                     </div>
                   </div>
                   <div>
-                    <div style={{ fontSize: "0.75rem", color: "#7a8294", marginBottom: "0.5rem" }}>Attendance Rate</div>
-                    <div style={{ fontSize: "1.25rem", fontWeight: "700", color: getAttendanceColor(staff.attendance) }}>
+                    <div style={{ fontSize: "0.5rem", color: "#7a8294", marginBottom: "0.5rem" }}>Attendance Rate</div>
+                    <div style={{ fontSize: "0.4375rem", fontWeight: "700", color: getAttendanceColor(staff.attendance) }}>
                       {staff.attendance}%
                     </div>
                   </div>
@@ -189,7 +189,7 @@ export default function StaffModule() {
               padding: "1.5rem",
               textAlign: "center",
             }}>
-              <div style={{ fontSize: "0.75rem", color: "#7a8294", marginBottom: "0.5rem", textTransform: "uppercase", letterSpacing: "0.5px" }}>
+              <div style={{ fontSize: "0.5rem", color: "#7a8294", marginBottom: "0.5rem", textTransform: "uppercase", letterSpacing: "0.5px" }}>
                 Total Staff
               </div>
               <div style={{ fontSize: "2rem", fontWeight: "700", color: "#ffffff" }}>6</div>
@@ -201,7 +201,7 @@ export default function StaffModule() {
               padding: "1.5rem",
               textAlign: "center",
             }}>
-              <div style={{ fontSize: "0.75rem", color: "#7a8294", marginBottom: "0.5rem", textTransform: "uppercase", letterSpacing: "0.5px" }}>
+              <div style={{ fontSize: "0.5rem", color: "#7a8294", marginBottom: "0.5rem", textTransform: "uppercase", letterSpacing: "0.5px" }}>
                 Present Today
               </div>
               <div style={{ fontSize: "2rem", fontWeight: "700", color: "#14b8a6" }}>5</div>
@@ -213,7 +213,7 @@ export default function StaffModule() {
               padding: "1.5rem",
               textAlign: "center",
             }}>
-              <div style={{ fontSize: "0.75rem", color: "#7a8294", marginBottom: "0.5rem", textTransform: "uppercase", letterSpacing: "0.5px" }}>
+              <div style={{ fontSize: "0.5rem", color: "#7a8294", marginBottom: "0.5rem", textTransform: "uppercase", letterSpacing: "0.5px" }}>
                 Avg Attendance
               </div>
               <div style={{ fontSize: "2rem", fontWeight: "700", color: "#14b8a6" }}>90%</div>

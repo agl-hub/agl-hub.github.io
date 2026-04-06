@@ -63,8 +63,8 @@ export default function FinanceModule() {
         <div style={{ padding: "2rem", flex: 1, overflow: "auto" }}>
           {/* Header */}
           <div style={{ marginBottom: "2rem" }}>
-            <h1 style={{ fontSize: "1.875rem", fontWeight: "700", color: "#ffffff", margin: "0 0 0.5rem 0" }}>Financial Summary</h1>
-            <p style={{ fontSize: "0.875rem", color: "#b0b8c8", margin: 0 }}>Track revenue, expenses, and financial performance</p>
+            <h1 style={{ fontSize: "0.4375rem", fontWeight: "700", color: "#ffffff", margin: "0 0 0.5rem 0" }}>Financial Summary</h1>
+            <p style={{ fontSize: "0.4375rem", color: "#b0b8c8", margin: 0 }}>Track revenue, expenses, and financial performance</p>
           </div>
 
           {/* KPI Cards */}
@@ -77,7 +77,7 @@ export default function FinanceModule() {
             }}>
               <div style={{ display: "flex", justifyContent: "space-between", alignItems: "start", marginBottom: "1rem" }}>
                 <div>
-                  <div style={{ fontSize: "0.75rem", color: "#7a8294", textTransform: "uppercase", letterSpacing: "0.5px", marginBottom: "0.5rem" }}>
+                  <div style={{ fontSize: "0.5rem", color: "#7a8294", textTransform: "uppercase", letterSpacing: "0.5px", marginBottom: "0.5rem" }}>
                     Total Revenue
                   </div>
                   <div style={{ fontSize: "2rem", fontWeight: "700", color: "#14b8a6" }}>
@@ -86,7 +86,7 @@ export default function FinanceModule() {
                 </div>
                 <DollarSign size={24} style={{ color: "#14b8a6" }} />
               </div>
-              <div style={{ display: "flex", alignItems: "center", gap: "0.5rem", fontSize: "0.875rem", color: "#14b8a6" }}>
+              <div style={{ display: "flex", alignItems: "center", gap: "0.5rem", fontSize: "0.4375rem", color: "#14b8a6" }}>
                 <TrendingUp size={16} />
                 +12.5% from last week
               </div>
@@ -100,7 +100,7 @@ export default function FinanceModule() {
             }}>
               <div style={{ display: "flex", justifyContent: "space-between", alignItems: "start", marginBottom: "1rem" }}>
                 <div>
-                  <div style={{ fontSize: "0.75rem", color: "#7a8294", textTransform: "uppercase", letterSpacing: "0.5px", marginBottom: "0.5rem" }}>
+                  <div style={{ fontSize: "0.5rem", color: "#7a8294", textTransform: "uppercase", letterSpacing: "0.5px", marginBottom: "0.5rem" }}>
                     Total Expenses
                   </div>
                   <div style={{ fontSize: "2rem", fontWeight: "700", color: "#f59e0b" }}>
@@ -109,7 +109,7 @@ export default function FinanceModule() {
                 </div>
                 <AlertCircle size={24} style={{ color: "#f59e0b" }} />
               </div>
-              <div style={{ display: "flex", alignItems: "center", gap: "0.5rem", fontSize: "0.875rem", color: "#f59e0b" }}>
+              <div style={{ display: "flex", alignItems: "center", gap: "0.5rem", fontSize: "0.4375rem", color: "#f59e0b" }}>
                 <TrendingUp size={16} />
                 +8.2% from last week
               </div>
@@ -123,7 +123,7 @@ export default function FinanceModule() {
             }}>
               <div style={{ display: "flex", justifyContent: "space-between", alignItems: "start", marginBottom: "1rem" }}>
                 <div>
-                  <div style={{ fontSize: "0.75rem", color: "#7a8294", textTransform: "uppercase", letterSpacing: "0.5px", marginBottom: "0.5rem" }}>
+                  <div style={{ fontSize: "0.5rem", color: "#7a8294", textTransform: "uppercase", letterSpacing: "0.5px", marginBottom: "0.5rem" }}>
                     Net Profit
                   </div>
                   <div style={{ fontSize: "2rem", fontWeight: "700", color: "#e30613" }}>
@@ -132,7 +132,7 @@ export default function FinanceModule() {
                 </div>
                 <DollarSign size={24} style={{ color: "#e30613" }} />
               </div>
-              <div style={{ display: "flex", alignItems: "center", gap: "0.5rem", fontSize: "0.875rem", color: netProfit > 0 ? "#14b8a6" : "#e30613" }}>
+              <div style={{ display: "flex", alignItems: "center", gap: "0.5rem", fontSize: "0.4375rem", color: netProfit > 0 ? "#14b8a6" : "#e30613" }}>
                 {netProfit > 0 ? <TrendingUp size={16} /> : <TrendingDown size={16} />}
                 {netProfit > 0 ? "+" : ""}{((netProfit / totalRevenue) * 100).toFixed(1)}% margin
               </div>
@@ -144,7 +144,7 @@ export default function FinanceModule() {
             {/* Revenue Section */}
             <div>
               <div style={{ marginBottom: "1.5rem" }}>
-                <h2 style={{ fontSize: "1.25rem", fontWeight: "600", color: "#ffffff", margin: 0 }}>Revenue</h2>
+                <h2 style={{ fontSize: "0.4375rem", fontWeight: "600", color: "#ffffff", margin: 0 }}>Revenue</h2>
               </div>
 
               <div style={{
@@ -157,7 +157,7 @@ export default function FinanceModule() {
                   <table style={{
                     width: "100%",
                     borderCollapse: "collapse",
-                    fontSize: "0.875rem",
+                    fontSize: "0.4375rem",
                   }}>
                     <thead>
                       <tr style={{ backgroundColor: "#0f172a", borderBottom: "1px solid #2a3447" }}>
@@ -177,7 +177,7 @@ export default function FinanceModule() {
                               backgroundColor: `${getSourceColor(row.source)}33`,
                               color: getSourceColor(row.source),
                               borderRadius: "6px",
-                              fontSize: "0.75rem",
+                              fontSize: "0.5rem",
                               fontWeight: "600",
                             }}>
                               {row.source}
@@ -195,7 +195,7 @@ export default function FinanceModule() {
             {/* Expense Section */}
             <div>
               <div style={{ marginBottom: "1.5rem" }}>
-                <h2 style={{ fontSize: "1.25rem", fontWeight: "600", color: "#ffffff", margin: 0 }}>Expenses</h2>
+                <h2 style={{ fontSize: "0.4375rem", fontWeight: "600", color: "#ffffff", margin: 0 }}>Expenses</h2>
               </div>
 
               <div style={{
@@ -208,7 +208,7 @@ export default function FinanceModule() {
                   <table style={{
                     width: "100%",
                     borderCollapse: "collapse",
-                    fontSize: "0.875rem",
+                    fontSize: "0.4375rem",
                   }}>
                     <thead>
                       <tr style={{ backgroundColor: "#0f172a", borderBottom: "1px solid #2a3447" }}>
@@ -228,7 +228,7 @@ export default function FinanceModule() {
                               backgroundColor: `${getCategoryColor(row.category)}33`,
                               color: getCategoryColor(row.category),
                               borderRadius: "6px",
-                              fontSize: "0.75rem",
+                              fontSize: "0.5rem",
                               fontWeight: "600",
                             }}>
                               {row.category}

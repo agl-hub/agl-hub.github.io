@@ -34,8 +34,8 @@ export default function MechanicTrackerModule() {
         <div style={{ padding: "2rem", flex: 1, overflow: "auto" }}>
           {/* Header */}
           <div style={{ marginBottom: "2rem" }}>
-            <h1 style={{ fontSize: "1.875rem", fontWeight: "700", color: "#ffffff", margin: "0 0 0.5rem 0" }}>Mechanic Performance Tracker</h1>
-            <p style={{ fontSize: "0.875rem", color: "#b0b8c8", margin: 0 }}>Monitor mechanic efficiency, ratings, and productivity</p>
+            <h1 style={{ fontSize: "0.4375rem", fontWeight: "700", color: "#ffffff", margin: "0 0 0.5rem 0" }}>Mechanic Performance Tracker</h1>
+            <p style={{ fontSize: "0.4375rem", color: "#b0b8c8", margin: 0 }}>Monitor mechanic efficiency, ratings, and productivity</p>
           </div>
 
           {/* Metric Selector */}
@@ -95,7 +95,7 @@ export default function MechanicTrackerModule() {
                     <div style={{ fontSize: "1.125rem", fontWeight: "700", color: "#ffffff", marginBottom: "0.25rem" }}>
                       {mechanic.name}
                     </div>
-                    <div style={{ fontSize: "0.75rem", color: "#7a8294" }}>
+                    <div style={{ fontSize: "0.5rem", color: "#7a8294" }}>
                       {mechanic.specialty}
                     </div>
                   </div>
@@ -104,7 +104,7 @@ export default function MechanicTrackerModule() {
                     backgroundColor: mechanic.status === "Active" ? "#14b8a633" : "#f59e0b33",
                     color: mechanic.status === "Active" ? "#14b8a6" : "#f59e0b",
                     borderRadius: "6px",
-                    fontSize: "0.75rem",
+                    fontSize: "0.5rem",
                     fontWeight: "600",
                   }}>
                     {mechanic.status}
@@ -114,25 +114,25 @@ export default function MechanicTrackerModule() {
                 {/* Metrics Grid */}
                 <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: "1rem", marginBottom: "1.5rem", paddingBottom: "1.5rem", borderBottom: "1px solid #2a3447" }}>
                   <div>
-                    <div style={{ fontSize: "0.75rem", color: "#7a8294", marginBottom: "0.5rem" }}>Jobs Completed</div>
-                    <div style={{ fontSize: "1.5rem", fontWeight: "700", color: "#ffffff" }}>{mechanic.jobsCompleted}</div>
+                    <div style={{ fontSize: "0.5rem", color: "#7a8294", marginBottom: "0.5rem" }}>Jobs Completed</div>
+                    <div style={{ fontSize: "0.5rem", fontWeight: "700", color: "#ffffff" }}>{mechanic.jobsCompleted}</div>
                   </div>
                   <div>
-                    <div style={{ fontSize: "0.75rem", color: "#7a8294", marginBottom: "0.5rem" }}>Avg Time</div>
-                    <div style={{ fontSize: "1rem", fontWeight: "600", color: "#b0b8c8" }}>{mechanic.avgTime}</div>
+                    <div style={{ fontSize: "0.5rem", color: "#7a8294", marginBottom: "0.5rem" }}>Avg Time</div>
+                    <div style={{ fontSize: "0.5rem", fontWeight: "600", color: "#b0b8c8" }}>{mechanic.avgTime}</div>
                   </div>
                   <div>
-                    <div style={{ fontSize: "0.75rem", color: "#7a8294", marginBottom: "0.5rem" }}>Rating</div>
+                    <div style={{ fontSize: "0.5rem", color: "#7a8294", marginBottom: "0.5rem" }}>Rating</div>
                     <div style={{ display: "flex", alignItems: "center", gap: "0.5rem" }}>
                       <Star size={16} style={{ color: getRatingColor(mechanic.rating), fill: getRatingColor(mechanic.rating) }} />
-                      <span style={{ fontSize: "1rem", fontWeight: "600", color: getRatingColor(mechanic.rating) }}>
+                      <span style={{ fontSize: "0.5rem", fontWeight: "600", color: getRatingColor(mechanic.rating) }}>
                         {mechanic.rating}
                       </span>
                     </div>
                   </div>
                   <div>
-                    <div style={{ fontSize: "0.75rem", color: "#7a8294", marginBottom: "0.5rem" }}>Efficiency</div>
-                    <div style={{ fontSize: "1rem", fontWeight: "600", color: getEfficiencyColor(mechanic.efficiency) }}>
+                    <div style={{ fontSize: "0.5rem", color: "#7a8294", marginBottom: "0.5rem" }}>Efficiency</div>
+                    <div style={{ fontSize: "0.5rem", fontWeight: "600", color: getEfficiencyColor(mechanic.efficiency) }}>
                       {mechanic.efficiency}%
                     </div>
                   </div>
@@ -141,16 +141,16 @@ export default function MechanicTrackerModule() {
                 {/* Revenue and Progress */}
                 <div style={{ marginBottom: "1rem" }}>
                   <div style={{ display: "flex", justifyContent: "space-between", marginBottom: "0.5rem" }}>
-                    <div style={{ fontSize: "0.75rem", color: "#7a8294" }}>Revenue Generated</div>
-                    <div style={{ fontSize: "0.875rem", fontWeight: "600", color: "#14b8a6" }}>{mechanic.revenue}</div>
+                    <div style={{ fontSize: "0.5rem", color: "#7a8294" }}>Revenue Generated</div>
+                    <div style={{ fontSize: "0.4375rem", fontWeight: "600", color: "#14b8a6" }}>{mechanic.revenue}</div>
                   </div>
                 </div>
 
                 {/* Efficiency Bar */}
                 <div>
                   <div style={{ display: "flex", justifyContent: "space-between", marginBottom: "0.5rem" }}>
-                    <div style={{ fontSize: "0.75rem", color: "#7a8294" }}>Efficiency Score</div>
-                    <div style={{ fontSize: "0.75rem", fontWeight: "600", color: getEfficiencyColor(mechanic.efficiency) }}>
+                    <div style={{ fontSize: "0.5rem", color: "#7a8294" }}>Efficiency Score</div>
+                    <div style={{ fontSize: "0.5rem", fontWeight: "600", color: getEfficiencyColor(mechanic.efficiency) }}>
                       {mechanic.efficiency}%
                     </div>
                   </div>
@@ -182,7 +182,7 @@ export default function MechanicTrackerModule() {
               padding: "1.5rem",
               textAlign: "center",
             }}>
-              <div style={{ fontSize: "0.75rem", color: "#7a8294", marginBottom: "0.5rem", textTransform: "uppercase", letterSpacing: "0.5px" }}>
+              <div style={{ fontSize: "0.5rem", color: "#7a8294", marginBottom: "0.5rem", textTransform: "uppercase", letterSpacing: "0.5px" }}>
                 Team Average Efficiency
               </div>
               <div style={{ fontSize: "2rem", fontWeight: "700", color: "#14b8a6" }}>88%</div>
@@ -194,7 +194,7 @@ export default function MechanicTrackerModule() {
               padding: "1.5rem",
               textAlign: "center",
             }}>
-              <div style={{ fontSize: "0.75rem", color: "#7a8294", marginBottom: "0.5rem", textTransform: "uppercase", letterSpacing: "0.5px" }}>
+              <div style={{ fontSize: "0.5rem", color: "#7a8294", marginBottom: "0.5rem", textTransform: "uppercase", letterSpacing: "0.5px" }}>
                 Team Average Rating
               </div>
               <div style={{ fontSize: "2rem", fontWeight: "700", color: "#14b8a6" }}>4.7★</div>
@@ -206,7 +206,7 @@ export default function MechanicTrackerModule() {
               padding: "1.5rem",
               textAlign: "center",
             }}>
-              <div style={{ fontSize: "0.75rem", color: "#7a8294", marginBottom: "0.5rem", textTransform: "uppercase", letterSpacing: "0.5px" }}>
+              <div style={{ fontSize: "0.5rem", color: "#7a8294", marginBottom: "0.5rem", textTransform: "uppercase", letterSpacing: "0.5px" }}>
                 Total Revenue
               </div>
               <div style={{ fontSize: "2rem", fontWeight: "700", color: "#14b8a6" }}>₵51.2K</div>
