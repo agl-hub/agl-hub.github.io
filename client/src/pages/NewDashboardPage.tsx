@@ -1,4 +1,4 @@
-import NewAppLayout from "@/components/NewAppLayout";
+// import NewAppLayout from "@/components/NewAppLayout";
 import { TrendingUp, TrendingDown, AlertCircle, CheckCircle } from "lucide-react";
 import FilterBar from "@/components/FilterBar";
 
@@ -22,7 +22,7 @@ export default function NewDashboardPage() {
   ];
 
   return (
-    <NewAppLayout currentPage="dashboard">
+    <>
       <div style={{ display: "flex", flexDirection: "column", height: "100%", backgroundColor: "#0f172a" }}>
         <FilterBar showDateRange showStatus showChannel showPaymentMethod />
         
@@ -251,6 +251,6 @@ export default function NewDashboardPage() {
           </div>
         </div>
       </div>
-    </NewAppLayout>
+    </>
   );
 }

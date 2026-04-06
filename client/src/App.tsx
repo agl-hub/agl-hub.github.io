@@ -3,7 +3,7 @@ import { TooltipProvider } from "@/components/ui/tooltip";
 import { Route, Switch, useLocation } from "wouter";
 import ErrorBoundary from "./components/ErrorBoundary";
 import { ThemeProvider } from "./contexts/ThemeContext";
-import NewAppLayout from "./components/NewAppLayout";
+import MainLayout from "./components/MainLayout";
 import NewDashboardPage from "./pages/NewDashboardPage";
 import DailyEntry from "./pages/DailyEntry";
 import Workshop from "./pages/Workshop";
@@ -33,10 +33,10 @@ function Router() {
     return path;
   };
 
-  const currentPage = getCurrentPage();
+  // const currentPage = getCurrentPage();
 
   return (
-    <NewAppLayout currentPage={currentPage}>
+    <MainLayout>
       <Switch>
         <Route path="/dashboard" component={NewDashboardPage} />
         <Route path="/entry" component={DailyEntry} />
@@ -57,7 +57,7 @@ function Router() {
         <Route path="/public" component={PublicDashboard} />
         <Route path="/" component={NewDashboardPage} />
       </Switch>
-    </NewAppLayout>
+    </MainLayout>
   );
 }
 
