@@ -1,5 +1,6 @@
 import { useState } from "react";
 import { LineChart, Line, BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, Legend, ResponsiveContainer } from "recharts";
+import { trpc } from "@/lib/trpc";
 
 const kpiData = [
   { date: "Apr 1", revenue: 4200, target: 5000, transactions: 12 },
@@ -12,6 +13,8 @@ const kpiData = [
 
 export default function KPITracker() {
   const [selectedKPI, setSelectedKPI] = useState("revenue");
+  const insightsQuery = trpc.sheets.insights.useQuery(undefined, { refetchInterval: 60_000 });
+  const m = insightsQuery.data?.success ? insightsQuery.data.metrics : null;
 
   const kpis = [
     {
@@ -55,6 +58,50 @@ export default function KPITracker() {
   return (
     <div className="flex flex-col gap-lg">
       <h2 className="text-2xl font-bold">KPI Tracker</h2>
+
+      {/* Monthly target progress (live) */}
+      {m && (
+        <div className="card">
+          <div className="flex justify-between items-center mb-md">
+            <div>
+              <h3 className="text-lg font-bold">Monthly Revenue Target</h3>
+              <div className="text-sm text-text-tertiary">
+                GHS {m.monthlyRevenueActual.toLocaleString()} / GHS {m.monthlyRevenueTarget.toLocaleString()}
+              </div>
+            </div>
+            <div className="text-2xl font-bold">{m.monthlyProgressPct}%</div>
+          </div>
+          <div style={{ height: 10, background: 'rgba(255,255,255,0.08)', borderRadius: 6, overflow: 'hidden' }}>
+            <div
+              style={{
+                width: `${Math.min(100, m.monthlyProgressPct)}%`,
+                height: '100%',
+                background: m.monthlyProgressPct >= 100 ? '#10b981' : m.monthlyProgressPct >= 70 ? '#f59e0b' : '#ef4444',
+                transition: 'width 0.4s',
+              }}
+            />
+          </div>
+          {m.alerts && m.alerts.length > 0 && (
+            <div className="mt-md">
+              <div className="text-sm font-bold mb-sm">Active Alerts ({m.alerts.length})</div>
+              <div className="flex flex-col gap-sm">
+                {m.alerts.slice(0, 5).map((a) => (
+                  <div
+                    key={a.id}
+                    className={`p-sm rounded-md text-sm ${
+                      a.severity === 'critical'
+                        ? 'bg-danger/10 border border-danger/20'
+                        : 'bg-warning/10 border border-warning/20'
+                    }`}
+                  >
+                    <span className="font-bold">{a.title}</span> — {a.detail}
+                  </div>
+                ))}
+              </div>
+            </div>
+          )}
+        </div>
+      )}
 
       {/* KPI Cards */}
       <div className="grid grid-4 gap-md">
