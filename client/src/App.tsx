@@ -22,7 +22,7 @@ import Chat from "./pages/Chat";
 import DataImport from "./pages/DataImport";
 import PublicDashboard from "./pages/PublicDashboard";
 import MechanicTracker from "./pages/MechanicTracker";
-import "./styles/theme.css";
+
 
 function Router() {
   const [location] = useLocation();
