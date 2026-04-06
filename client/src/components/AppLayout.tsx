@@ -64,15 +64,13 @@ export default function AppLayout({ children, currentPage }: AppLayoutProps) {
         <nav className="flex-1 overflow-y-auto p-md">
           <div className="flex flex-col gap-sm">
             {NAVIGATION_ITEMS.map((item) => (
-              <Link key={item.id} href={`/${item.id}`}>
-                <a className={`flex items-center gap-md px-md py-sm rounded-md transition-all ${
+              <Link key={item.id} href={`/${item.id}`} className={`flex items-center gap-md px-md py-sm rounded-md transition-all ${
                   currentPage === item.id
                     ? "bg-primary/20 text-primary-light border-l-2 border-primary"
                     : "text-text-secondary hover:bg-bg-tertiary"
                 }`}>
                   <span className="text-lg">{item.icon}</span>
                   <span className="text-sm font-medium">{item.label}</span>
-                </a>
               </Link>
             ))}
           </div>
