@@ -1,11 +1,36 @@
 import { router, protectedProcedure } from "../_core/trpc";
-import { syncAllSheetData, getSheetMetadata } from "../googleSheets";
+import {
+  syncAllSheetData,
+  getSheetMetadata,
+  getSyncStatus,
+  clearSheetCache,
+} from "../googleSheets";
 import { generateBusinessMetrics } from "../insights";
 
 export const sheetsRouter = router({
   /**
    * Sync all data from Google Sheets
    */
+  /**
+   * Current sync status (last sync time, errors, totals)
+   */
+  getStatus: protectedProcedure.query(() => {
+    return { success: true, status: getSyncStatus() };
+  }),
+
+  /**
+   * Force a fresh sync (bypass cache)
+   */
+  forceSync: protectedProcedure.mutation(async () => {
+    try {
+      clearSheetCache();
+      const data = await syncAllSheetData({ force: true });
+      return { success: true, data, syncedAt: new Date() };
+    } catch (error) {
+      return { success: false, error: (error as Error).message };
+    }
+  }),
+
   syncAll: protectedProcedure.mutation(async () => {
     try {
       const data = await syncAllSheetData();

@@ -6,12 +6,19 @@ export default function GoogleSheets() {
   const [lastSyncTime, setLastSyncTime] = useState<Date | null>(null);
   const [syncMessage, setSyncMessage] = useState("");
 
-  const sheetsSync = trpc.sheets.syncAll.useMutation({
+  // Live status, refetched every 10s
+  const statusQuery = trpc.sheets.getStatus.useQuery(undefined, {
+    refetchInterval: 10_000,
+  });
+  const liveStatus = statusQuery.data?.status;
+
+  const sheetsSync = trpc.sheets.forceSync.useMutation({
     onSuccess: (data) => {
       if (data.success) {
         setSyncStatus("success");
         setSyncMessage("Data synchronized successfully!");
         setLastSyncTime(new Date());
+        statusQuery.refetch();
         setTimeout(() => setSyncStatus("idle"), 3000);
       } else {
         setSyncStatus("error");
@@ -121,50 +128,43 @@ export default function GoogleSheets() {
         </div>
       </div>
 
-      {/* Sync History */}
+      {/* Live Sync Status */}
       <div className="card">
-        <h3 className="text-lg font-bold mb-lg">Sync History</h3>
-        <table className="table">
-          <thead>
-            <tr>
-              <th>Date & Time</th>
-              <th>Action</th>
-              <th>Records Synced</th>
-              <th>Status</th>
-              <th>Duration</th>
-            </tr>
-          </thead>
-          <tbody>
-            <tr>
-              <td>2026-04-06 14:30:45</td>
-              <td>Full Sync</td>
-              <td>554</td>
-              <td><span className="badge badge-success">Success</span></td>
-              <td>2.3s</td>
-            </tr>
-            <tr>
-              <td>2026-04-06 12:15:20</td>
-              <td>Full Sync</td>
-              <td>554</td>
-              <td><span className="badge badge-success">Success</span></td>
-              <td>2.1s</td>
-            </tr>
-            <tr>
-              <td>2026-04-06 10:00:00</td>
-              <td>Full Sync</td>
-              <td>554</td>
-              <td><span className="badge badge-success">Success</span></td>
-              <td>2.4s</td>
-            </tr>
-            <tr>
-              <td>2026-04-05 16:45:30</td>
-              <td>Full Sync</td>
-              <td>548</td>
-              <td><span className="badge badge-success">Success</span></td>
-              <td>2.2s</td>
-            </tr>
-          </tbody>
-        </table>
+        <h3 className="text-lg font-bold mb-lg">Live Sync Status</h3>
+        {!liveStatus ? (
+          <div className="text-text-tertiary">Loading status...</div>
+        ) : (
+          <div className="grid grid-2 gap-md">
+            <div className="p-md bg-bg-tertiary rounded-md">
+              <div className="text-text-tertiary text-sm">Last sync attempt</div>
+              <div className="font-bold">
+                {liveStatus.lastSyncedAt ? new Date(liveStatus.lastSyncedAt).toLocaleString() : "Never"}
+              </div>
+            </div>
+            <div className="p-md bg-bg-tertiary rounded-md">
+              <div className="text-text-tertiary text-sm">Last successful sync</div>
+              <div className="font-bold">
+                {liveStatus.lastSuccessAt ? new Date(liveStatus.lastSuccessAt).toLocaleString() : "Never"}
+              </div>
+            </div>
+            <div className="p-md bg-bg-tertiary rounded-md">
+              <div className="text-text-tertiary text-sm">Total syncs / failures</div>
+              <div className="font-bold">
+                {liveStatus.totalSyncs} / {liveStatus.totalFailures}
+              </div>
+            </div>
+            <div className="p-md bg-bg-tertiary rounded-md">
+              <div className="text-text-tertiary text-sm">In progress</div>
+              <div className="font-bold">{liveStatus.inProgress ? "Yes" : "No"}</div>
+            </div>
+            {liveStatus.lastError && (
+              <div className="p-md bg-danger/10 border border-danger/20 rounded-md col-span-2">
+                <div className="text-danger font-bold text-sm">Last error</div>
+                <div className="text-sm">{liveStatus.lastError}</div>
+              </div>
+            )}
+          </div>
+        )}
       </div>
 
       {/* Settings */}
