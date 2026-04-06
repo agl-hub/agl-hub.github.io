@@ -3,8 +3,8 @@ import { TooltipProvider } from "@/components/ui/tooltip";
 import { Route, Switch, useLocation } from "wouter";
 import ErrorBoundary from "./components/ErrorBoundary";
 import { ThemeProvider } from "./contexts/ThemeContext";
-import AppLayout from "./components/AppLayout";
-import DashboardPage from "./pages/DashboardPage";
+import NewAppLayout from "./components/NewAppLayout";
+import NewDashboardPage from "./pages/NewDashboardPage";
 import DailyEntry from "./pages/DailyEntry";
 import Workshop from "./pages/Workshop";
 import Sales from "./pages/Sales";
@@ -36,9 +36,9 @@ function Router() {
   const currentPage = getCurrentPage();
 
   return (
-    <AppLayout currentPage={currentPage}>
+    <NewAppLayout currentPage={currentPage}>
       <Switch>
-        <Route path="/dashboard" component={DashboardPage} />
+        <Route path="/dashboard" component={NewDashboardPage} />
         <Route path="/entry" component={DailyEntry} />
         <Route path="/workshop" component={Workshop} />
         <Route path="/sales" component={Sales} />
@@ -55,9 +55,9 @@ function Router() {
         <Route path="/chat" component={Chat} />
         <Route path="/import" component={DataImport} />
         <Route path="/public" component={PublicDashboard} />
-        <Route path="/" component={DashboardPage} />
+        <Route path="/" component={NewDashboardPage} />
       </Switch>
-    </AppLayout>
+    </NewAppLayout>
   );
 }
 
