@@ -10,6 +10,8 @@ import Sales from "./pages/Sales";
 import Workshop from "./pages/Workshop";
 import Staff from "./pages/Staff";
 import Finances from "./pages/Finances";
+import DataImport from "./pages/DataImport";
+import Reports from "./pages/Reports";
 
 function Router() {
   // make sure to consider if you need authentication for certain routes
@@ -21,6 +23,8 @@ function Router() {
       <Route path="/staff" component={Staff} />
       <Route path="/finances" component={Finances} />
       <Route path="/chat" component={Chat} />
+      <Route path="/import" component={DataImport} />
+      <Route path="/reports" component={Reports} />
       <Route path={"/404"} component={NotFound} />
       {/* Final fallback route */}
       <Route component={NotFound} />

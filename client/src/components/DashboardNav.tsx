@@ -3,19 +3,21 @@ import { useAuth } from "@/_core/hooks/useAuth";
 import { getLoginUrl } from "@/const";
 import { Button } from "@/components/ui/button";
 import {
-  BarChart3,
-  ShoppingCart,
-  Wrench,
-  Users,
-  DollarSign,
-  Package,
-  CreditCard,
-  Bell,
-  LogOut,
-  Menu,
-  X,
-  MessageSquare,
-} from "lucide-react";
+    BarChart3,
+    ShoppingCart,
+    Wrench,
+    Users,
+    DollarSign,
+    Package,
+    CreditCard,
+    Bell,
+    LogOut,
+    Menu,
+    X,
+    MessageSquare,
+    Upload,
+    FileText,
+  } from "lucide-react";
 import { Link } from "wouter";
 
 interface NavItem {
@@ -38,6 +40,8 @@ export default function DashboardNav() {
     { label: "Inventory", icon: <Package size={20} />, href: "/inventory" },
     { label: "Credit Sales", icon: <CreditCard size={20} />, href: "/credit-sales" },
     { label: "AI Assistant", icon: <MessageSquare size={20} />, href: "/chat" },
+    { label: "Data Import", icon: <Upload size={20} />, href: "/import" },
+    { label: "Reports", icon: <FileText size={20} />, href: "/reports" },
   ];
 
   if (!isAuthenticated) {

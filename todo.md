@@ -56,15 +56,22 @@
 - [ ] Create staff performance leaderboard
 
 ## Phase 8: Reporting & Export
-- [ ] Implement CSV export for all data tables
-- [ ] Add Excel export functionality
-- [ ] Create daily business report template
-- [ ] Build weekly summary report
-- [ ] Implement monthly financial report
-- [ ] Add printing capability for reports
-- [ ] Create CEO daily report format
+- [ ] Implement CSV export for Sales table (DONE) - need Workshop, Staff, Finances, Inventory
+- [ ] Implement proper Excel export (currently CSV with .xlsx extension)
+- [ ] Create concrete daily business report template with real data
+- [ ] Build weekly summary report with aggregated metrics
+- [ ] Implement monthly financial report with breakdowns
+- [x] Add printing capability for reports
+- [ ] Create CEO-specific daily report format
 
-## Phase 9: Inventory & Stock Management
+## Phase 9: Data Import
+- [x] Create Excel file upload interface
+- [ ] Implement data parsing from Excel sheets
+- [ ] Build data validation and error handling
+- [ ] Create data sync mechanism to database
+- [ ] Add import status tracking and logging
+
+## Phase 11: Inventory & Stock Management
 - [ ] Build inventory tracking interface
 - [ ] Implement stock level monitoring
 - [ ] Add low-stock alerts

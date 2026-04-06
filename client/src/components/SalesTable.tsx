@@ -11,6 +11,7 @@ import {
 } from "@/components/ui/select";
 import { Badge } from "@/components/ui/badge";
 import { Download } from "lucide-react";
+import { exportToCSV, exportToExcel } from "@/lib/export";
 
 interface SalesTransaction {
   id: number;
@@ -77,10 +78,22 @@ export default function SalesTable({ data, isLoading, onFilterChange }: SalesTab
     <Card className="p-6">
       <div className="flex justify-between items-center mb-6">
         <h2 className="text-2xl font-bold text-slate-900">Sales Transactions</h2>
-        <Button className="flex items-center gap-2 bg-red-600 hover:bg-red-700">
-          <Download size={16} />
-          Export
-        </Button>
+        <div className="flex gap-2">
+          <Button
+            onClick={() => exportToCSV(data, "sales-transactions")}
+            className="flex items-center gap-2 bg-red-600 hover:bg-red-700"
+          >
+            <Download size={16} />
+            CSV
+          </Button>
+          <Button
+            onClick={() => exportToExcel(data, "sales-transactions")}
+            className="flex items-center gap-2 bg-red-600 hover:bg-red-700"
+          >
+            <Download size={16} />
+            Excel
+          </Button>
+        </div>
       </div>
 
       {/* Filters */}
