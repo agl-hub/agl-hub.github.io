@@ -5,6 +5,7 @@ import { systemRouter } from "./_core/systemRouter";
 import { sheetsRouter } from "./routers/sheets";
 import { reportsRouter } from "./routers/reports";
 import { auditRouter } from "./routers/audit";
+import { configRouter } from "./routers/config";
 import { publicProcedure, router, protectedProcedure } from "./_core/trpc";
 import { aiRouter } from "./routers/ai";
 import {
@@ -36,6 +37,7 @@ export const appRouter = router({
   sheets: sheetsRouter,
   reports: reportsRouter,
   audit: auditRouter,
+  config: configRouter,
   auth: router({
     me: publicProcedure.query((opts) => opts.ctx.user),
     logout: publicProcedure.mutation(({ ctx }) => {

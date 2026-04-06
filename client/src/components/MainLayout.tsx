@@ -52,6 +52,7 @@ export default function MainLayout({ children }: MainLayoutProps) {
     { id: 'creditors', label: 'Creditors & Loans', icon: '₵' },
     { id: 'sheets', label: 'Google Sheets', icon: '📄' },
     { id: 'audit', label: 'Audit Log', icon: '🛡' },
+    { id: 'settings', label: 'Settings', icon: '⚙' },
   ];
 
   const currentPage = location.split('/')[1] || 'dashboard';

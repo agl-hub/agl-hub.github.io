@@ -6,6 +6,7 @@ import {
   clearSheetCache,
 } from "../googleSheets";
 import { generateBusinessMetrics } from "../insights";
+import { getConfig } from "../config";
 
 export const sheetsRouter = router({
   /**
@@ -73,7 +74,7 @@ export const sheetsRouter = router({
   getInsights: protectedProcedure.mutation(async () => {
     try {
       const data = await syncAllSheetData();
-      const metrics = generateBusinessMetrics(data);
+      const metrics = generateBusinessMetrics(data, getConfig());
       return {
         success: true,
         metrics,
@@ -93,7 +94,7 @@ export const sheetsRouter = router({
   insights: protectedProcedure.query(async () => {
     try {
       const data = await syncAllSheetData();
-      const metrics = generateBusinessMetrics(data);
+      const metrics = generateBusinessMetrics(data, getConfig());
       return { success: true, metrics };
     } catch (error) {
       return { success: false, error: (error as Error).message };

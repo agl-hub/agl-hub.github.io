@@ -24,6 +24,7 @@ import DataImport from "./pages/DataImport";
 import PublicDashboard from "./pages/PublicDashboard";
 import MechanicTracker from "./pages/MechanicTracker";
 import AuditLog from "./pages/AuditLog";
+import Settings from "./pages/Settings";
 
 
 function Router() {
@@ -59,6 +60,7 @@ function Router() {
         <Route path="/chat" component={Chat} />
         <Route path="/import" component={DataImport} />
         <Route path="/audit" component={AuditLog} />
+        <Route path="/settings" component={Settings} />
         <Route path="/" component={NewDashboardPage} />
       </Switch>
     </MainLayout>
