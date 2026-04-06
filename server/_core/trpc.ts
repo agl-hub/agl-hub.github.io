@@ -2,6 +2,7 @@ import { NOT_ADMIN_ERR_MSG, UNAUTHED_ERR_MSG } from '@shared/const';
 import { initTRPC, TRPCError } from "@trpc/server";
 import superjson from "superjson";
 import type { TrpcContext } from "./context";
+import { recordAudit } from "../audit";
 
 const t = initTRPC.context<TrpcContext>().create({
   transformer: superjson,
@@ -25,7 +26,25 @@ const requireUser = t.middleware(async opts => {
   });
 });
 
-export const protectedProcedure = t.procedure.use(requireUser);
+const auditMutations = t.middleware(async (opts) => {
+  const result = await opts.next();
+  if (opts.type === "mutation") {
+    try {
+      recordAudit({
+        userId: (opts.ctx as TrpcContext).user?.openId ?? null,
+        userName: (opts.ctx as TrpcContext).user?.name ?? null,
+        action: opts.path,
+        category: "mutation",
+        ip: (opts.ctx as TrpcContext).req?.ip ?? null,
+      });
+    } catch {
+      /* never fail a request because of audit */
+    }
+  }
+  return result;
+});
+
+export const protectedProcedure = t.procedure.use(requireUser).use(auditMutations);
 
 export const adminProcedure = t.procedure.use(
   t.middleware(async opts => {
