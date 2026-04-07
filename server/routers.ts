@@ -3,6 +3,11 @@ import { COOKIE_NAME } from "@shared/const";
 import { getSessionCookieOptions } from "./_core/cookies";
 import { systemRouter } from "./_core/systemRouter";
 import { sheetsRouter } from "./routers/sheets";
+import { reportsRouter } from "./routers/reports";
+import { auditRouter } from "./routers/audit";
+import { configRouter } from "./routers/config";
+import { shareRouter } from "./routers/share";
+import { schedulesRouter } from "./routers/schedules";
 import { publicProcedure, router, protectedProcedure } from "./_core/trpc";
 import { aiRouter } from "./routers/ai";
 import {
@@ -32,6 +37,11 @@ import {
 export const appRouter = router({
   system: systemRouter,
   sheets: sheetsRouter,
+  reports: reportsRouter,
+  audit: auditRouter,
+  config: configRouter,
+  share: shareRouter,
+  schedules: schedulesRouter,
   auth: router({
     me: publicProcedure.query((opts) => opts.ctx.user),
     logout: publicProcedure.mutation(({ ctx }) => {

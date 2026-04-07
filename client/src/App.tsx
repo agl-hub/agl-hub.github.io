@@ -3,6 +3,7 @@ import { TooltipProvider } from "@/components/ui/tooltip";
 import { Route, Switch, useLocation } from "wouter";
 import ErrorBoundary from "./components/ErrorBoundary";
 import { ThemeProvider } from "./contexts/ThemeContext";
+import { AccessProvider } from "./contexts/AccessContext";
 import MainLayout from "./components/MainLayout";
 import NewDashboardPage from "./pages/NewDashboardPage";
 import DailyEntry from "./pages/DailyEntry";
@@ -22,18 +23,27 @@ import Chat from "./pages/Chat";
 import DataImport from "./pages/DataImport";
 import PublicDashboard from "./pages/PublicDashboard";
 import MechanicTracker from "./pages/MechanicTracker";
+import AuditLog from "./pages/AuditLog";
+import Settings from "./pages/Settings";
+import ShareLinks from "./pages/ShareLinks";
+import Schedules from "./pages/Schedules";
+import MonthlyReport from "./pages/MonthlyReport";
+import StaffClockIn from "./pages/StaffClockIn";
+import ProjectBoard from "./pages/ProjectBoard";
 
 
 function Router() {
   const [location] = useLocation();
 
-  // Extract current page from location
-  const getCurrentPage = () => {
-    const path = location.split("/")[1] || "dashboard";
-    return path;
-  };
-
-  // const currentPage = getCurrentPage();
+  // Public dashboard renders without sidebar/main layout
+  if (location.startsWith("/public")) {
+    return (
+      <Switch>
+        <Route path="/public" component={PublicDashboard} />
+        <Route path="/public/:rest*" component={PublicDashboard} />
+      </Switch>
+    );
+  }
 
   return (
     <MainLayout>
@@ -42,6 +52,7 @@ function Router() {
         <Route path="/entry" component={DailyEntry} />
         <Route path="/workshop" component={Workshop} />
         <Route path="/sales" component={Sales} />
+        <Route path="/monthly" component={MonthlyReport} />
         <Route path="/mechanics" component={MechanicTracker} />
         <Route path="/finance" component={Finances} />
         <Route path="/kanban" component={Kanban} />
@@ -54,7 +65,13 @@ function Router() {
         <Route path="/sheets" component={GoogleSheets} />
         <Route path="/chat" component={Chat} />
         <Route path="/import" component={DataImport} />
-        <Route path="/public" component={PublicDashboard} />
+        <Route path="/audit" component={AuditLog} />
+        <Route path="/settings" component={Settings} />
+        <Route path="/share" component={ShareLinks} />
+        <Route path="/schedules" component={Schedules} />
+        <Route path="/staff" component={Staff} />
+        <Route path="/staff-clockin" component={StaffClockIn} />
+        <Route path="/project-board" component={ProjectBoard} />
         <Route path="/" component={NewDashboardPage} />
       </Switch>
     </MainLayout>
@@ -65,10 +82,12 @@ function App() {
   return (
     <ErrorBoundary>
       <ThemeProvider defaultTheme="dark">
-        <TooltipProvider>
-          <Toaster />
-          <Router />
-        </TooltipProvider>
+        <AccessProvider>
+          <TooltipProvider>
+            <Toaster />
+            <Router />
+          </TooltipProvider>
+        </AccessProvider>
       </ThemeProvider>
     </ErrorBoundary>
   );
