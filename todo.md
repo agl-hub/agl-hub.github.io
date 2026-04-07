@@ -4,13 +4,12 @@
 - [ ] Install Google Sheets API client library
 - [ ] Create Google Sheets sync service
 - [ ] Implement data fetching from all sheets (Monthly Summary, Sales, Workshop, Staff, Expenses, POs)
-- [ ] Set up automatic## Phase 1: Project Setup & Architecture
-- [x] Create data transformation/normalization layer
-- [x] Add error handling and retry logic for API calls
-- [x] Implement data caching strategy
-- [x] Extract and convert original HTML to React components
-- [x] Create MainLayout component with sidebar navigation
-- [x] Implement global CSS styling## Phase 2: UI/UX Redesign
+- [ ] Set up automatic data refresh (real-time or scheduled)
+- [ ] Create data transformation/normalization layer
+- [ ] Add error handling and retry logic for API calls
+- [ ] Implement data caching strategy
+
+## Phase 2: UI/UX Redesign
 - [x] Update global CSS with enhanced color palette
 - [x] Create responsive grid-based layout system
 - [x] Design compact card components
@@ -20,8 +19,6 @@
 - [x] Ensure mobile responsiveness
 - [x] Add dark mode theme system
 - [x] Reduce all font sizes to 7.5pt base with proportional scaling
-- [x] Fix layout overlap and navigation issues
-- [x] Implement proper sidebar and main content layout
 
 ## Phase 3: Core Modules
 - [x] Rebuild Live Dashboard with financial KPIs
@@ -84,28 +81,3 @@
 - [ ] Mobile responsiveness testing
 - [ ] Prepare Manus hosting deployment
 - [ ] Create deployment documentation
-
-## Phase 9: Complete HTML-to-React Rebuild (100% Match)
-- [ ] Extract all CSS from original HTML and port to global styles
-- [ ] Rebuild sidebar to match original (icons, colors, collapse behavior)
-- [ ] Rebuild top bar (live clock, search, notifications, CSV export, print buttons)
-- [ ] Rebuild global filter bar (date period, staff, channel, payment method)
-- [ ] Rebuild slide-out drawer for quick data entry
-- [ ] Rebuild toast notification system
-- [ ] Rebuild modal overlay system
-- [ ] Rebuild Live Dashboard (KPIs, charts, insights engine, drill-down modals)
-- [ ] Rebuild Daily Entry (tabbed: Sales, Expenses, POs)
-- [ ] Rebuild Workshop Log (form, active jobs grid, mechanic workload bars)
-- [ ] Rebuild Monthly Report (calendar grid, daily revenue, top items, expense categories)
-- [ ] Rebuild Mechanic Tracker (individual cards, jobs, recalls, deductions, 5-star rating)
-- [ ] Rebuild Finance Summary (weekly table, credit payments, cash flow/profit charts)
-- [ ] Rebuild Project Board (Kanban with drag-and-drop)
-- [ ] Rebuild KPI Tracker (GHS 50K target bar, staff targets, attendance, lateness)
-- [ ] Rebuild Staff Clock-In (attendance table, HR rules, chronic lateness leaderboard)
-- [ ] Rebuild Staff Training (tabbed: Sales, Mechanics, Supervisors, CEO modules)
-- [ ] Rebuild Inventory/POS (stock table, SKU, reorder, auto-deduct, low stock alerts)
-- [ ] Rebuild Reports (printable daily/weekly/monthly, CSS print rules)
-- [ ] Rebuild Creditors & Loans (debts, payments, overdue highlighting)
-- [ ] Rebuild Google Sheets connection interface
-- [ ] Add localStorage demo data generation
-- [ ] Test all 14 pages end-to-end

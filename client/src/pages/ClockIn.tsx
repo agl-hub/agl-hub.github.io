@@ -1,175 +1,226 @@
-import { useState, useMemo } from 'react';
-import { getData, updateData } from '../lib/dataStore';
-import { useLayout } from '../components/MainLayout';
+import { useState } from "react";
+
+interface AttendanceRecord {
+  id: string;
+  name: string;
+  date: string;
+  clockIn: string | null;
+  clockOut: string | null;
+  hoursWorked: number;
+  status: "present" | "late" | "absent" | "on-leave";
+  notes: string;
+}
+
+const attendanceRecords: AttendanceRecord[] = [
+  {
+    id: "1",
+    name: "John Mensah",
+    date: "2026-04-06",
+    clockIn: "07:45",
+    clockOut: "16:30",
+    hoursWorked: 8.75,
+    status: "present",
+    notes: "",
+  },
+  {
+    id: "2",
+    name: "Peter Kwame",
+    date: "2026-04-06",
+    clockIn: "08:15",
+    clockOut: "17:00",
+    hoursWorked: 8.75,
+    status: "late",
+    notes: "Traffic",
+  },
+  {
+    id: "3",
+    name: "Samuel Osei",
+    date: "2026-04-06",
+    clockIn: "07:50",
+    clockOut: null,
+    hoursWorked: 8.5,
+    status: "present",
+    notes: "Still working",
+  },
+  {
+    id: "4",
+    name: "Ama Boateng",
+    date: "2026-04-06",
+    clockIn: null,
+    clockOut: null,
+    hoursWorked: 0,
+    status: "absent",
+    notes: "Sick leave",
+  },
+];
 
 export default function ClockIn() {
-  const { showToast } = useLayout();
-  const data = getData();
-  const [refresh, setRefresh] = useState(0);
-  const [selectedDate, setSelectedDate] = useState(new Date().toISOString().slice(0, 10));
-  const [selectedStaff, setSelectedStaff] = useState('');
+  const [records, setRecords] = useState(attendanceRecords);
+  const [selectedDate, setSelectedDate] = useState(new Date().toISOString().split("T")[0]);
 
-  const staffNames = useMemo(() => data.staff.map(s => s.name), [data.staff]);
-
-  const todayRecords = useMemo(() => {
-    return data.clockin.filter(r => r.date === selectedDate);
-  }, [data.clockin, selectedDate, refresh]);
-
-  const presentCount = todayRecords.filter(r => r.timeIn).length;
-  const lateCount = todayRecords.filter(r => {
-    if (!r.timeIn) return false;
-    const [h, m] = r.timeIn.split(':').map(Number);
-    return h > 8 || (h === 8 && m > 15);
-  }).length;
-  const absentCount = staffNames.length - presentCount;
-
-  const doClockIn = () => {
-    if (!selectedStaff) { showToast('Select a staff member', 'error'); return; }
-    const existing = data.clockin.find(r => r.staff === selectedStaff && r.date === selectedDate);
-    if (existing && existing.timeIn) { showToast(`${selectedStaff} already clocked in`, 'error'); return; }
-    const now = new Date();
-    const timeStr = `${String(now.getHours()).padStart(2, '0')}:${String(now.getMinutes()).padStart(2, '0')}`;
-    updateData(d => {
-      d.clockin.push({ id: `ci_${Date.now()}`, staff: selectedStaff, date: selectedDate, timeIn: timeStr, timeOut: '' });
-    });
-    showToast(`${selectedStaff} clocked in at ${timeStr}`, 'success');
-    setRefresh(r => r + 1);
-  };
-
-  const doClockOut = () => {
-    if (!selectedStaff) { showToast('Select a staff member', 'error'); return; }
-    const existing = data.clockin.find(r => r.staff === selectedStaff && r.date === selectedDate && r.timeIn && !r.timeOut);
-    if (!existing) { showToast(`${selectedStaff} has not clocked in or already clocked out`, 'error'); return; }
-    const now = new Date();
-    const timeStr = `${String(now.getHours()).padStart(2, '0')}:${String(now.getMinutes()).padStart(2, '0')}`;
-    updateData(d => {
-      const rec = d.clockin.find(r => r.staff === selectedStaff && r.date === selectedDate && r.timeIn && !r.timeOut);
-      if (rec) rec.timeOut = timeStr;
-    });
-    showToast(`${selectedStaff} clocked out at ${timeStr}`, 'success');
-    setRefresh(r => r + 1);
-  };
-
-  const getHoursWorked = (timeIn: string, timeOut: string): string => {
-    if (!timeIn || !timeOut) return '—';
-    const [h1, m1] = timeIn.split(':').map(Number);
-    const [h2, m2] = timeOut.split(':').map(Number);
-    const diff = (h2 * 60 + m2) - (h1 * 60 + m1);
-    return `${(diff / 60).toFixed(1)}h`;
-  };
-
-  const isLate = (timeIn: string): boolean => {
-    if (!timeIn) return false;
-    const [h, m] = timeIn.split(':').map(Number);
-    return h > 8 || (h === 8 && m > 15);
-  };
+  const todayRecords = records.filter((r) => r.date === selectedDate);
+  const presentCount = todayRecords.filter((r) => r.status === "present" || r.status === "late").length;
+  const lateCount = todayRecords.filter((r) => r.status === "late").length;
+  const absentCount = todayRecords.filter((r) => r.status === "absent").length;
 
   return (
-    <div>
-      <div className="grid grid-4" style={{ marginBottom: '8px' }}>
-        <div className="card kpi-card green"><div className="kpi-label">Present</div><div className="kpi-value">{presentCount}</div><div className="kpi-sub">Clocked in today</div></div>
-        <div className="card kpi-card gold"><div className="kpi-label">Late</div><div className="kpi-value">{lateCount}</div><div className="kpi-sub">After 8:15 AM</div></div>
-        <div className="card kpi-card red"><div className="kpi-label">Absent</div><div className="kpi-value">{absentCount}</div><div className="kpi-sub">Not clocked in</div></div>
-        <div className="card kpi-card navy"><div className="kpi-label">Total Staff</div><div className="kpi-value">{staffNames.length}</div><div className="kpi-sub">Expected today</div></div>
+    <div className="flex flex-col gap-lg">
+      <div className="flex justify-between items-center">
+        <h2 className="text-2xl font-bold">Staff Clock-In</h2>
+        <button className="btn btn-primary">+ Manual Entry</button>
       </div>
 
       {/* Quick Clock In/Out */}
-      <div className="card" style={{ padding: '12px', marginBottom: '8px' }}>
-        <h4 style={{ color: 'var(--text-dim)', marginBottom: '8px', fontSize: '10px', fontFamily: 'Rajdhani', fontWeight: 600 }}>QUICK CLOCK IN / OUT</h4>
-        <div style={{ display: 'flex', gap: '8px', alignItems: 'flex-end', flexWrap: 'wrap' }}>
-          <div style={{ flex: 1, minWidth: '150px' }}>
-            <label className="form-label">Staff Member</label>
-            <select className="form-control" value={selectedStaff} onChange={e => setSelectedStaff(e.target.value)}>
-              <option value="">Select staff...</option>
-              {staffNames.map(n => <option key={n} value={n}>{n}</option>)}
+      <div className="card">
+        <h3 className="text-lg font-bold mb-lg">Quick Clock In/Out</h3>
+        <div className="grid grid-2 gap-lg">
+          <div>
+            <label className="form-label">Select Staff Member</label>
+            <select className="form-control">
+              <option>Select staff...</option>
+              <option>John Mensah</option>
+              <option>Peter Kwame</option>
+              <option>Samuel Osei</option>
+              <option>Ama Boateng</option>
             </select>
           </div>
-          <div style={{ minWidth: '140px' }}>
-            <label className="form-label">Date</label>
-            <input type="date" className="form-control" value={selectedDate} onChange={e => setSelectedDate(e.target.value)} />
+          <div className="flex items-end gap-md">
+            <button className="btn btn-success flex-1">🟢 Clock In</button>
+            <button className="btn btn-warning flex-1">🔴 Clock Out</button>
           </div>
-          <button className="btn" style={{ background: '#1ABC9C', color: '#fff', fontWeight: 600 }} onClick={doClockIn}>Clock In</button>
-          <button className="btn" style={{ background: '#E30613', color: '#fff', fontWeight: 600 }} onClick={doClockOut}>Clock Out</button>
+        </div>
+      </div>
+
+      {/* Date Selector */}
+      <div className="card">
+        <input
+          type="date"
+          value={selectedDate}
+          onChange={(e) => setSelectedDate(e.target.value)}
+          className="form-control max-w-xs"
+        />
+      </div>
+
+      {/* Attendance Summary */}
+      <div className="grid grid-4 gap-md">
+        <div className="card">
+          <div className="kpi-label">Present</div>
+          <div className="kpi-value text-success-light">{presentCount}</div>
+          <div className="kpi-sub">On time</div>
+        </div>
+        <div className="card">
+          <div className="kpi-label">Late</div>
+          <div className="kpi-value text-warning">{lateCount}</div>
+          <div className="kpi-sub">Arrived late</div>
+        </div>
+        <div className="card">
+          <div className="kpi-label">Absent</div>
+          <div className="kpi-value text-danger">{absentCount}</div>
+          <div className="kpi-sub">Not present</div>
+        </div>
+        <div className="card">
+          <div className="kpi-label">Total Staff</div>
+          <div className="kpi-value">{todayRecords.length}</div>
+          <div className="kpi-sub">Expected today</div>
         </div>
       </div>
 
       {/* Attendance Table */}
-      <div className="card" style={{ padding: '10px' }}>
-        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '8px' }}>
-          <h4 style={{ color: 'var(--text-dim)', fontSize: '10px', fontFamily: 'Rajdhani', fontWeight: 600 }}>ATTENDANCE RECORDS — {selectedDate}</h4>
-          <span style={{ fontSize: '8px', color: 'var(--text-muted)' }}>{todayRecords.length} records</span>
-        </div>
-        <div style={{ overflowX: 'auto' }}>
-          <table>
-            <thead>
-              <tr><th>Staff</th><th>Clock In</th><th>Clock Out</th><th>Hours</th><th>Status</th></tr>
-            </thead>
-            <tbody>
-              {todayRecords.length === 0 ? (
-                <tr><td colSpan={5} style={{ textAlign: 'center', color: 'var(--text-muted)', padding: '20px' }}>No records for this date</td></tr>
-              ) : todayRecords.map(r => (
-                <tr key={r.id}>
-                  <td>
-                    <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
-                      <div className="staff-avatar">{r.staff.charAt(0)}</div>
-                      <span style={{ fontWeight: 600 }}>{r.staff}</span>
-                    </div>
-                  </td>
-                  <td style={{ color: '#1ABC9C', fontFamily: 'monospace' }}>{r.timeIn || '—'}</td>
-                  <td style={{ color: '#F39C12', fontFamily: 'monospace' }}>{r.timeOut || '—'}</td>
-                  <td style={{ fontWeight: 600 }}>{getHoursWorked(r.timeIn, r.timeOut)}</td>
-                  <td>
-                    <span className={`status-badge ${isLate(r.timeIn) ? 'status-progress' : 'status-completed'}`}>
-                      {isLate(r.timeIn) ? 'Late' : 'On Time'}
-                    </span>
-                  </td>
-                </tr>
-              ))}
-            </tbody>
-          </table>
-        </div>
+      <div className="card">
+        <h3 className="text-lg font-bold mb-lg">Attendance Records - {selectedDate}</h3>
+        <table className="table">
+          <thead>
+            <tr>
+              <th>Name</th>
+              <th>Clock In</th>
+              <th>Clock Out</th>
+              <th>Hours Worked</th>
+              <th>Status</th>
+              <th>Notes</th>
+              <th>Actions</th>
+            </tr>
+          </thead>
+          <tbody>
+            {todayRecords.map((record) => (
+              <tr key={record.id}>
+                <td className="font-bold">{record.name}</td>
+                <td className="font-mono">{record.clockIn || "-"}</td>
+                <td className="font-mono">{record.clockOut || "-"}</td>
+                <td className="font-bold">{record.hoursWorked.toFixed(2)}h</td>
+                <td>
+                  <span
+                    className={`badge ${
+                      record.status === "present"
+                        ? "badge-success"
+                        : record.status === "late"
+                        ? "badge-warning"
+                        : record.status === "absent"
+                        ? "badge-danger"
+                        : "badge-info"
+                    }`}
+                  >
+                    {record.status.toUpperCase()}
+                  </span>
+                </td>
+                <td className="text-sm text-text-tertiary">{record.notes}</td>
+                <td>
+                  <button className="btn btn-secondary btn-sm">Edit</button>
+                </td>
+              </tr>
+            ))}
+          </tbody>
+        </table>
       </div>
 
-      {/* Monthly Summary */}
-      <div className="card" style={{ padding: '10px', marginTop: '8px' }}>
-        <h4 style={{ color: 'var(--text-dim)', marginBottom: '8px', fontSize: '10px', fontFamily: 'Rajdhani', fontWeight: 600 }}>MONTHLY ATTENDANCE SUMMARY</h4>
-        <div style={{ overflowX: 'auto' }}>
-          <table>
-            <thead>
-              <tr><th>Staff</th><th>Days Present</th><th>Days Late</th><th>Total Hours</th><th>Attendance %</th></tr>
-            </thead>
-            <tbody>
-              {staffNames.map(name => {
-                const records = data.clockin.filter(r => r.staff === name);
-                const present = records.filter(r => r.timeIn).length;
-                const late = records.filter(r => isLate(r.timeIn)).length;
-                const totalMins = records.reduce((sum, r) => {
-                  if (!r.timeIn || !r.timeOut) return sum;
-                  const [h1, m1] = r.timeIn.split(':').map(Number);
-                  const [h2, m2] = r.timeOut.split(':').map(Number);
-                  return sum + (h2 * 60 + m2) - (h1 * 60 + m1);
-                }, 0);
-                const pct = records.length > 0 ? Math.round((present / Math.max(records.length, 1)) * 100) : 0;
-                return (
-                  <tr key={name}>
-                    <td style={{ fontWeight: 600 }}>{name}</td>
-                    <td>{present}</td>
-                    <td style={{ color: late > 0 ? '#F39C12' : 'inherit' }}>{late}</td>
-                    <td>{(totalMins / 60).toFixed(1)}h</td>
-                    <td>
-                      <div style={{ display: 'flex', alignItems: 'center', gap: '6px' }}>
-                        <div className="progress-bar" style={{ flex: 1 }}>
-                          <div className="fill" style={{ width: `${pct}%`, background: pct >= 90 ? '#1ABC9C' : pct >= 75 ? '#F39C12' : '#E30613' }} />
-                        </div>
-                        <span style={{ fontSize: '9px', fontWeight: 600, color: pct >= 90 ? '#1ABC9C' : pct >= 75 ? '#F39C12' : '#E30613' }}>{pct}%</span>
-                      </div>
-                    </td>
-                  </tr>
-                );
-              })}
-            </tbody>
-          </table>
-        </div>
+      {/* Monthly Attendance Summary */}
+      <div className="card">
+        <h3 className="text-lg font-bold mb-lg">Monthly Attendance Summary</h3>
+        <table className="table">
+          <thead>
+            <tr>
+              <th>Staff Name</th>
+              <th>Days Present</th>
+              <th>Days Late</th>
+              <th>Days Absent</th>
+              <th>Total Hours</th>
+              <th>Attendance %</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td className="font-bold">John Mensah</td>
+              <td>20</td>
+              <td>1</td>
+              <td>0</td>
+              <td>160.5h</td>
+              <td><span className="badge badge-success">95%</span></td>
+            </tr>
+            <tr>
+              <td className="font-bold">Peter Kwame</td>
+              <td>19</td>
+              <td>2</td>
+              <td>0</td>
+              <td>158.0h</td>
+              <td><span className="badge badge-success">90%</span></td>
+            </tr>
+            <tr>
+              <td className="font-bold">Samuel Osei</td>
+              <td>18</td>
+              <td>0</td>
+              <td>3</td>
+              <td>144.0h</td>
+              <td><span className="badge badge-warning">85%</span></td>
+            </tr>
+            <tr>
+              <td className="font-bold">Ama Boateng</td>
+              <td>17</td>
+              <td>1</td>
+              <td>3</td>
+              <td>136.0h</td>
+              <td><span className="badge badge-warning">80%</span></td>
+            </tr>
+          </tbody>
+        </table>
       </div>
     </div>
   );

@@ -1,161 +1,226 @@
-<<<<<<< Updated upstream
 import { useState } from "react";
 import DashboardNav from "@/components/DashboardNav";
-import LiveInsightsBanner from "@/components/LiveInsightsBanner";
 import { trpc } from "@/lib/trpc";
 import { Card } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, Legend, ResponsiveContainer, BarChart, Bar } from "recharts";
 import { Download } from "lucide-react";
-=======
-import { useState, useEffect, useRef } from 'react';
-import { getData, updateData, fmtGHS, today } from '../lib/dataStore';
-import { useLayout } from '../components/MainLayout';
-
-declare const Chart: any;
->>>>>>> Stashed changes
 
 export default function Finances() {
-  const { showToast, openSlidePanel } = useLayout();
-  const data = getData();
-  const chartRef = useRef<HTMLCanvasElement>(null);
-  const chartInst = useRef<any>(null);
-  const [tab, setTab] = useState<'expenses' | 'po'>('expenses');
-  const [refresh, setRefresh] = useState(0);
+  const [activeTab, setActiveTab] = useState<"expenses" | "po">("expenses");
+  const { data: expensesData, isLoading: expensesLoading } = trpc.expenses.list.useQuery({});
+  const { data: poData, isLoading: poLoading } = trpc.purchaseOrders.list.useQuery({});
 
-  const totalRevenue = data.sales.reduce((s, x) => s + x.total, 0);
-  const totalExpenses = data.expenses.reduce((s, x) => s + x.amount, 0);
-  const totalPOs = data.purchaseOrders.reduce((s, x) => s + x.amount, 0);
-  const totalOutflow = totalExpenses + totalPOs;
-  const netPosition = totalRevenue - totalOutflow;
-  const profitMargin = totalRevenue > 0 ? ((netPosition / totalRevenue) * 100) : 0;
+  // Calculate expenses by category
+  const expensesByCategory = expensesData?.reduce((acc: any, expense: any) => {
+    const existing = acc.find((item: any) => item.name === expense.category);
+    if (existing) {
+      existing.amount += parseFloat(expense.amount || 0);
+    } else {
+      acc.push({ name: expense.category, amount: parseFloat(expense.amount || 0) });
+    }
+    return acc;
+  }, []) || [];
 
-  const expByCat: Record<string, number> = {};
-  data.expenses.forEach(e => { expByCat[e.item] = (expByCat[e.item] || 0) + e.amount; });
+  // Calculate PO by status
+  const poByStatus = poData?.reduce((acc: any, po: any) => {
+    const existing = acc.find((item: any) => item.status === po.status);
+    if (existing) {
+      existing.count += 1;
+      existing.amount += parseFloat(po.amount || 0);
+    } else {
+      acc.push({ status: po.status, count: 1, amount: parseFloat(po.amount || 0) });
+    }
+    return acc;
+  }, []) || [];
 
-  useEffect(() => {
-    if (typeof Chart === 'undefined' || !chartRef.current) return;
-    chartInst.current?.destroy();
-    const labels = Object.keys(expByCat).slice(0, 8);
-    const colors = ['#E30613','#16A085','#F39C12','#3B82F6','#E67E22','#8B5CF6','#EC4899','#14B8A6'];
-    chartInst.current = new Chart(chartRef.current, {
-      type: 'doughnut',
-      data: { labels, datasets: [{ data: labels.map(l => expByCat[l]), backgroundColor: colors }] },
-      options: { responsive: true, maintainAspectRatio: false, plugins: { legend: { position: 'right', labels: { color: '#A0AEC0', font: { size: 9 } } } } },
-    });
-    return () => { chartInst.current?.destroy(); };
-  }, [data.expenses, refresh]);
+  const totalExpenses = expensesData?.reduce((sum: number, e: any) => sum + parseFloat(e.amount || 0), 0) || 0;
+  const totalPOAmount = poData?.reduce((sum: number, po: any) => sum + parseFloat(po.amount || 0), 0) || 0;
 
-  const addExpense = () => {
-    openSlidePanel('Add Expense', (
-      <div style={{ color: 'var(--text)' }}>
-        <div className="form-group"><label className="form-label">Item / Description</label><input className="form-control" id="exp-item" placeholder="Workshop supplies" /></div>
-        <div className="form-group"><label className="form-label">Supplier</label><input className="form-control" id="exp-sup" placeholder="Local Market" /></div>
-        <div className="form-group"><label className="form-label">Amount (GHS)</label><input type="number" className="form-control" id="exp-amt" placeholder="0" /></div>
-        <div className="form-group"><label className="form-label">Purpose</label><input className="form-control" id="exp-purp" placeholder="Operational expense" /></div>
-        <button className="btn btn-primary" style={{ marginTop: '12px' }} onClick={() => {
-          const item = (document.getElementById('exp-item') as HTMLInputElement)?.value;
-          const supplier = (document.getElementById('exp-sup') as HTMLInputElement)?.value;
-          const amount = parseFloat((document.getElementById('exp-amt') as HTMLInputElement)?.value) || 0;
-          const purpose = (document.getElementById('exp-purp') as HTMLInputElement)?.value;
-          if (!item || !amount) { showToast('Fill in Item and Amount', 'error'); return; }
-          updateData(d => { d.expenses.push({ id: `e_${Date.now()}`, date: today(), item, supplier, amount, purpose }); });
-          showToast(`Expense recorded: ${item} — ${fmtGHS(amount)}`, 'success');
-          setRefresh(r => r + 1);
-        }}>Record Expense</button>
-      </div>
-    ));
-  };
+  return (
+    <div className="flex min-h-screen bg-gray-50">
+      <DashboardNav />
 
-<<<<<<< Updated upstream
       <main className="flex-1 p-4 md:p-8">
         <div className="max-w-7xl mx-auto">
           <h1 className="text-4xl font-bold text-slate-900 mb-8">Financial Management</h1>
-          <LiveInsightsBanner categories={["finance"]} />
-=======
-  const addPO = () => {
-    openSlidePanel('Add Purchase Order', (
-      <div style={{ color: 'var(--text)' }}>
-        <div className="form-group"><label className="form-label">Supplier</label><input className="form-control" id="po-sup" placeholder="AutoParts Ghana" /></div>
-        <div className="form-group"><label className="form-label">Items</label><input className="form-control" id="po-items" placeholder="Brake pads, oil filters" /></div>
-        <div className="form-group"><label className="form-label">Amount (GHS)</label><input type="number" className="form-control" id="po-amt" placeholder="0" /></div>
-        <div className="form-group"><label className="form-label">Notes</label><input className="form-control" id="po-notes" placeholder="Optional notes" /></div>
-        <button className="btn btn-primary" style={{ marginTop: '12px' }} onClick={() => {
-          const supplier = (document.getElementById('po-sup') as HTMLInputElement)?.value;
-          const items = (document.getElementById('po-items') as HTMLInputElement)?.value;
-          const amount = parseFloat((document.getElementById('po-amt') as HTMLInputElement)?.value) || 0;
-          const notes = (document.getElementById('po-notes') as HTMLInputElement)?.value;
-          if (!supplier || !amount) { showToast('Fill in Supplier and Amount', 'error'); return; }
-          updateData(d => {
-            const poNumber = `AGL-PO-${String(d.settings.poCounter++).padStart(3, '0')}`;
-            d.purchaseOrders.push({ id: `po_${Date.now()}`, date: today(), poNumber, supplier, amount, items, notes });
-          });
-          showToast(`PO created: ${supplier}`, 'success');
-          setRefresh(r => r + 1);
-        }}>Create PO</button>
-      </div>
-    ));
-  };
->>>>>>> Stashed changes
 
-  return (
-    <div>
-      <div className="grid grid-5" style={{ marginBottom: '8px' }}>
-        <div className="card kpi-card green"><div className="kpi-label">Total Revenue</div><div className="kpi-value">{fmtGHS(totalRevenue)}</div></div>
-        <div className="card kpi-card red"><div className="kpi-label">Expenses</div><div className="kpi-value">{fmtGHS(totalExpenses)}</div></div>
-        <div className="card kpi-card gold"><div className="kpi-label">Purchase Orders</div><div className="kpi-value">{fmtGHS(totalPOs)}</div></div>
-        <div className="card kpi-card" style={{ borderTopColor: netPosition >= 0 ? '#16A085' : '#E30613' }}><div className="kpi-label">Net Position</div><div className="kpi-value" style={{ color: netPosition >= 0 ? '#1ABC9C' : '#FF2D3A' }}>{fmtGHS(netPosition)}</div></div>
-        <div className="card kpi-card navy"><div className="kpi-label">Profit Margin</div><div className="kpi-value">{profitMargin.toFixed(1)}%</div></div>
-      </div>
-
-      <div style={{ display: 'flex', gap: '8px', marginBottom: '8px' }}>
-        <button className="btn btn-primary" onClick={addExpense}>+ Add Expense</button>
-        <button className="btn btn-success" onClick={addPO}>+ Purchase Order</button>
-      </div>
-
-      <div className="grid" style={{ gridTemplateColumns: '2fr 1fr', marginBottom: '8px' }}>
-        <div className="card" style={{ padding: '10px' }}>
-          <div className="tab-bar">
-            <button className={`tab-btn ${tab === 'expenses' ? 'active' : ''}`} onClick={() => setTab('expenses')}>Expenses ({data.expenses.length})</button>
-            <button className={`tab-btn ${tab === 'po' ? 'active' : ''}`} onClick={() => setTab('po')}>Purchase Orders ({data.purchaseOrders.length})</button>
+          {/* Summary Cards */}
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-8">
+            <Card className="p-6 border-l-4 border-red-500">
+              <p className="text-sm text-gray-600 font-medium mb-2">Total Expenses</p>
+              <p className="text-3xl font-bold text-slate-900">₵{totalExpenses.toLocaleString("en-US", { maximumFractionDigits: 2 })}</p>
+            </Card>
+            <Card className="p-6 border-l-4 border-orange-500">
+              <p className="text-sm text-gray-600 font-medium mb-2">Total PO Amount</p>
+              <p className="text-3xl font-bold text-slate-900">₵{totalPOAmount.toLocaleString("en-US", { maximumFractionDigits: 2 })}</p>
+            </Card>
           </div>
-          {tab === 'expenses' && (
-            <div style={{ overflowX: 'auto', maxHeight: '300px', overflowY: 'auto' }}>
-              <table>
-                <thead><tr><th>Date</th><th>Item</th><th>Supplier</th><th>Amount</th><th>Purpose</th></tr></thead>
-                <tbody>
-                  {[...data.expenses].sort((a, b) => b.date.localeCompare(a.date)).map(e => (
-                    <tr key={e.id}><td>{e.date}</td><td>{e.item}</td><td>{e.supplier}</td><td style={{ color: '#FF2D3A', fontWeight: 600 }}>{fmtGHS(e.amount)}</td><td style={{ color: 'var(--text-dim)' }}>{e.purpose}</td></tr>
-                  ))}
-                </tbody>
-              </table>
-            </div>
+
+          {/* Charts */}
+          <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 mb-8">
+            <Card className="p-6">
+              <h2 className="text-xl font-bold text-slate-900 mb-4">Expenses by Category</h2>
+              <ResponsiveContainer width="100%" height={300}>
+                <BarChart data={expensesByCategory}>
+                  <CartesianGrid strokeDasharray="3 3" />
+                  <XAxis dataKey="name" />
+                  <YAxis />
+                  <Tooltip formatter={(value) => `₵${value.toLocaleString()}`} />
+                  <Bar dataKey="amount" fill="#ef4444" />
+                </BarChart>
+              </ResponsiveContainer>
+            </Card>
+
+            <Card className="p-6">
+              <h2 className="text-xl font-bold text-slate-900 mb-4">Purchase Orders by Status</h2>
+              <ResponsiveContainer width="100%" height={300}>
+                <BarChart data={poByStatus}>
+                  <CartesianGrid strokeDasharray="3 3" />
+                  <XAxis dataKey="status" />
+                  <YAxis />
+                  <Tooltip />
+                  <Legend />
+                  <Bar dataKey="count" fill="#3b82f6" name="Count" />
+                </BarChart>
+              </ResponsiveContainer>
+            </Card>
+          </div>
+
+          {/* Tab Navigation */}
+          <div className="flex gap-2 mb-8 border-b border-gray-200">
+            {[
+              { id: "expenses" as const, label: "Expenses" },
+              { id: "po" as const, label: "Purchase Orders" },
+            ].map((tab) => (
+              <button
+                key={tab.id}
+                onClick={() => setActiveTab(tab.id)}
+                className={`px-4 py-3 font-medium border-b-2 transition-colors ${
+                  activeTab === tab.id
+                    ? "border-red-600 text-red-600"
+                    : "border-transparent text-gray-600 hover:text-gray-900"
+                }`}
+              >
+                {tab.label}
+              </button>
+            ))}
+          </div>
+
+          {/* Expenses Table */}
+          {activeTab === "expenses" && (
+            <Card className="p-6">
+              <div className="flex justify-between items-center mb-6">
+                <h2 className="text-2xl font-bold text-slate-900">Expenses</h2>
+                <Button className="flex items-center gap-2 bg-red-600 hover:bg-red-700">
+                  <Download size={16} />
+                  Export
+                </Button>
+              </div>
+              {expensesLoading ? (
+                <div className="text-center py-8 text-gray-500">Loading expenses...</div>
+              ) : (
+                <div className="overflow-x-auto">
+                  <table className="w-full text-sm">
+                    <thead className="bg-gray-100 border-b">
+                      <tr>
+                        <th className="px-4 py-3 text-left font-semibold text-gray-700">Date</th>
+                        <th className="px-4 py-3 text-left font-semibold text-gray-700">Category</th>
+                        <th className="px-4 py-3 text-left font-semibold text-gray-700">Description</th>
+                        <th className="px-4 py-3 text-left font-semibold text-gray-700">Amount</th>
+                        <th className="px-4 py-3 text-left font-semibold text-gray-700">Vendor</th>
+                      </tr>
+                    </thead>
+                    <tbody>
+                      {expensesData?.length === 0 ? (
+                        <tr>
+                          <td colSpan={5} className="px-4 py-8 text-center text-gray-500">
+                            No expenses found
+                          </td>
+                        </tr>
+                      ) : (
+                        expensesData?.map((expense: any) => (
+                          <tr key={expense.id} className="border-b hover:bg-gray-50">
+                            <td className="px-4 py-3 text-gray-900">
+                              {new Date(expense.expenseDate).toLocaleDateString()}
+                            </td>
+                            <td className="px-4 py-3">
+                              <Badge variant="outline">{expense.category}</Badge>
+                            </td>
+                            <td className="px-4 py-3 text-gray-700">{expense.description}</td>
+                            <td className="px-4 py-3 font-semibold text-gray-900">
+                              ₵{parseFloat(expense.amount || 0).toLocaleString("en-US", { maximumFractionDigits: 2 })}
+                            </td>
+                            <td className="px-4 py-3 text-gray-700">{expense.vendor || "-"}</td>
+                          </tr>
+                        ))
+                      )}
+                    </tbody>
+                  </table>
+                </div>
+              )}
+            </Card>
           )}
-          {tab === 'po' && (
-            <div style={{ overflowX: 'auto', maxHeight: '300px', overflowY: 'auto' }}>
-              <table>
-                <thead><tr><th>Date</th><th>PO #</th><th>Supplier</th><th>Items</th><th>Amount</th></tr></thead>
-                <tbody>
-                  {[...data.purchaseOrders].sort((a, b) => b.date.localeCompare(a.date)).map(po => (
-                    <tr key={po.id}><td>{po.date}</td><td style={{ fontFamily: 'monospace', fontSize: '8pt' }}>{po.poNumber}</td><td>{po.supplier}</td><td>{po.items}</td><td style={{ color: '#F39C12', fontWeight: 600 }}>{fmtGHS(po.amount)}</td></tr>
-                  ))}
-                </tbody>
-              </table>
-            </div>
+
+          {/* Purchase Orders Table */}
+          {activeTab === "po" && (
+            <Card className="p-6">
+              <div className="flex justify-between items-center mb-6">
+                <h2 className="text-2xl font-bold text-slate-900">Purchase Orders</h2>
+                <Button className="flex items-center gap-2 bg-red-600 hover:bg-red-700">
+                  <Download size={16} />
+                  Export
+                </Button>
+              </div>
+              {poLoading ? (
+                <div className="text-center py-8 text-gray-500">Loading purchase orders...</div>
+              ) : (
+                <div className="overflow-x-auto">
+                  <table className="w-full text-sm">
+                    <thead className="bg-gray-100 border-b">
+                      <tr>
+                        <th className="px-4 py-3 text-left font-semibold text-gray-700">PO Number</th>
+                        <th className="px-4 py-3 text-left font-semibold text-gray-700">Date</th>
+                        <th className="px-4 py-3 text-left font-semibold text-gray-700">Vendor</th>
+                        <th className="px-4 py-3 text-left font-semibold text-gray-700">Amount</th>
+                        <th className="px-4 py-3 text-left font-semibold text-gray-700">Status</th>
+                      </tr>
+                    </thead>
+                    <tbody>
+                      {poData?.length === 0 ? (
+                        <tr>
+                          <td colSpan={5} className="px-4 py-8 text-center text-gray-500">
+                            No purchase orders found
+                          </td>
+                        </tr>
+                      ) : (
+                        poData?.map((po: any) => (
+                          <tr key={po.id} className="border-b hover:bg-gray-50">
+                            <td className="px-4 py-3 font-semibold text-gray-900">{po.poNumber}</td>
+                            <td className="px-4 py-3 text-gray-900">
+                              {new Date(po.poDate).toLocaleDateString()}
+                            </td>
+                            <td className="px-4 py-3 text-gray-700">{po.vendor}</td>
+                            <td className="px-4 py-3 font-semibold text-gray-900">
+                              ₵{parseFloat(po.amount || 0).toLocaleString("en-US", { maximumFractionDigits: 2 })}
+                            </td>
+                            <td className="px-4 py-3">
+                              <Badge className={po.status === "Approved" ? "bg-green-100 text-green-800" : "bg-yellow-100 text-yellow-800"}>
+                                {po.status}
+                              </Badge>
+                            </td>
+                          </tr>
+                        ))
+                      )}
+                    </tbody>
+                  </table>
+                </div>
+              )}
+            </Card>
           )}
         </div>
-        <div className="card chart-card"><h4>Expense Breakdown</h4><div className="chart-container"><canvas ref={chartRef} /></div></div>
-      </div>
-
-      <div className="card" style={{ padding: '14px' }}>
-        <h3 style={{ color: '#fff', marginBottom: '12px' }}>Financial Summary</h3>
-        <div className="finance-metric"><span className="fm-label">Gross Revenue</span><span className="fm-value" style={{ color: '#1ABC9C' }}>{fmtGHS(totalRevenue)}</span></div>
-        <div className="finance-metric"><span className="fm-label">Total Expenses</span><span className="fm-value" style={{ color: '#FF2D3A' }}>{fmtGHS(totalExpenses)}</span></div>
-        <div className="finance-metric"><span className="fm-label">Purchase Orders</span><span className="fm-value" style={{ color: '#F39C12' }}>{fmtGHS(totalPOs)}</span></div>
-        <div className="finance-metric"><span className="fm-label">Total Outflow</span><span className="fm-value" style={{ color: '#FF2D3A' }}>{fmtGHS(totalOutflow)}</span></div>
-        <div className="finance-metric" style={{ borderBottom: 'none' }}><span className="fm-label" style={{ fontWeight: 700, color: '#fff' }}>Net Position</span><span className="fm-value" style={{ color: netPosition >= 0 ? '#1ABC9C' : '#FF2D3A', fontSize: '18px' }}>{fmtGHS(netPosition)}</span></div>
-      </div>
+      </main>
     </div>
   );
 }

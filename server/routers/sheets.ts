@@ -1,37 +1,11 @@
 import { router, protectedProcedure } from "../_core/trpc";
-import {
-  syncAllSheetData,
-  getSheetMetadata,
-  getSyncStatus,
-  clearSheetCache,
-} from "../googleSheets";
+import { syncAllSheetData, getSheetMetadata } from "../googleSheets";
 import { generateBusinessMetrics } from "../insights";
-import { getConfig } from "../config";
 
 export const sheetsRouter = router({
   /**
    * Sync all data from Google Sheets
    */
-  /**
-   * Current sync status (last sync time, errors, totals)
-   */
-  getStatus: protectedProcedure.query(() => {
-    return { success: true, status: getSyncStatus() };
-  }),
-
-  /**
-   * Force a fresh sync (bypass cache)
-   */
-  forceSync: protectedProcedure.mutation(async () => {
-    try {
-      clearSheetCache();
-      const data = await syncAllSheetData({ force: true });
-      return { success: true, data, syncedAt: new Date() };
-    } catch (error) {
-      return { success: false, error: (error as Error).message };
-    }
-  }),
-
   syncAll: protectedProcedure.mutation(async () => {
     try {
       const data = await syncAllSheetData();
@@ -69,12 +43,12 @@ export const sheetsRouter = router({
   }),
 
   /**
-   * Get business metrics and insights (mutation form, kept for backwards compat)
+   * Get business metrics and insights
    */
   getInsights: protectedProcedure.mutation(async () => {
     try {
       const data = await syncAllSheetData();
-      const metrics = generateBusinessMetrics(data, getConfig());
+      const metrics = generateBusinessMetrics(data);
       return {
         success: true,
         metrics,
@@ -85,19 +59,6 @@ export const sheetsRouter = router({
         success: false,
         error: (error as Error).message,
       };
-    }
-  }),
-
-  /**
-   * Cached query form: pulls from cached sheet data, regenerates metrics each call
-   */
-  insights: protectedProcedure.query(async () => {
-    try {
-      const data = await syncAllSheetData();
-      const metrics = generateBusinessMetrics(data, getConfig());
-      return { success: true, metrics };
-    } catch (error) {
-      return { success: false, error: (error as Error).message };
     }
   }),
 });

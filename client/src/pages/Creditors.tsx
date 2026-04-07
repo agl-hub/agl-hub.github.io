@@ -1,142 +1,268 @@
-import { useState, useMemo } from 'react';
-import { getData, updateData, fmtGHS } from '../lib/dataStore';
-import { useLayout } from '../components/MainLayout';
+import { useState } from "react";
+
+interface Creditor {
+  id: string;
+  name: string;
+  type: "supplier" | "customer";
+  totalOwed: number;
+  amountPaid: number;
+  dueDate: string;
+  status: "current" | "overdue" | "paid";
+  lastTransaction: string;
+  contactPerson: string;
+  phone: string;
+}
+
+const creditors: Creditor[] = [
+  {
+    id: "1",
+    name: "ABC Auto Parts Ltd",
+    type: "supplier",
+    totalOwed: 5000,
+    amountPaid: 3000,
+    dueDate: "2026-04-15",
+    status: "current",
+    lastTransaction: "2026-04-03",
+    contactPerson: "Mr. Agyeman",
+    phone: "0244-123456",
+  },
+  {
+    id: "2",
+    name: "Mr. Kwame Asante",
+    type: "customer",
+    totalOwed: 2500,
+    amountPaid: 0,
+    dueDate: "2026-04-10",
+    status: "overdue",
+    lastTransaction: "2026-03-28",
+    contactPerson: "Kwame Asante",
+    phone: "0555-789012",
+  },
+  {
+    id: "3",
+    name: "XYZ Supplies Co.",
+    type: "supplier",
+    totalOwed: 0,
+    amountPaid: 8000,
+    dueDate: "2026-03-31",
+    status: "paid",
+    lastTransaction: "2026-04-01",
+    contactPerson: "Ms. Abena",
+    phone: "0244-654321",
+  },
+  {
+    id: "4",
+    name: "Ms. Ama Osei",
+    type: "customer",
+    totalOwed: 1200,
+    amountPaid: 300,
+    dueDate: "2026-04-12",
+    status: "current",
+    lastTransaction: "2026-04-02",
+    contactPerson: "Ama Osei",
+    phone: "0555-345678",
+  },
+];
 
 export default function Creditors() {
-  const { showToast, openSlidePanel } = useLayout();
-  const data = getData();
-  const [refresh, setRefresh] = useState(0);
+  const [creditorList, setCreditorList] = useState(creditors);
+  const [filterType, setFilterType] = useState<"all" | "supplier" | "customer">("all");
+  const [filterStatus, setFilterStatus] = useState<"all" | "current" | "overdue" | "paid">("all");
 
-  const creditors = useMemo(() => data.creditors, [data.creditors, refresh]);
-  const totalOwed = creditors.reduce((s, c) => s + (c.amount - c.paid), 0);
-  const totalPaid = creditors.reduce((s, c) => s + c.paid, 0);
-  const urgentCount = creditors.filter(c => c.priority === 'Urgent' && c.paid < c.amount).length;
-  const overdueCount = creditors.filter(c => new Date(c.dueDate) < new Date() && c.paid < c.amount).length;
+  const filteredCreditors = creditorList.filter((c) => {
+    const typeMatch = filterType === "all" || c.type === filterType;
+    const statusMatch = filterStatus === "all" || c.status === filterStatus;
+    return typeMatch && statusMatch;
+  });
 
-  const addCreditor = () => {
-    openSlidePanel('Add Creditor', (
-      <div style={{ color: 'var(--text)' }}>
-        <div className="form-group"><label className="form-label">Name</label><input className="form-control" id="cr-name" placeholder="Creditor name" /></div>
-        <div className="form-group"><label className="form-label">Contact</label><input className="form-control" id="cr-contact" placeholder="Phone number" /></div>
-        <div className="form-group"><label className="form-label">Amount Owed</label><input className="form-control" id="cr-amount" type="number" placeholder="0" /></div>
-        <div className="form-group"><label className="form-label">Category</label>
-          <select className="form-control" id="cr-cat"><option>Parts Supplier</option><option>Service Provider</option><option>Staff Advance</option><option>Rent/Utilities</option><option>Other</option></select>
-        </div>
-        <div className="form-group"><label className="form-label">Priority</label>
-          <select className="form-control" id="cr-prio"><option>Normal</option><option>High</option><option>Urgent</option></select>
-        </div>
-        <div className="form-group"><label className="form-label">Due Date</label><input className="form-control" id="cr-due" type="date" /></div>
-        <button className="btn btn-primary" style={{ marginTop: '12px' }} onClick={() => {
-          const name = (document.getElementById('cr-name') as HTMLInputElement)?.value;
-          const contact = (document.getElementById('cr-contact') as HTMLInputElement)?.value;
-          const amount = Number((document.getElementById('cr-amount') as HTMLInputElement)?.value) || 0;
-          const category = (document.getElementById('cr-cat') as HTMLSelectElement)?.value;
-          const priority = (document.getElementById('cr-prio') as HTMLSelectElement)?.value;
-          const dueDate = (document.getElementById('cr-due') as HTMLInputElement)?.value;
-          if (!name || !amount) { showToast('Name and amount required', 'error'); return; }
-          updateData(d => {
-            d.creditors.push({ id: `cr_${Date.now()}`, name, contact, amount, date: new Date().toISOString().slice(0, 10), dueDate, category, priority, notes: '', paid: 0 });
-          });
-          showToast(`Creditor added: ${name}`, 'success');
-          setRefresh(r => r + 1);
-        }}>Add Creditor</button>
-      </div>
-    ));
-  };
-
-  const makePayment = (creditor: typeof creditors[0]) => {
-    openSlidePanel(`Payment: ${creditor.name}`, (
-      <div style={{ color: 'var(--text)' }}>
-        <div style={{ padding: '10px', background: 'rgba(255,255,255,0.03)', borderRadius: 'var(--radius-sm)', marginBottom: '12px' }}>
-          <div style={{ fontSize: '11px', color: '#fff', fontWeight: 600 }}>{creditor.name}</div>
-          <div style={{ fontSize: '9px', color: 'var(--text-dim)' }}>Total: {fmtGHS(creditor.amount)} | Paid: {fmtGHS(creditor.paid)} | Balance: {fmtGHS(creditor.amount - creditor.paid)}</div>
-        </div>
-        <div className="form-group"><label className="form-label">Payment Amount</label><input className="form-control" id="pay-amt" type="number" placeholder="0" /></div>
-        <div className="form-group"><label className="form-label">Method</label>
-          <select className="form-control" id="pay-method"><option>Cash</option><option>MoMo</option><option>Bank Transfer</option><option>Cheque</option></select>
-        </div>
-        <div className="form-group"><label className="form-label">Reference</label><input className="form-control" id="pay-ref" placeholder="Payment reference" /></div>
-        <button className="btn btn-primary" style={{ marginTop: '12px' }} onClick={() => {
-          const amount = Number((document.getElementById('pay-amt') as HTMLInputElement)?.value) || 0;
-          const method = (document.getElementById('pay-method') as HTMLSelectElement)?.value;
-          const reference = (document.getElementById('pay-ref') as HTMLInputElement)?.value;
-          if (!amount) { showToast('Enter payment amount', 'error'); return; }
-          const balance = creditor.amount - creditor.paid;
-          if (amount > balance) { showToast('Amount exceeds balance', 'error'); return; }
-          updateData(d => {
-            const cr = d.creditors.find(c => c.id === creditor.id);
-            if (cr) cr.paid += amount;
-            d.payments.push({ id: `pay_${Date.now()}`, creditorId: creditor.id, amount, date: new Date().toISOString().slice(0, 10), method, reference, notes: '' });
-          });
-          showToast(`Payment of ${fmtGHS(amount)} recorded`, 'success');
-          setRefresh(r => r + 1);
-        }}>Record Payment</button>
-      </div>
-    ));
-  };
+  const totalOwed = creditorList.reduce((sum, c) => sum + c.totalOwed, 0);
+  const overdueAmount = creditorList
+    .filter((c) => c.status === "overdue")
+    .reduce((sum, c) => sum + c.totalOwed, 0);
+  const overdueCount = creditorList.filter((c) => c.status === "overdue").length;
 
   return (
-    <div>
-      <div className="grid grid-4" style={{ marginBottom: '8px' }}>
-        <div className="card kpi-card red"><div className="kpi-label">Total Owed</div><div className="kpi-value" style={{ fontSize: '16px' }}>{fmtGHS(totalOwed)}</div></div>
-        <div className="card kpi-card green"><div className="kpi-label">Total Paid</div><div className="kpi-value" style={{ fontSize: '16px' }}>{fmtGHS(totalPaid)}</div></div>
-        <div className="card kpi-card gold"><div className="kpi-label">Urgent</div><div className="kpi-value">{urgentCount}</div></div>
-        <div className="card kpi-card navy"><div className="kpi-label">Overdue</div><div className="kpi-value">{overdueCount}</div></div>
+    <div className="flex flex-col gap-lg">
+      <div className="flex justify-between items-center">
+        <h2 className="text-2xl font-bold">Creditors & Loans</h2>
+        <button className="btn btn-primary">+ New Creditor</button>
       </div>
 
-      <div style={{ marginBottom: '8px' }}><button className="btn btn-primary" onClick={addCreditor}>+ Add Creditor</button></div>
-
-      <div className="card" style={{ padding: '10px' }}>
-        <div style={{ overflowX: 'auto' }}>
-          <table>
-            <thead><tr><th>Name</th><th>Contact</th><th>Category</th><th>Amount</th><th>Paid</th><th>Balance</th><th>Due Date</th><th>Priority</th><th>Status</th><th>Action</th></tr></thead>
-            <tbody>
-              {creditors.map(c => {
-                const balance = c.amount - c.paid;
-                const isOverdue = new Date(c.dueDate) < new Date() && balance > 0;
-                const isPaid = balance <= 0;
-                return (
-                  <tr key={c.id}>
-                    <td style={{ fontWeight: 600 }}>{c.name}</td>
-                    <td style={{ fontSize: '9px' }}>{c.contact}</td>
-                    <td>{c.category}</td>
-                    <td style={{ fontWeight: 600 }}>{fmtGHS(c.amount)}</td>
-                    <td style={{ color: '#1ABC9C' }}>{fmtGHS(c.paid)}</td>
-                    <td style={{ color: balance > 0 ? '#FF2D3A' : '#1ABC9C', fontWeight: 600 }}>{fmtGHS(balance)}</td>
-                    <td style={{ color: isOverdue ? '#FF2D3A' : 'var(--text-dim)' }}>{c.dueDate}</td>
-                    <td><span style={{ fontSize: '8px', padding: '1px 5px', borderRadius: '3px', background: c.priority === 'Urgent' ? 'rgba(227,6,19,0.15)' : c.priority === 'High' ? 'rgba(243,156,18,0.15)' : 'rgba(255,255,255,0.05)', color: c.priority === 'Urgent' ? '#FF2D3A' : c.priority === 'High' ? '#F39C12' : 'var(--text-dim)', fontWeight: 600 }}>{c.priority}</span></td>
-                    <td><span className={`status-badge ${isPaid ? 'status-completed' : isOverdue ? 'status-awaiting' : 'status-progress'}`}>{isPaid ? 'Paid' : isOverdue ? 'Overdue' : 'Active'}</span></td>
-                    <td>{!isPaid && <button className="btn btn-xs btn-primary" onClick={() => makePayment(c)}>Pay</button>}</td>
-                  </tr>
-                );
-              })}
-            </tbody>
-          </table>
+      {/* Summary Cards */}
+      <div className="grid grid-4 gap-md">
+        <div className="card">
+          <div className="kpi-label">Total Owed</div>
+          <div className="kpi-value">GHS {totalOwed.toLocaleString()}</div>
+          <div className="kpi-sub">To all creditors</div>
+        </div>
+        <div className="card">
+          <div className="kpi-label">Overdue Amount</div>
+          <div className="kpi-value text-warning">GHS {overdueAmount.toLocaleString()}</div>
+          <div className="kpi-sub">{overdueCount} accounts</div>
+        </div>
+        <div className="card">
+          <div className="kpi-label">Total Creditors</div>
+          <div className="kpi-value">{creditorList.length}</div>
+          <div className="kpi-sub">Active accounts</div>
+        </div>
+        <div className="card">
+          <div className="kpi-label">Paid This Month</div>
+          <div className="kpi-value text-success-light">GHS 11,300</div>
+          <div className="kpi-sub">Total payments</div>
         </div>
       </div>
 
-      {data.payments.length > 0 && (
-        <div className="card" style={{ padding: '10px', marginTop: '8px' }}>
-          <h3 style={{ color: '#fff', marginBottom: '8px' }}>Payment History</h3>
-          <table>
-            <thead><tr><th>Date</th><th>Creditor</th><th>Amount</th><th>Method</th><th>Reference</th></tr></thead>
-            <tbody>
-              {[...data.payments].sort((a, b) => b.date.localeCompare(a.date)).map(p => {
-                const cr = data.creditors.find(c => c.id === p.creditorId);
-                return (
-                  <tr key={p.id}>
-                    <td>{p.date}</td>
-                    <td style={{ fontWeight: 600 }}>{cr?.name || 'Unknown'}</td>
-                    <td style={{ color: '#1ABC9C', fontWeight: 600 }}>{fmtGHS(p.amount)}</td>
-                    <td>{p.method}</td>
-                    <td style={{ fontSize: '9px', color: 'var(--text-dim)' }}>{p.reference || '\u2014'}</td>
-                  </tr>
-                );
-              })}
-            </tbody>
-          </table>
+      {/* Overdue Alert */}
+      {overdueCount > 0 && (
+        <div className="card border-l-4 border-danger bg-danger/5">
+          <h3 className="font-bold text-danger mb-md">🚨 Overdue Payments Alert</h3>
+          <div className="flex flex-col gap-sm">
+            {creditorList
+              .filter((c) => c.status === "overdue")
+              .map((c) => (
+                <div key={c.id} className="flex justify-between items-center text-sm">
+                  <span>{c.name} - Due: {c.dueDate}</span>
+                  <span className="font-bold text-danger">GHS {c.totalOwed.toLocaleString()}</span>
+                </div>
+              ))}
+          </div>
         </div>
       )}
+
+      {/* Filters */}
+      <div className="card">
+        <div className="grid grid-2 gap-md">
+          <div>
+            <label className="form-label">Creditor Type</label>
+            <select
+              value={filterType}
+              onChange={(e) => setFilterType(e.target.value as any)}
+              className="form-control"
+            >
+              <option value="all">All Types</option>
+              <option value="supplier">Suppliers</option>
+              <option value="customer">Customers (Credit)</option>
+            </select>
+          </div>
+          <div>
+            <label className="form-label">Payment Status</label>
+            <select
+              value={filterStatus}
+              onChange={(e) => setFilterStatus(e.target.value as any)}
+              className="form-control"
+            >
+              <option value="all">All Status</option>
+              <option value="current">Current</option>
+              <option value="overdue">Overdue</option>
+              <option value="paid">Paid</option>
+            </select>
+          </div>
+        </div>
+      </div>
+
+      {/* Creditors Table */}
+      <div className="card">
+        <h3 className="text-lg font-bold mb-lg">Creditor Accounts</h3>
+        <table className="table">
+          <thead>
+            <tr>
+              <th>Name</th>
+              <th>Type</th>
+              <th>Contact</th>
+              <th>Total Owed</th>
+              <th>Amount Paid</th>
+              <th>Due Date</th>
+              <th>Status</th>
+              <th>Actions</th>
+            </tr>
+          </thead>
+          <tbody>
+            {filteredCreditors.map((creditor) => (
+              <tr key={creditor.id}>
+                <td className="font-bold">{creditor.name}</td>
+                <td>
+                  <span className="badge badge-info">
+                    {creditor.type === "supplier" ? "Supplier" : "Customer"}
+                  </span>
+                </td>
+                <td>
+                  <div className="text-sm">
+                    <div>{creditor.contactPerson}</div>
+                    <div className="text-text-tertiary">{creditor.phone}</div>
+                  </div>
+                </td>
+                <td className="font-bold">GHS {creditor.totalOwed.toLocaleString()}</td>
+                <td className="font-bold text-success-light">
+                  GHS {creditor.amountPaid.toLocaleString()}
+                </td>
+                <td>{creditor.dueDate}</td>
+                <td>
+                  <span
+                    className={`badge ${
+                      creditor.status === "paid"
+                        ? "badge-success"
+                        : creditor.status === "overdue"
+                        ? "badge-danger"
+                        : "badge-info"
+                    }`}
+                  >
+                    {creditor.status.toUpperCase()}
+                  </span>
+                </td>
+                <td>
+                  <div className="flex gap-sm">
+                    <button className="btn btn-secondary btn-sm">View</button>
+                    {creditor.totalOwed > 0 && (
+                      <button className="btn btn-primary btn-sm">Record Payment</button>
+                    )}
+                  </div>
+                </td>
+              </tr>
+            ))}
+          </tbody>
+        </table>
+      </div>
+
+      {/* Payment Form */}
+      <div className="card">
+        <h3 className="text-lg font-bold mb-lg">Record Payment</h3>
+        <div className="grid grid-3 gap-lg">
+          <div className="form-group">
+            <label className="form-label">Creditor</label>
+            <select className="form-control">
+              <option>Select creditor...</option>
+              {creditorList
+                .filter((c) => c.totalOwed > 0)
+                .map((c) => (
+                  <option key={c.id} value={c.id}>
+                    {c.name} - Owes: GHS {c.totalOwed}
+                  </option>
+                ))}
+            </select>
+          </div>
+          <div className="form-group">
+            <label className="form-label">Amount (GHS)</label>
+            <input type="number" placeholder="0.00" className="form-control" />
+          </div>
+          <div className="form-group">
+            <label className="form-label">Payment Date</label>
+            <input type="date" className="form-control" />
+          </div>
+        </div>
+        <div className="form-group">
+          <label className="form-label">Payment Method</label>
+          <select className="form-control">
+            <option>Cash</option>
+            <option>Bank Transfer</option>
+            <option>MoMo</option>
+            <option>Cheque</option>
+          </select>
+        </div>
+        <div className="flex gap-md justify-end">
+          <button className="btn btn-secondary">Cancel</button>
+          <button className="btn btn-primary">Record Payment</button>
+        </div>
+      </div>
     </div>
   );
 }

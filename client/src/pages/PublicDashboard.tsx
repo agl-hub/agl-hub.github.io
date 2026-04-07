@@ -1,27 +1,44 @@
 import { useEffect, useState } from "react";
 import { BarChart, Bar, PieChart, Pie, Cell, XAxis, YAxis, CartesianGrid, Tooltip, Legend, ResponsiveContainer, LineChart, Line } from "recharts";
-import { trpc } from "@/lib/trpc";
 
 export default function PublicDashboard() {
-  const [token, setToken] = useState<string>("");
+  const [metrics, setMetrics] = useState<any>(null);
+  const [loading, setLoading] = useState(true);
+
   useEffect(() => {
-    const params = new URLSearchParams(window.location.search);
-    setToken(params.get("token") || "");
+    // Simulate fetching public data
+    setTimeout(() => {
+      setMetrics({
+        dailyRevenue: 5800,
+        dailyRevenueTarget: 5000,
+        revenueProgress: 116,
+        mechanicEfficiency: [
+          { mechanicName: "John", efficiency: 92, jobsCompleted: 8 },
+          { mechanicName: "Peter", efficiency: 88, jobsCompleted: 7 },
+          { mechanicName: "Samuel", efficiency: 85, jobsCompleted: 6 },
+        ],
+        bestSellers: {
+          "Oil Change": 15,
+          "Brake Service": 12,
+          "Engine Diagnostics": 8,
+          "Tire Rotation": 10,
+        },
+        actionItems: [
+          {
+            type: "positive",
+            title: "Revenue Target Exceeded",
+            description: "Daily revenue is 16% above target",
+          },
+          {
+            type: "warning",
+            title: "Pending Vehicles",
+            description: "3 vehicles pending completion",
+          },
+        ],
+      });
+      setLoading(false);
+    }, 500);
   }, []);
-
-  const query = trpc.share.publicMetrics.useQuery(
-    { token },
-    { enabled: !!token, refetchInterval: 60_000 },
-  );
-  const loading = !token || query.isLoading;
-  const result = query.data;
-  const error = !token
-    ? "No share token provided. Append ?token=YOUR_TOKEN to the URL."
-    : result && !result.ok
-    ? result.error
-    : null;
-
-  const metrics = result && result.ok ? (result.metrics as any) : null;
 
   if (loading) {
     return (
@@ -34,28 +51,10 @@ export default function PublicDashboard() {
     );
   }
 
-  if (error || !metrics) {
-    return (
-      <div className="flex items-center justify-center min-h-screen bg-bg-primary">
-        <div className="text-center" style={{ padding: 24 }}>
-          <div className="text-4xl font-bold mb-lg">AGL Command Center</div>
-          <div className="text-text-tertiary">{error || "Unable to load dashboard"}</div>
-        </div>
-      </div>
-    );
-  }
-
   const mechanicData = metrics?.mechanicEfficiency || [];
-  const bestSellersArr = Array.isArray(metrics?.bestSellers)
-    ? metrics.bestSellers
-    : Object.entries(metrics?.bestSellers || {}).map(([productName, quantity]: any) => ({
-        productName,
-        quantity,
-        revenue: 0,
-      }));
-  const paymentData = bestSellersArr.map((b: any) => ({
-    name: b.productName,
-    value: b.quantity ?? b.revenue ?? 0,
+  const paymentData = Object.entries(metrics?.bestSellers || {}).map(([name, value]: any) => ({
+    name,
+    value,
   }));
   const colors = ["#E30613", "#16A085", "#F39C12", "#3498DB"];
 
