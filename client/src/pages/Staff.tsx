@@ -1,86 +1,69 @@
-import DashboardNav from "@/components/DashboardNav";
-import StaffTable from "@/components/StaffTable";
-import { trpc } from "@/lib/trpc";
-import { Card } from "@/components/ui/card";
-import { BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, Legend, ResponsiveContainer } from "recharts";
+import { useState, useMemo } from 'react';
+import { getData, fmtGHS } from '../lib/dataStore';
 
 export default function Staff() {
-  const { data: staffData, isLoading } = trpc.staff.listAttendance.useQuery({});
+  const data = getData();
+  const [search, setSearch] = useState('');
 
-  // Calculate late days by staff
-  const lateDaysByStaff = staffData?.reduce((acc: any, record: any) => {
-    const existing = acc.find((item: any) => item.name === record.staffName);
-    if (existing) {
-      existing.lateDays += record.isLate ? 1 : 0;
-      existing.totalDays += 1;
-    } else {
-      acc.push({
-        name: record.staffName,
-        lateDays: record.isLate ? 1 : 0,
-        totalDays: 1,
-      });
-    }
-    return acc;
-  }, []) || [];
+  const staff = useMemo(() => {
+    let list = data.staff;
+    if (search) list = list.filter(s => s.name.toLowerCase().includes(search.toLowerCase()));
+    return list;
+  }, [data.staff, search]);
 
-  // Calculate total hours by staff
-  const hoursByStaff = staffData?.reduce((acc: any, record: any) => {
-    const existing = acc.find((item: any) => item.name === record.staffName);
-    const hours = typeof record.hoursWorked === 'number' ? record.hoursWorked : parseFloat(record.hoursWorked || 0);
-    if (existing) {
-      existing.hours += hours;
-    } else {
-      acc.push({
-        name: record.staffName,
-        hours: hours,
-      });
-    }
-    return acc;
-  }, []) || [];
+  const totalStaff = data.staff.length;
+  const activeToday = data.staff.filter(s => s.clockIn).length;
+  const avgRating = data.staff.length > 0 ? (data.staff.reduce((s, x) => s + x.rating, 0) / data.staff.length).toFixed(1) : '0';
+  const totalSalaries = data.staff.reduce((s, x) => s + x.salary, 0);
 
   return (
-    <div className="flex min-h-screen bg-gray-50">
-      <DashboardNav />
+    <div>
+      <div className="grid grid-4" style={{ marginBottom: '8px' }}>
+        <div className="card kpi-card navy"><div className="kpi-label">Total Staff</div><div className="kpi-value">{totalStaff}</div></div>
+        <div className="card kpi-card green"><div className="kpi-label">Active Today</div><div className="kpi-value">{activeToday}</div></div>
+        <div className="card kpi-card gold"><div className="kpi-label">Avg Rating</div><div className="kpi-value">{avgRating}</div></div>
+        <div className="card kpi-card red"><div className="kpi-label">Payroll</div><div className="kpi-value" style={{ fontSize: '16px' }}>{fmtGHS(totalSalaries)}</div></div>
+      </div>
 
-      <main className="flex-1 p-4 md:p-8">
-        <div className="max-w-7xl mx-auto">
-          <h1 className="text-4xl font-bold text-slate-900 mb-8">Staff Management</h1>
+      <div style={{ marginBottom: '8px' }}>
+        <input className="form-control" placeholder="Search staff..." value={search} onChange={e => setSearch(e.target.value)} />
+      </div>
 
-          {/* Charts */}
-          <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 mb-8">
-            <Card className="p-6">
-              <h2 className="text-xl font-bold text-slate-900 mb-4">Late Days by Staff</h2>
-              <ResponsiveContainer width="100%" height={300}>
-                <BarChart data={lateDaysByStaff}>
-                  <CartesianGrid strokeDasharray="3 3" />
-                  <XAxis dataKey="name" />
-                  <YAxis />
-                  <Tooltip />
-                  <Legend />
-                  <Bar dataKey="lateDays" fill="#ef4444" name="Late Days" />
-                  <Bar dataKey="totalDays" fill="#10b981" name="Total Days" />
-                </BarChart>
-              </ResponsiveContainer>
-            </Card>
-
-            <Card className="p-6">
-              <h2 className="text-xl font-bold text-slate-900 mb-4">Total Hours Worked</h2>
-              <ResponsiveContainer width="100%" height={300}>
-                <BarChart data={hoursByStaff}>
-                  <CartesianGrid strokeDasharray="3 3" />
-                  <XAxis dataKey="name" />
-                  <YAxis />
-                  <Tooltip />
-                  <Bar dataKey="hours" fill="#3b82f6" />
-                </BarChart>
-              </ResponsiveContainer>
-            </Card>
-          </div>
-
-          {/* Staff Table */}
-          <StaffTable data={staffData || []} isLoading={isLoading} />
+      <div className="card" style={{ padding: '10px' }}>
+        <div style={{ overflowX: 'auto' }}>
+          <table>
+            <thead>
+              <tr><th>Name</th><th>Role</th><th>Department</th><th>Phone</th><th>Clock In</th><th>Clock Out</th><th>Status</th><th>Rating</th><th>Salary</th></tr>
+            </thead>
+            <tbody>
+              {staff.map(s => (
+                <tr key={s.id}>
+                  <td>
+                    <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+                      <div className="staff-avatar">{s.name.charAt(0)}</div>
+                      <span style={{ fontWeight: 600 }}>{s.name}</span>
+                    </div>
+                  </td>
+                  <td>{s.role}</td>
+                  <td>{s.department}</td>
+                  <td style={{ fontSize: '9px' }}>{s.phone}</td>
+                  <td style={{ color: s.clockIn ? '#1ABC9C' : 'var(--text-muted)' }}>{s.clockIn || '\u2014'}</td>
+                  <td style={{ color: s.clockOut ? '#F39C12' : 'var(--text-muted)' }}>{s.clockOut || '\u2014'}</td>
+                  <td><span className={`status-badge ${s.clockIn && !s.clockOut ? 'status-completed' : s.clockOut ? 'status-progress' : 'status-awaiting'}`}>{s.clockIn && !s.clockOut ? 'Active' : s.clockOut ? 'Clocked Out' : 'Absent'}</span></td>
+                  <td>
+                    <div style={{ display: 'flex', gap: '1px' }}>
+                      {[1, 2, 3, 4, 5].map(star => (
+                        <span key={star} style={{ color: star <= s.rating ? '#F39C12' : 'rgba(255,255,255,0.1)', fontSize: '10px' }}>{'\u2605'}</span>
+                      ))}
+                    </div>
+                  </td>
+                  <td style={{ fontWeight: 600 }}>{fmtGHS(s.salary)}</td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
         </div>
-      </main>
+      </div>
     </div>
   );
 }

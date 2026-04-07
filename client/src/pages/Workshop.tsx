@@ -1,80 +1,155 @@
+<<<<<<< Updated upstream
 import DashboardNav from "@/components/DashboardNav";
 import WorkshopTable from "@/components/WorkshopTable";
 import LiveInsightsBanner from "@/components/LiveInsightsBanner";
 import { trpc } from "@/lib/trpc";
 import { Card } from "@/components/ui/card";
 import { BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, Legend, ResponsiveContainer } from "recharts";
+=======
+import { useState, useMemo, useEffect, useRef } from 'react';
+import { getData, updateData, fmtGHS } from '../lib/dataStore';
+import { useLayout } from '../components/MainLayout';
+
+declare const Chart: any;
+>>>>>>> Stashed changes
 
 export default function Workshop() {
-  const { data: workshopData, isLoading } = trpc.workshop.list.useQuery({});
+  const { showToast, openSlidePanel } = useLayout();
+  const data = getData();
+  const chartRef = useRef<HTMLCanvasElement>(null);
+  const chartInst = useRef<any>(null);
+  const [refresh, setRefresh] = useState(0);
 
-  // Calculate jobs by mechanic
-  const jobsByMechanic = workshopData?.reduce((acc: any, job: any) => {
-    const mechanics = job.mechanics.split(",").map((m: string) => m.trim());
-    mechanics.forEach((mechanic: string) => {
-      const existing = acc.find((item: any) => item.name === mechanic);
-      if (existing) {
-        existing.jobs += 1;
-      } else {
-        acc.push({ name: mechanic, jobs: 1 });
-      }
+  const jobs = useMemo(() => [...data.workshop].sort((a, b) => b.date.localeCompare(a.date)), [data.workshop, refresh]);
+
+  const queued = jobs.filter(j => j.status === 'Queued').length;
+  const inProgress = jobs.filter(j => j.status === 'In Progress').length;
+  const awaiting = jobs.filter(j => j.status === 'Awaiting Parts').length;
+  const completed = jobs.filter(j => j.status === 'Completed').length;
+  const totalEstCost = jobs.reduce((s, j) => s + j.estCost, 0);
+
+  useEffect(() => {
+    if (typeof Chart === 'undefined' || !chartRef.current) return;
+    chartInst.current?.destroy();
+    const mechMap: Record<string, number> = {};
+    jobs.forEach(j => { mechMap[j.mechanic] = (mechMap[j.mechanic] || 0) + 1; });
+    chartInst.current = new Chart(chartRef.current, {
+      type: 'bar',
+      data: { labels: Object.keys(mechMap), datasets: [{ data: Object.values(mechMap), backgroundColor: ['#E30613','#16A085','#F39C12','#3B82F6'], borderRadius: 4 }] },
+      options: { responsive: true, maintainAspectRatio: false, plugins: { legend: { display: false } }, scales: { x: { ticks: { color: '#718096', font: { size: 9 } }, grid: { color: 'rgba(255,255,255,0.03)' } }, y: { ticks: { color: '#718096', font: { size: 9 } }, grid: { color: 'rgba(255,255,255,0.03)' } } } },
     });
-    return acc;
-  }, []) || [];
+    return () => { chartInst.current?.destroy(); };
+  }, [jobs]);
 
-  // Calculate jobs by status
-  const jobsByStatus = workshopData?.reduce((acc: any, job: any) => {
-    const existing = acc.find((item: any) => item.status === job.status);
-    if (existing) {
-      existing.count += 1;
-    } else {
-      acc.push({ status: job.status, count: 1 });
-    }
-    return acc;
-  }, []) || [];
+  const statusColor = (s: string) => {
+    if (s === 'Queued') return 'status-queued';
+    if (s === 'In Progress') return 'status-progress';
+    if (s === 'Awaiting Parts') return 'status-awaiting';
+    if (s === 'Completed') return 'status-completed';
+    return '';
+  };
 
-  return (
-    <div className="flex min-h-screen bg-gray-50">
-      <DashboardNav />
+  const openNewJobForm = () => {
+    openSlidePanel('New Workshop Job', (
+      <div style={{ color: 'var(--text)' }}>
+        <div className="form-group"><label className="form-label">Vehicle Reg</label><input className="form-control" placeholder="GR-1234-24" id="ws-reg" /></div>
+        <div className="form-group"><label className="form-label">Car</label><input className="form-control" placeholder="Toyota Camry" id="ws-car" /></div>
+        <div className="form-group"><label className="form-label">Owner</label><input className="form-control" placeholder="Customer name" id="ws-owner" /></div>
+        <div className="form-group"><label className="form-label">Job Description</label><input className="form-control" placeholder="Full service, brake repair..." id="ws-job" /></div>
+        <div className="form-group"><label className="form-label">Mechanic</label>
+          <select className="form-control" id="ws-mech">{['Appiah','Kojo','Fatawu','Chris'].map(m => <option key={m}>{m}</option>)}</select>
+        </div>
+        <div className="form-group"><label className="form-label">Est. Cost (GHS)</label><input type="number" className="form-control" placeholder="0" id="ws-cost" /></div>
+        <button className="btn btn-primary" style={{ marginTop: '12px' }} onClick={() => {
+          const reg = (document.getElementById('ws-reg') as HTMLInputElement)?.value;
+          const car = (document.getElementById('ws-car') as HTMLInputElement)?.value;
+          const owner = (document.getElementById('ws-owner') as HTMLInputElement)?.value;
+          const job = (document.getElementById('ws-job') as HTMLInputElement)?.value;
+          const mech = (document.getElementById('ws-mech') as HTMLSelectElement)?.value;
+          const cost = parseFloat((document.getElementById('ws-cost') as HTMLInputElement)?.value) || 0;
+          if (!reg || !job) { showToast('Please fill in Vehicle Reg and Job', 'error'); return; }
+          updateData(d => {
+            d.workshop.push({ id: `w_${Date.now()}`, date: new Date().toISOString().slice(0, 10), reg, car, owner, job, mechanic: mech, status: 'Queued', estCost: cost, notes: '' });
+          });
+          showToast(`Workshop job added: ${reg}`, 'success');
+          setRefresh(r => r + 1);
+        }}>Add Job</button>
+      </div>
+    ));
+  };
 
+<<<<<<< Updated upstream
       <main className="flex-1 p-4 md:p-8">
         <div className="max-w-7xl mx-auto">
           <h1 className="text-4xl font-bold text-slate-900 mb-8">Workshop Management</h1>
           <LiveInsightsBanner categories={["workshop"]} />
+=======
+  return (
+    <div>
+      <div className="grid grid-5" style={{ marginBottom: '8px' }}>
+        <div className="card kpi-card amber"><div className="kpi-label">Queued</div><div className="kpi-value">{queued}</div></div>
+        <div className="card kpi-card green"><div className="kpi-label">In Progress</div><div className="kpi-value">{inProgress}</div></div>
+        <div className="card kpi-card gold"><div className="kpi-label">Awaiting Parts</div><div className="kpi-value">{awaiting}</div></div>
+        <div className="card kpi-card navy"><div className="kpi-label">Completed</div><div className="kpi-value">{completed}</div></div>
+        <div className="card kpi-card red"><div className="kpi-label">Total Est. Cost</div><div className="kpi-value">{fmtGHS(totalEstCost)}</div></div>
+      </div>
+>>>>>>> Stashed changes
 
-          {/* Charts */}
-          <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 mb-8">
-            <Card className="p-6">
-              <h2 className="text-xl font-bold text-slate-900 mb-4">Jobs by Mechanic</h2>
-              <ResponsiveContainer width="100%" height={300}>
-                <BarChart data={jobsByMechanic}>
-                  <CartesianGrid strokeDasharray="3 3" />
-                  <XAxis dataKey="name" />
-                  <YAxis />
-                  <Tooltip />
-                  <Bar dataKey="jobs" fill="#10b981" />
-                </BarChart>
-              </ResponsiveContainer>
-            </Card>
+      <div style={{ marginBottom: '8px' }}>
+        <button className="btn btn-primary" onClick={openNewJobForm}>+ New Workshop Job</button>
+      </div>
 
-            <Card className="p-6">
-              <h2 className="text-xl font-bold text-slate-900 mb-4">Jobs by Status</h2>
-              <ResponsiveContainer width="100%" height={300}>
-                <BarChart data={jobsByStatus}>
-                  <CartesianGrid strokeDasharray="3 3" />
-                  <XAxis dataKey="status" />
-                  <YAxis />
-                  <Tooltip />
-                  <Bar dataKey="count" fill="#3b82f6" />
-                </BarChart>
-              </ResponsiveContainer>
-            </Card>
+      <div className="grid" style={{ gridTemplateColumns: '2fr 1fr', marginBottom: '8px' }}>
+        <div>
+          <h3 style={{ color: '#fff', marginBottom: '8px' }}>Active Jobs</h3>
+          <div className="grid grid-2">
+            {jobs.filter(j => j.status !== 'Completed').map(j => (
+              <div key={j.id} className="vehicle-card">
+                <div className="vc-header">
+                  <span className="vc-reg">{j.reg}</span>
+                  <span className={`status-badge ${statusColor(j.status)}`}>{j.status}</span>
+                </div>
+                <div className="vc-info">{j.car} &mdash; {j.owner}</div>
+                <div className="vc-mechanic">{'\u{1F527}'} {j.mechanic}</div>
+                <div className="vc-job">{j.job}</div>
+                <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginTop: '4px' }}>
+                  <span style={{ fontSize: '11px', color: 'var(--text-dim)' }}>{j.date}</span>
+                  <span style={{ fontFamily: 'Rajdhani', fontWeight: 700, color: '#1ABC9C' }}>{fmtGHS(j.estCost)}</span>
+                </div>
+                <div style={{ display: 'flex', gap: '4px', marginTop: '6px' }}>
+                  {j.status === 'Queued' && <button className="btn btn-xs btn-success" onClick={() => { updateData(d => { const f = d.workshop.find(w => w.id === j.id); if (f) f.status = 'In Progress'; }); setRefresh(r => r + 1); showToast(`${j.reg} started`, 'success'); }}>Start</button>}
+                  {j.status === 'In Progress' && <button className="btn btn-xs btn-primary" onClick={() => { updateData(d => { const f = d.workshop.find(w => w.id === j.id); if (f) f.status = 'Completed'; }); setRefresh(r => r + 1); showToast(`${j.reg} completed`, 'success'); }}>Complete</button>}
+                  {j.status === 'In Progress' && <button className="btn btn-xs btn-amber" onClick={() => { updateData(d => { const f = d.workshop.find(w => w.id === j.id); if (f) f.status = 'Awaiting Parts'; }); setRefresh(r => r + 1); showToast(`${j.reg} awaiting parts`, 'info'); }}>Await Parts</button>}
+                  {j.status === 'Awaiting Parts' && <button className="btn btn-xs btn-success" onClick={() => { updateData(d => { const f = d.workshop.find(w => w.id === j.id); if (f) f.status = 'In Progress'; }); setRefresh(r => r + 1); showToast(`${j.reg} resumed`, 'success'); }}>Resume</button>}
+                </div>
+              </div>
+            ))}
           </div>
-
-          {/* Workshop Table */}
-          <WorkshopTable data={workshopData || []} isLoading={isLoading} />
         </div>
-      </main>
+        <div className="card chart-card">
+          <h4>Mechanic Workload</h4>
+          <div className="chart-container"><canvas ref={chartRef} /></div>
+        </div>
+      </div>
+
+      <div className="card" style={{ padding: '10px' }}>
+        <h3 style={{ color: '#fff', marginBottom: '8px' }}>Completed Jobs</h3>
+        <div style={{ overflowX: 'auto' }}>
+          <table>
+            <thead><tr><th>Date</th><th>Reg</th><th>Car</th><th>Owner</th><th>Job</th><th>Mechanic</th><th>Cost</th><th>Status</th></tr></thead>
+            <tbody>
+              {jobs.filter(j => j.status === 'Completed').map(j => (
+                <tr key={j.id}>
+                  <td>{j.date}</td><td style={{ fontWeight: 600 }}>{j.reg}</td><td>{j.car}</td><td>{j.owner}</td>
+                  <td>{j.job}</td><td style={{ color: '#F39C12' }}>{j.mechanic}</td>
+                  <td style={{ color: '#1ABC9C', fontWeight: 600 }}>{fmtGHS(j.estCost)}</td>
+                  <td><span className="status-badge status-completed">Completed</span></td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
+        </div>
+      </div>
     </div>
   );
 }

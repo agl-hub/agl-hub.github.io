@@ -1,6 +1,6 @@
 import { Toaster } from "@/components/ui/sonner";
 import { TooltipProvider } from "@/components/ui/tooltip";
-import { Route, Switch, useLocation } from "wouter";
+import { Route, Switch } from "wouter";
 import ErrorBoundary from "./components/ErrorBoundary";
 import { ThemeProvider } from "./contexts/ThemeContext";
 import { AccessProvider } from "./contexts/AccessContext";
@@ -19,10 +19,8 @@ import Inventory from "./pages/Inventory";
 import Reports from "./pages/Reports";
 import Creditors from "./pages/Creditors";
 import GoogleSheets from "./pages/GoogleSheets";
-import Chat from "./pages/Chat";
-import DataImport from "./pages/DataImport";
-import PublicDashboard from "./pages/PublicDashboard";
 import MechanicTracker from "./pages/MechanicTracker";
+<<<<<<< Updated upstream
 import AuditLog from "./pages/AuditLog";
 import Settings from "./pages/Settings";
 import ShareLinks from "./pages/ShareLinks";
@@ -41,6 +39,13 @@ function Router() {
     );
   }
 
+=======
+import MonthlyReport from "./pages/MonthlyReport";
+import StaffClockIn from "./pages/StaffClockIn";
+import ProjectBoard from "./pages/ProjectBoard";
+
+function Router() {
+>>>>>>> Stashed changes
   return (
     <MainLayout>
       <Switch>
@@ -48,6 +53,7 @@ function Router() {
         <Route path="/entry" component={DailyEntry} />
         <Route path="/workshop" component={Workshop} />
         <Route path="/sales" component={Sales} />
+        <Route path="/monthly" component={MonthlyReport} />
         <Route path="/mechanics" component={MechanicTracker} />
         <Route path="/finance" component={Finances} />
         <Route path="/kanban" component={Kanban} />
@@ -58,11 +64,17 @@ function Router() {
         <Route path="/reports" component={Reports} />
         <Route path="/creditors" component={Creditors} />
         <Route path="/sheets" component={GoogleSheets} />
+<<<<<<< Updated upstream
         <Route path="/chat" component={Chat} />
         <Route path="/import" component={DataImport} />
         <Route path="/audit" component={AuditLog} />
         <Route path="/settings" component={Settings} />
         <Route path="/share" component={ShareLinks} />
+=======
+        <Route path="/staff" component={Staff} />
+        <Route path="/staff-clockin" component={StaffClockIn} />
+        <Route path="/project-board" component={ProjectBoard} />
+>>>>>>> Stashed changes
         <Route path="/" component={NewDashboardPage} />
       </Switch>
     </MainLayout>

@@ -1,213 +1,100 @@
-import { useState } from "react";
+import { useState, useMemo } from 'react';
+import { getData, updateData } from '../lib/dataStore';
+import { useLayout } from '../components/MainLayout';
 
-interface Task {
-  id: string;
-  title: string;
-  description: string;
-  priority: "high" | "medium" | "low";
-  assignee: string;
-  dueDate: string;
-}
-
-interface Column {
-  id: string;
-  title: string;
-  tasks: Task[];
-}
-
-const initialColumns: Column[] = [
-  {
-    id: "todo",
-    title: "To Do",
-    tasks: [
-      {
-        id: "1",
-        title: "Engine Diagnostics",
-        description: "Complete engine scan for GN 123-45",
-        priority: "high",
-        assignee: "John",
-        dueDate: "2026-04-06",
-      },
-      {
-        id: "2",
-        title: "Parts Inventory Check",
-        description: "Verify stock levels",
-        priority: "medium",
-        assignee: "Peter",
-        dueDate: "2026-04-07",
-      },
-    ],
-  },
-  {
-    id: "in-progress",
-    title: "In Progress",
-    tasks: [
-      {
-        id: "3",
-        title: "Brake Pad Replacement",
-        description: "Replace front brake pads - GN 456-78",
-        priority: "high",
-        assignee: "Samuel",
-        dueDate: "2026-04-05",
-      },
-    ],
-  },
-  {
-    id: "review",
-    title: "Review",
-    tasks: [
-      {
-        id: "4",
-        title: "Quality Check - Oil Change",
-        description: "Verify oil change completion",
-        priority: "medium",
-        assignee: "John",
-        dueDate: "2026-04-05",
-      },
-    ],
-  },
-  {
-    id: "done",
-    title: "Done",
-    tasks: [
-      {
-        id: "5",
-        title: "Tire Rotation",
-        description: "Completed tire rotation - GN 789-01",
-        priority: "low",
-        assignee: "Peter",
-        dueDate: "2026-04-04",
-      },
-    ],
-  },
-];
-
-const priorityColors = {
-  high: "border-l-4 border-danger",
-  medium: "border-l-4 border-warning",
-  low: "border-l-4 border-success",
-};
+const COLUMNS = ['To Do', 'In Progress', 'Review', 'Done'];
+const COL_COLORS: Record<string, string> = { 'To Do': '#3B82F6', 'In Progress': '#F39C12', 'Review': '#8B5CF6', 'Done': '#1ABC9C' };
 
 export default function Kanban() {
-  const [columns, setColumns] = useState(initialColumns);
-  const [newTaskTitle, setNewTaskTitle] = useState("");
-  const [selectedColumn, setSelectedColumn] = useState("todo");
+  const { showToast, openSlidePanel } = useLayout();
+  const data = getData();
+  const [refresh, setRefresh] = useState(0);
+  const [dragItem, setDragItem] = useState<string | null>(null);
 
-  const handleAddTask = (e: React.FormEvent) => {
-    e.preventDefault();
-    if (!newTaskTitle.trim()) return;
+  const tasks = useMemo(() => data.kanban, [data.kanban, refresh]);
 
-    const newTask: Task = {
-      id: Date.now().toString(),
-      title: newTaskTitle,
-      description: "",
-      priority: "medium",
-      assignee: "Unassigned",
-      dueDate: new Date().toISOString().split("T")[0],
-    };
-
-    setColumns((prev) =>
-      prev.map((col) =>
-        col.id === selectedColumn
-          ? { ...col, tasks: [...col.tasks, newTask] }
-          : col
-      )
-    );
-
-    setNewTaskTitle("");
+  const addTask = () => {
+    openSlidePanel('New Task', (
+      <div style={{ color: 'var(--text)' }}>
+        <div className="form-group"><label className="form-label">Title</label><input className="form-control" id="task-title" placeholder="Task title" /></div>
+        <div className="form-group"><label className="form-label">Description</label><input className="form-control" id="task-desc" placeholder="Description" /></div>
+        <div className="form-group"><label className="form-label">Assignee</label><input className="form-control" id="task-assign" placeholder="Assignee" /></div>
+        <div className="form-group"><label className="form-label">Priority</label>
+          <select className="form-control" id="task-prio"><option>Low</option><option>Medium</option><option>High</option></select>
+        </div>
+        <button className="btn btn-primary" style={{ marginTop: '12px' }} onClick={() => {
+          const title = (document.getElementById('task-title') as HTMLInputElement)?.value;
+          const desc = (document.getElementById('task-desc') as HTMLInputElement)?.value;
+          const assignee = (document.getElementById('task-assign') as HTMLInputElement)?.value;
+          const priority = (document.getElementById('task-prio') as HTMLSelectElement)?.value;
+          if (!title) { showToast('Title is required', 'error'); return; }
+          updateData(d => {
+            d.kanban.push({ id: `k_${Date.now()}`, title, desc, assignee, priority, column: 'To Do', created: new Date().toISOString().slice(0, 10) });
+          });
+          showToast(`Task added: ${title}`, 'success');
+          setRefresh(r => r + 1);
+        }}>Add Task</button>
+      </div>
+    ));
   };
 
+  const handleDrop = (col: string) => {
+    if (!dragItem) return;
+    updateData(d => {
+      const task = d.kanban.find(t => t.id === dragItem);
+      if (task) task.column = col;
+    });
+    setDragItem(null);
+    setRefresh(r => r + 1);
+    showToast(`Task moved to ${col}`, 'info');
+  };
+
+  const totalTasks = tasks.length;
+  const doneTasks = tasks.filter(t => t.column === 'Done').length;
+  const inProgress = tasks.filter(t => t.column === 'In Progress').length;
+  const highPriority = tasks.filter(t => t.priority === 'High' && t.column !== 'Done').length;
+
   return (
-    <div className="flex flex-col gap-lg">
-      {/* Add Task Form */}
-      <div className="card">
-        <h2 className="text-2xl font-bold mb-lg">Project Board</h2>
-
-        <form onSubmit={handleAddTask} className="flex gap-md">
-          <select
-            value={selectedColumn}
-            onChange={(e) => setSelectedColumn(e.target.value)}
-            className="form-control max-w-xs"
-          >
-            {columns.map((col) => (
-              <option key={col.id} value={col.id}>
-                {col.title}
-              </option>
-            ))}
-          </select>
-
-          <input
-            type="text"
-            value={newTaskTitle}
-            onChange={(e) => setNewTaskTitle(e.target.value)}
-            placeholder="Add new task..."
-            className="form-control flex-1"
-          />
-
-          <button type="submit" className="btn btn-primary">
-            Add Task
-          </button>
-        </form>
+    <div>
+      <div className="grid grid-4" style={{ marginBottom: '8px' }}>
+        <div className="card kpi-card navy"><div className="kpi-label">Total Tasks</div><div className="kpi-value">{totalTasks}</div></div>
+        <div className="card kpi-card green"><div className="kpi-label">Completed</div><div className="kpi-value">{doneTasks}</div></div>
+        <div className="card kpi-card gold"><div className="kpi-label">In Progress</div><div className="kpi-value">{inProgress}</div></div>
+        <div className="card kpi-card red"><div className="kpi-label">High Priority</div><div className="kpi-value">{highPriority}</div></div>
       </div>
 
-      {/* Kanban Board */}
-      <div className="grid grid-4 gap-md">
-        {columns.map((column) => (
-          <div key={column.id} className="flex flex-col gap-md">
-            <div className="flex justify-between items-center">
-              <h3 className="font-bold text-lg">{column.title}</h3>
-              <span className="badge badge-primary">{column.tasks.length}</span>
-            </div>
+      <div style={{ marginBottom: '8px' }}><button className="btn btn-primary" onClick={addTask}>+ New Task</button></div>
 
-            <div className="flex flex-col gap-md">
-              {column.tasks.map((task) => (
-                <div
-                  key={task.id}
-                  className={`card card-compact cursor-move hover:shadow-md transition-all ${
-                    priorityColors[task.priority]
-                  }`}
+      <div style={{ display: 'grid', gridTemplateColumns: 'repeat(4, 1fr)', gap: '8px' }}>
+        {COLUMNS.map(col => {
+          const colTasks = tasks.filter(t => t.column === col);
+          return (
+            <div key={col}
+              onDragOver={e => e.preventDefault()}
+              onDrop={() => handleDrop(col)}
+              style={{ background: 'rgba(255,255,255,0.02)', borderRadius: 'var(--radius-sm)', padding: '8px', minHeight: '300px', border: '1px solid rgba(255,255,255,0.04)' }}
+            >
+              <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '8px', paddingBottom: '6px', borderBottom: `2px solid ${COL_COLORS[col]}` }}>
+                <span style={{ fontWeight: 700, fontSize: '11px', color: COL_COLORS[col], fontFamily: 'Rajdhani' }}>{col.toUpperCase()}</span>
+                <span style={{ fontSize: '9px', background: 'rgba(255,255,255,0.05)', padding: '1px 6px', borderRadius: '8px', color: 'var(--text-dim)' }}>{colTasks.length}</span>
+              </div>
+              {colTasks.map(task => (
+                <div key={task.id}
+                  draggable
+                  onDragStart={() => setDragItem(task.id)}
+                  style={{ background: 'rgba(255,255,255,0.03)', borderRadius: 'var(--radius-sm)', padding: '8px', marginBottom: '6px', cursor: 'grab', borderLeft: `3px solid ${task.priority === 'High' ? '#E30613' : task.priority === 'Medium' ? '#F39C12' : '#1ABC9C'}`, transition: 'transform 0.15s' }}
                 >
-                  <h4 className="font-bold text-sm mb-sm">{task.title}</h4>
-                  <p className="text-xs text-text-tertiary mb-md">
-                    {task.description}
-                  </p>
-
-                  <div className="flex justify-between items-center text-xs">
-                    <div className="flex gap-sm">
-                      <span
-                        className={`badge ${
-                          task.priority === "high"
-                            ? "badge-danger"
-                            : task.priority === "medium"
-                            ? "badge-warning"
-                            : "badge-success"
-                        }`}
-                      >
-                        {task.priority.toUpperCase()}
-                      </span>
-                    </div>
-                    <span className="text-text-muted">{task.dueDate}</span>
-                  </div>
-
-                  <div className="mt-md pt-md border-t border-border-light flex items-center gap-sm">
-                    <div className="w-6 h-6 bg-primary/20 rounded-full flex items-center justify-center text-xs font-bold text-primary-light">
-                      {task.assignee.charAt(0)}
-                    </div>
-                    <span className="text-xs text-text-tertiary">
-                      {task.assignee}
-                    </span>
+                  <div style={{ fontSize: '10px', fontWeight: 600, color: '#fff', marginBottom: '3px' }}>{task.title}</div>
+                  <div style={{ fontSize: '8px', color: 'var(--text-dim)', marginBottom: '4px' }}>{task.desc}</div>
+                  <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+                    <span style={{ fontSize: '8px', color: 'var(--text-muted)' }}>{task.assignee}</span>
+                    <span style={{ fontSize: '7px', padding: '1px 4px', borderRadius: '3px', background: task.priority === 'High' ? 'rgba(227,6,19,0.15)' : task.priority === 'Medium' ? 'rgba(243,156,18,0.15)' : 'rgba(26,188,156,0.15)', color: task.priority === 'High' ? '#FF2D3A' : task.priority === 'Medium' ? '#F39C12' : '#1ABC9C', fontWeight: 600 }}>{task.priority}</span>
                   </div>
                 </div>
               ))}
-
-              {column.tasks.length === 0 && (
-                <div className="card card-compact text-center py-lg">
-                  <p className="text-text-muted text-sm">No tasks</p>
-                </div>
-              )}
             </div>
-          </div>
-        ))}
+          );
+        })}
       </div>
     </div>
   );
