@@ -14,15 +14,41 @@ export interface Insight {
   action?: string;
 }
 
+export interface TrendPoint {
+  label: string; // e.g. "2026-04-01"
+  value: number;
+}
+
+export interface TrendSeries {
+  name: string;
+  points: TrendPoint[];
+  deltaPct: number; // % change vs previous period
+  direction: "up" | "down" | "flat";
+}
+
+export interface PerformanceAlert {
+  id: string;
+  severity: "critical" | "warning" | "info";
+  category: "finance" | "workshop" | "staff" | "inventory" | "sales";
+  title: string;
+  detail: string;
+  metric?: number;
+  recommendedAction?: string;
+}
+
 export interface BusinessMetrics {
   dailyRevenueTarget: number;
   dailyRevenue: number;
   revenueProgress: number;
+  monthlyRevenueTarget: number;
+  monthlyRevenueActual: number;
+  monthlyProgressPct: number;
   mechanicEfficiency: {
     mechanicName: string;
     jobsCompleted: number;
     avgTimePerJob: number;
     efficiency: number; // percentage
+    score5Star: number; // 0-5
   }[];
   vehicleTurnaroundTime: {
     average: number; // in hours
@@ -34,7 +60,20 @@ export interface BusinessMetrics {
     revenue: number;
     trend: "up" | "down";
   }[];
+  trends: {
+    revenue: TrendSeries;
+    expenses: TrendSeries;
+    sales: TrendSeries;
+  };
+  alerts: PerformanceAlert[];
   actionItems: Insight[];
+}
+
+export interface InsightConfig {
+  dailyRevenueTarget?: number; // default 5,000 GHS
+  monthlyRevenueTarget?: number; // default 50,000 GHS per todo
+  lowStockThreshold?: number; // default 5
+  overdueJobHours?: number; // default 72
 }
 
 /**
@@ -150,7 +189,7 @@ export function generateInsights(data: any): Insight[] {
 export function calculateMechanicEfficiency(
   mechanicData: any[],
   jobData: any[]
-): BusinessMetrics["mechanicEfficiency"] {
+): { mechanicName: string; jobsCompleted: number; avgTimePerJob: number; efficiency: number }[] {
   return mechanicData.map((mechanic) => {
     const mechanicJobs = jobData.filter((job) => job.mechanicName === mechanic.name);
     const completedJobs = mechanicJobs.filter((job) => job.status === "Completed");
@@ -256,32 +295,206 @@ export function calculateRevenueProgress(
 }
 
 /**
+ * Build a daily trend series for a numeric field over a window of days
+ */
+export function buildDailyTrend(
+  rows: any[],
+  dateField: string,
+  amountField: string,
+  windowDays = 14,
+  name = "series",
+): TrendSeries {
+  const today = new Date();
+  const buckets: Record<string, number> = {};
+  for (let i = windowDays - 1; i >= 0; i--) {
+    const d = new Date(today);
+    d.setDate(today.getDate() - i);
+    buckets[d.toISOString().slice(0, 10)] = 0;
+  }
+  for (const row of rows || []) {
+    const raw = row?.[dateField];
+    if (!raw) continue;
+    const key = String(raw).slice(0, 10);
+    if (key in buckets) {
+      buckets[key] += parseFloat(row?.[amountField]) || 0;
+    }
+  }
+  const points: TrendPoint[] = Object.entries(buckets).map(([label, value]) => ({
+    label,
+    value: Math.round(value * 100) / 100,
+  }));
+
+  // delta: last half vs first half
+  const half = Math.floor(points.length / 2);
+  const first = points.slice(0, half).reduce((s, p) => s + p.value, 0);
+  const last = points.slice(half).reduce((s, p) => s + p.value, 0);
+  const deltaPct = first === 0 ? (last > 0 ? 100 : 0) : Math.round(((last - first) / first) * 100);
+  const direction: "up" | "down" | "flat" =
+    Math.abs(deltaPct) < 2 ? "flat" : deltaPct > 0 ? "up" : "down";
+
+  return { name, points, deltaPct, direction };
+}
+
+/**
+ * Generate alerts from operational data
+ */
+export function generateAlerts(data: any, config: Required<InsightConfig>): PerformanceAlert[] {
+  const alerts: PerformanceAlert[] = [];
+  const now = Date.now();
+
+  // Workshop: jobs open longer than overdueJobHours
+  for (const job of data.workshop || []) {
+    if (job.status && String(job.status).toLowerCase() !== "completed") {
+      const intake = job.intakeDate ? new Date(job.intakeDate).getTime() : null;
+      if (intake && (now - intake) / 36e5 > config.overdueJobHours) {
+        alerts.push({
+          id: `overdue-${job.vehicleReg || job.id || Math.random()}`,
+          severity: "warning",
+          category: "workshop",
+          title: `Job overdue: ${job.vehicleReg || "vehicle"}`,
+          detail: `Open for >${config.overdueJobHours}h. Mechanic: ${job.mechanicName || "unassigned"}`,
+          recommendedAction: "Escalate or reassign",
+        });
+      }
+    }
+  }
+
+  // Inventory: low stock
+  for (const item of data.inventory || []) {
+    const qty = parseFloat(item.quantity ?? item.stock) || 0;
+    if (qty <= config.lowStockThreshold) {
+      alerts.push({
+        id: `lowstock-${item.sku || item.name}`,
+        severity: qty <= 0 ? "critical" : "warning",
+        category: "inventory",
+        title: `Low stock: ${item.name || item.sku}`,
+        detail: `Only ${qty} left (threshold ${config.lowStockThreshold})`,
+        metric: qty,
+        recommendedAction: "Raise purchase order",
+      });
+    }
+  }
+
+  // Staff: chronic lateness (>3 lates in current dataset)
+  const lateCount: Record<string, number> = {};
+  for (const r of data.staff || []) {
+    if (r.status && String(r.status).toLowerCase() === "late") {
+      const k = r.name || r.staffName || "unknown";
+      lateCount[k] = (lateCount[k] || 0) + 1;
+    }
+  }
+  for (const [name, count] of Object.entries(lateCount)) {
+    if (count >= 3) {
+      alerts.push({
+        id: `late-${name}`,
+        severity: "warning",
+        category: "staff",
+        title: `Chronic lateness: ${name}`,
+        detail: `${count} late arrivals in current period`,
+        metric: count,
+        recommendedAction: "HR review",
+      });
+    }
+  }
+
+  // Finance: expenses > 70% of revenue today
+  const todayKey = new Date().toISOString().slice(0, 10);
+  const todayRevenue = (data.sales || [])
+    .filter((s: any) => String(s.date || "").slice(0, 10) === todayKey)
+    .reduce((sum: number, s: any) => sum + (parseFloat(s.amount) || 0), 0);
+  const todayExpenses = (data.expenses || [])
+    .filter((e: any) => String(e.date || "").slice(0, 10) === todayKey)
+    .reduce((sum: number, e: any) => sum + (parseFloat(e.amount) || 0), 0);
+  if (todayRevenue > 0 && todayExpenses / todayRevenue > 0.7) {
+    alerts.push({
+      id: "expense-ratio",
+      severity: "critical",
+      category: "finance",
+      title: "Expense ratio above 70%",
+      detail: `Expenses GHS ${todayExpenses.toFixed(0)} vs revenue GHS ${todayRevenue.toFixed(0)}`,
+      metric: Math.round((todayExpenses / todayRevenue) * 100),
+      recommendedAction: "Review variable costs",
+    });
+  }
+
+  return alerts;
+}
+
+/**
+ * Compute 5-star score for a mechanic from efficiency + recalls + jobs
+ */
+export function scoreMechanic(eff: number, recalls: number, jobs: number): number {
+  if (jobs === 0) return 0;
+  const effScore = Math.min(eff / 100, 1) * 3; // 0-3
+  const recallPenalty = Math.min(recalls / Math.max(jobs, 1), 1) * 2; // 0-2 deducted
+  const volumeBonus = Math.min(jobs / 20, 1) * 2; // 0-2
+  const raw = effScore + volumeBonus - recallPenalty;
+  return Math.max(0, Math.min(5, Math.round(raw * 10) / 10));
+}
+
+/**
  * Generate comprehensive business metrics
  */
-export function generateBusinessMetrics(data: any): BusinessMetrics {
-  const dailyRevenueTarget = 5000; // GHS - configurable
-  const dailyRevenue = data.sales?.reduce((sum: number, sale: any) => sum + (parseFloat(sale.amount) || 0), 0) || 0;
+export function generateBusinessMetrics(data: any, config: InsightConfig = {}): BusinessMetrics {
+  const cfg: Required<InsightConfig> = {
+    dailyRevenueTarget: config.dailyRevenueTarget ?? 5000,
+    monthlyRevenueTarget: config.monthlyRevenueTarget ?? 50000,
+    lowStockThreshold: config.lowStockThreshold ?? 5,
+    overdueJobHours: config.overdueJobHours ?? 72,
+  };
 
-  const mechanicEfficiency = calculateMechanicEfficiency(data.staff || [], data.workshop || []);
+  const dailyRevenue =
+    data.sales?.reduce((sum: number, sale: any) => sum + (parseFloat(sale.amount) || 0), 0) || 0;
+
+  // Monthly actuals: filter sales to current month
+  const now = new Date();
+  const ym = `${now.getFullYear()}-${String(now.getMonth() + 1).padStart(2, "0")}`;
+  const monthlyRevenueActual =
+    data.sales
+      ?.filter((s: any) => String(s.date || "").startsWith(ym))
+      .reduce((sum: number, s: any) => sum + (parseFloat(s.amount) || 0), 0) || 0;
+
+  const baseMechanicEff = calculateMechanicEfficiency(data.staff || [], data.workshop || []);
+  const mechanicEfficiency = baseMechanicEff.map((m) => {
+    const recalls =
+      (data.workshop || []).filter(
+        (j: any) => j.mechanicName === m.mechanicName && j.recall === true,
+      ).length || 0;
+    return { ...m, score5Star: scoreMechanic(m.efficiency, recalls, m.jobsCompleted) };
+  });
+
   const vehicleTurnaroundTime = calculateTurnaroundTime(data.workshop || []);
   const bestSellers = identifyBestSellers(data.sales || []);
-  const revenueProgress = calculateRevenueProgress(dailyRevenue, dailyRevenueTarget);
+  const revenueProgress = calculateRevenueProgress(dailyRevenue, cfg.dailyRevenueTarget);
+
+  const trends = {
+    revenue: buildDailyTrend(data.sales || [], "date", "amount", 14, "Revenue"),
+    expenses: buildDailyTrend(data.expenses || [], "date", "amount", 14, "Expenses"),
+    sales: buildDailyTrend(data.sales || [], "date", "quantity", 14, "Units sold"),
+  };
+
+  const alerts = generateAlerts(data, cfg);
 
   const actionItems = generateInsights({
     dailyRevenue,
-    dailyRevenueTarget,
+    dailyRevenueTarget: cfg.dailyRevenueTarget,
     mechanicEfficiency,
     vehicleTurnaroundTime,
     bestSellers,
   });
 
   return {
-    dailyRevenueTarget,
+    dailyRevenueTarget: cfg.dailyRevenueTarget,
     dailyRevenue,
     revenueProgress: revenueProgress.progress,
+    monthlyRevenueTarget: cfg.monthlyRevenueTarget,
+    monthlyRevenueActual,
+    monthlyProgressPct: Math.round((monthlyRevenueActual / cfg.monthlyRevenueTarget) * 100),
     mechanicEfficiency,
     vehicleTurnaroundTime,
     bestSellers,
+    trends,
+    alerts,
     actionItems,
   };
 }

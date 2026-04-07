@@ -36,35 +36,48 @@ export function exportToCSV(data: any[], filename: string) {
   link.click();
 }
 
-export function exportToExcel(data: any[], filename: string) {
-  // For now, we'll export as CSV with .xlsx extension
-  // For proper Excel support, you'd need to use a library like xlsx
+export async function exportToExcel(data: any[], filename: string, sheetName = "Sheet1") {
   if (!data || data.length === 0) {
     alert("No data to export");
     return;
   }
+  const XLSX = await import("xlsx");
+  const ws = XLSX.utils.json_to_sheet(data);
+  const wb = XLSX.utils.book_new();
+  XLSX.utils.book_append_sheet(wb, ws, sheetName);
+  XLSX.writeFile(wb, `${filename}.xlsx`);
+}
 
-  const headers = Object.keys(data[0]);
-  const csvContent = [
-    headers.join(","),
-    ...data.map((row) =>
-      headers
-        .map((header) => {
-          const value = row[header];
-          if (typeof value === "string" && (value.includes(",") || value.includes('"'))) {
-            return `"${value.replace(/"/g, '""')}"`;
-          }
-          return value;
-        })
-        .join(",")
-    ),
-  ].join("\n");
-
-  const blob = new Blob([csvContent], { type: "application/vnd.ms-excel;charset=utf-8;" });
-  const link = document.createElement("a");
-  link.href = URL.createObjectURL(blob);
-  link.download = `${filename}.xlsx`;
-  link.click();
+/**
+ * Print a DOM element to PDF via the browser's print dialog.
+ * Pass the id of the element you want printed.
+ */
+export function printElementToPDF(elementId: string, title = "AGL Report") {
+  const el = document.getElementById(elementId);
+  if (!el) {
+    alert("Report content not found");
+    return;
+  }
+  const win = window.open("", "_blank", "width=900,height=1000");
+  if (!win) return;
+  // Copy stylesheets so the printed view matches
+  const styles = Array.from(document.querySelectorAll('link[rel="stylesheet"], style'))
+    .map((n) => n.outerHTML)
+    .join("");
+  win.document.write(`<!doctype html><html><head><title>${title}</title>${styles}
+<style>
+  @page { size: A4; margin: 14mm; }
+  body { background: #fff; color: #000; font-family: system-ui, sans-serif; }
+  .no-print { display: none !important; }
+</style>
+</head><body>${el.outerHTML}</body></html>`);
+  win.document.close();
+  win.focus();
+  // Give styles a tick to load
+  setTimeout(() => {
+    win.print();
+    win.close();
+  }, 300);
 }
 
 export function formatDateForExport(date: Date | string | null | undefined): string {
