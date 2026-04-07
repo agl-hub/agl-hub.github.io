@@ -1,244 +1,113 @@
-import { useState } from "react";
-import { BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, Legend, ResponsiveContainer, LineChart, Line } from "recharts";
+import { useMemo, useEffect, useRef } from 'react';
+import { getData, fmtGHS } from '../lib/dataStore';
 
-interface Mechanic {
-  id: string;
-  name: string;
-  jobsCompleted: number;
-  jobsInProgress: number;
-  efficiency: number;
-  avgTimePerJob: number;
-  rating: number;
-  hoursWorked: number;
-  specialization: string;
-  joinDate: string;
-}
-
-const mechanics: Mechanic[] = [
-  {
-    id: "1",
-    name: "John Mensah",
-    jobsCompleted: 45,
-    jobsInProgress: 2,
-    efficiency: 92,
-    avgTimePerJob: 4.2,
-    rating: 4.8,
-    hoursWorked: 160,
-    specialization: "Engine & Transmission",
-    joinDate: "2023-01-15",
-  },
-  {
-    id: "2",
-    name: "Peter Kwame",
-    jobsCompleted: 38,
-    jobsInProgress: 3,
-    efficiency: 88,
-    avgTimePerJob: 4.5,
-    rating: 4.6,
-    hoursWorked: 158,
-    specialization: "Brake & Suspension",
-    joinDate: "2023-03-20",
-  },
-  {
-    id: "3",
-    name: "Samuel Osei",
-    jobsCompleted: 35,
-    jobsInProgress: 1,
-    efficiency: 85,
-    avgTimePerJob: 4.8,
-    rating: 4.5,
-    hoursWorked: 144,
-    specialization: "Electrical & Diagnostics",
-    joinDate: "2023-06-10",
-  },
-  {
-    id: "4",
-    name: "Ama Boateng",
-    jobsCompleted: 32,
-    jobsInProgress: 2,
-    efficiency: 82,
-    avgTimePerJob: 5.0,
-    rating: 4.4,
-    hoursWorked: 136,
-    specialization: "General Maintenance",
-    joinDate: "2023-09-05",
-  },
-];
-
-const performanceData = [
-  { week: "Week 1", John: 12, Peter: 10, Samuel: 9, Ama: 8 },
-  { week: "Week 2", John: 11, Peter: 9, Samuel: 8, Ama: 7 },
-  { week: "Week 3", John: 13, Peter: 11, Samuel: 10, Ama: 9 },
-  { week: "Week 4", John: 9, Peter: 8, Samuel: 8, Ama: 8 },
-];
+declare const Chart: any;
 
 export default function MechanicTracker() {
-  const [selectedMechanic, setSelectedMechanic] = useState<Mechanic | null>(null);
+  const data = getData();
+  const chartRef = useRef<HTMLCanvasElement>(null);
+  const chartInst = useRef<any>(null);
+
+  const mechanics = useMemo(() => {
+    const names = Array.from(new Set(data.workshop.map(j => j.mechanic)));
+    return names.map(name => {
+      const jobs = data.workshop.filter(j => j.mechanic === name);
+      const completed = jobs.filter(j => j.status === 'Completed');
+      const inProgress = jobs.filter(j => j.status === 'In Progress');
+      const totalRev = completed.reduce((s, j) => s + j.estCost, 0);
+      const efficiency = jobs.length > 0 ? Math.round((completed.length / jobs.length) * 100) : 0;
+      const rating = Math.min(5, Math.max(1, Math.round(efficiency / 20)));
+      return { name, total: jobs.length, completed: completed.length, inProgress: inProgress.length, totalRev, efficiency, rating };
+    }).sort((a, b) => b.totalRev - a.totalRev);
+  }, [data.workshop]);
+
+  const totalJobs = data.workshop.length;
+  const totalCompleted = data.workshop.filter(j => j.status === 'Completed').length;
+  const avgEfficiency = mechanics.length > 0 ? Math.round(mechanics.reduce((s, m) => s + m.efficiency, 0) / mechanics.length) : 0;
+  const topMechanic = mechanics[0]?.name || 'N/A';
+
+  useEffect(() => {
+    if (typeof Chart === 'undefined' || !chartRef.current) return;
+    chartInst.current?.destroy();
+    chartInst.current = new Chart(chartRef.current, {
+      type: 'bar',
+      data: {
+        labels: mechanics.map(m => m.name),
+        datasets: [
+          { label: 'Completed', data: mechanics.map(m => m.completed), backgroundColor: '#16A085', borderRadius: 4 },
+          { label: 'In Progress', data: mechanics.map(m => m.inProgress), backgroundColor: '#F39C12', borderRadius: 4 },
+        ],
+      },
+      options: { responsive: true, maintainAspectRatio: false, plugins: { legend: { labels: { color: '#A0AEC0', font: { size: 9 } } } }, scales: { x: { ticks: { color: '#718096', font: { size: 9 } }, grid: { color: 'rgba(255,255,255,0.03)' } }, y: { ticks: { color: '#718096', font: { size: 9 } }, grid: { color: 'rgba(255,255,255,0.03)' } } } },
+    });
+    return () => { chartInst.current?.destroy(); };
+  }, [mechanics]);
 
   return (
-    <div className="flex flex-col gap-lg">
-      <h2 className="text-2xl font-bold">Mechanic Tracker</h2>
-
-      {/* Summary Stats */}
-      <div className="grid grid-4 gap-md">
-        <div className="card">
-          <div className="kpi-label">Total Mechanics</div>
-          <div className="kpi-value">{mechanics.length}</div>
-          <div className="kpi-sub">Active staff</div>
-        </div>
-        <div className="card">
-          <div className="kpi-label">Jobs Completed</div>
-          <div className="kpi-value">{mechanics.reduce((sum, m) => sum + m.jobsCompleted, 0)}</div>
-          <div className="kpi-sub">This month</div>
-        </div>
-        <div className="card">
-          <div className="kpi-label">Avg Efficiency</div>
-          <div className="kpi-value">{(mechanics.reduce((sum, m) => sum + m.efficiency, 0) / mechanics.length).toFixed(0)}%</div>
-          <div className="kpi-sub">Team average</div>
-        </div>
-        <div className="card">
-          <div className="kpi-label">Avg Rating</div>
-          <div className="kpi-value">{(mechanics.reduce((sum, m) => sum + m.rating, 0) / mechanics.length).toFixed(1)}</div>
-          <div className="kpi-sub">Customer satisfaction</div>
-        </div>
+    <div>
+      <div className="grid grid-4" style={{ marginBottom: '8px' }}>
+        <div className="card kpi-card navy"><div className="kpi-label">Total Jobs</div><div className="kpi-value">{totalJobs}</div></div>
+        <div className="card kpi-card green"><div className="kpi-label">Completed</div><div className="kpi-value">{totalCompleted}</div></div>
+        <div className="card kpi-card gold"><div className="kpi-label">Avg Efficiency</div><div className="kpi-value">{avgEfficiency}%</div></div>
+        <div className="card kpi-card red"><div className="kpi-label">Top Mechanic</div><div className="kpi-value" style={{ fontSize: '16px' }}>{topMechanic}</div></div>
       </div>
 
-      {/* Performance Trend */}
-      <div className="card">
-        <h3 className="text-lg font-bold mb-lg">Weekly Performance Trend</h3>
-        <ResponsiveContainer width="100%" height={400}>
-          <LineChart data={performanceData}>
-            <CartesianGrid strokeDasharray="3 3" stroke="rgba(255,255,255,0.1)" />
-            <XAxis dataKey="week" stroke="rgba(255,255,255,0.5)" />
-            <YAxis stroke="rgba(255,255,255,0.5)" />
-            <Tooltip contentStyle={{ background: "rgba(20,25,35,0.95)", border: "1px solid rgba(255,255,255,0.1)" }} />
-            <Legend />
-            <Line type="monotone" dataKey="John" stroke="#E30613" strokeWidth={2} />
-            <Line type="monotone" dataKey="Peter" stroke="#16A085" strokeWidth={2} />
-            <Line type="monotone" dataKey="Samuel" stroke="#F39C12" strokeWidth={2} />
-            <Line type="monotone" dataKey="Ama" stroke="#3498DB" strokeWidth={2} />
-          </LineChart>
-        </ResponsiveContainer>
-      </div>
-
-      {/* Mechanics Grid */}
-      <div className="grid grid-2 gap-md">
-        {mechanics.map((mechanic) => (
-          <div
-            key={mechanic.id}
-            onClick={() => setSelectedMechanic(mechanic)}
-            className="card cursor-pointer hover:shadow-md transition-all"
-          >
-            <div className="flex justify-between items-start mb-md">
-              <div>
-                <h3 className="text-lg font-bold">{mechanic.name}</h3>
-                <p className="text-text-tertiary text-sm">{mechanic.specialization}</p>
+      <div className="grid" style={{ gridTemplateColumns: '1fr 1fr', marginBottom: '8px' }}>
+        <div>
+          <h3 style={{ color: '#fff', marginBottom: '8px' }}>Mechanic Performance</h3>
+          <div className="grid grid-2">
+            {mechanics.map(m => (
+              <div key={m.name} className="card" style={{ padding: '12px' }}>
+                <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '8px' }}>
+                  <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+                    <div style={{ width: '36px', height: '36px', borderRadius: '50%', background: 'linear-gradient(135deg, #E30613, #16A085)', display: 'flex', alignItems: 'center', justifyContent: 'center', fontWeight: 700, fontSize: '14px', color: '#fff' }}>
+                      {m.name.charAt(0)}
+                    </div>
+                    <div>
+                      <div style={{ fontWeight: 600, color: '#fff', fontSize: '12px' }}>{m.name}</div>
+                      <div style={{ fontSize: '9px', color: 'var(--text-dim)' }}>{m.total} jobs assigned</div>
+                    </div>
+                  </div>
+                  <div style={{ color: '#F39C12', fontSize: '12px' }}>
+                    {'★'.repeat(m.rating)}{'☆'.repeat(5 - m.rating)}
+                  </div>
+                </div>
+                <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: '10px', marginBottom: '6px' }}>
+                  <span style={{ color: 'var(--text-dim)' }}>Efficiency</span>
+                  <span style={{ color: m.efficiency >= 70 ? '#1ABC9C' : m.efficiency >= 40 ? '#F39C12' : '#FF2D3A', fontWeight: 600 }}>{m.efficiency}%</span>
+                </div>
+                <div style={{ width: '100%', height: '4px', background: 'rgba(255,255,255,0.1)', borderRadius: '2px', overflow: 'hidden' }}>
+                  <div style={{ width: `${m.efficiency}%`, height: '100%', background: m.efficiency >= 70 ? '#16A085' : m.efficiency >= 40 ? '#F39C12' : '#E30613', borderRadius: '2px', transition: 'width 0.5s' }} />
+                </div>
+                <div style={{ display: 'flex', justifyContent: 'space-between', marginTop: '8px', fontSize: '9px' }}>
+                  <div><span style={{ color: 'var(--text-muted)' }}>Completed: </span><span style={{ color: '#1ABC9C', fontWeight: 600 }}>{m.completed}</span></div>
+                  <div><span style={{ color: 'var(--text-muted)' }}>In Progress: </span><span style={{ color: '#F39C12', fontWeight: 600 }}>{m.inProgress}</span></div>
+                  <div><span style={{ color: 'var(--text-muted)' }}>Revenue: </span><span style={{ color: '#1ABC9C', fontWeight: 600 }}>{fmtGHS(m.totalRev)}</span></div>
+                </div>
               </div>
-              <div className="text-right">
-                <div className="text-2xl font-bold text-primary-light">⭐ {mechanic.rating}</div>
-                <div className="text-xs text-text-tertiary">Rating</div>
-              </div>
-            </div>
-
-            <div className="grid grid-3 gap-md mb-md">
-              <div>
-                <div className="text-text-tertiary text-xs">Jobs Completed</div>
-                <div className="text-xl font-bold">{mechanic.jobsCompleted}</div>
-              </div>
-              <div>
-                <div className="text-text-tertiary text-xs">In Progress</div>
-                <div className="text-xl font-bold text-warning">{mechanic.jobsInProgress}</div>
-              </div>
-              <div>
-                <div className="text-text-tertiary text-xs">Efficiency</div>
-                <div className="text-xl font-bold">{mechanic.efficiency}%</div>
-              </div>
-            </div>
-
-            <div className="mb-md">
-              <div className="flex justify-between text-xs mb-sm">
-                <span className="text-text-tertiary">Efficiency Progress</span>
-                <span className="font-bold">{mechanic.efficiency}%</span>
-              </div>
-              <div className="w-full bg-bg-tertiary rounded-full h-2 overflow-hidden">
-                <div
-                  className="bg-gradient-primary h-full"
-                  style={{ width: `${mechanic.efficiency}%` }}
-                ></div>
-              </div>
-            </div>
-
-            <button className="w-full btn btn-secondary btn-sm">View Details</button>
-          </div>
-        ))}
-      </div>
-
-      {/* Mechanic Details */}
-      {selectedMechanic && (
-        <div className="card">
-          <div className="flex justify-between items-start mb-lg">
-            <div>
-              <h3 className="text-2xl font-bold">{selectedMechanic.name}</h3>
-              <p className="text-text-tertiary mt-sm">{selectedMechanic.specialization}</p>
-            </div>
-            <button
-              onClick={() => setSelectedMechanic(null)}
-              className="btn btn-secondary btn-sm"
-            >
-              ✕
-            </button>
-          </div>
-
-          <div className="grid grid-4 gap-lg mb-lg">
-            <div>
-              <div className="text-text-tertiary text-sm mb-sm">Jobs Completed</div>
-              <div className="text-3xl font-bold">{selectedMechanic.jobsCompleted}</div>
-            </div>
-            <div>
-              <div className="text-text-tertiary text-sm mb-sm">Efficiency</div>
-              <div className="text-3xl font-bold">{selectedMechanic.efficiency}%</div>
-            </div>
-            <div>
-              <div className="text-text-tertiary text-sm mb-sm">Avg Time/Job</div>
-              <div className="text-3xl font-bold">{selectedMechanic.avgTimePerJob}h</div>
-            </div>
-            <div>
-              <div className="text-text-tertiary text-sm mb-sm">Customer Rating</div>
-              <div className="text-3xl font-bold">⭐ {selectedMechanic.rating}</div>
-            </div>
-          </div>
-
-          <div className="grid grid-2 gap-lg">
-            <div>
-              <div className="text-text-tertiary text-sm mb-sm">Hours Worked</div>
-              <div className="font-bold">{selectedMechanic.hoursWorked}h this month</div>
-            </div>
-            <div>
-              <div className="text-text-tertiary text-sm mb-sm">Join Date</div>
-              <div className="font-bold">{selectedMechanic.joinDate}</div>
-            </div>
-          </div>
-
-          <div className="mt-lg flex gap-md">
-            <button className="btn btn-secondary flex-1">View Job History</button>
-            <button className="btn btn-secondary flex-1">Performance Report</button>
-            <button className="btn btn-primary flex-1">Assign Job</button>
+            ))}
           </div>
         </div>
-      )}
+        <div className="card chart-card"><h4>Jobs by Mechanic</h4><div className="chart-container"><canvas ref={chartRef} /></div></div>
+      </div>
 
-      {/* Efficiency Comparison */}
-      <div className="card">
-        <h3 className="text-lg font-bold mb-lg">Efficiency Comparison</h3>
-        <ResponsiveContainer width="100%" height={300}>
-          <BarChart data={mechanics}>
-            <CartesianGrid strokeDasharray="3 3" stroke="rgba(255,255,255,0.1)" />
-            <XAxis dataKey="name" stroke="rgba(255,255,255,0.5)" />
-            <YAxis stroke="rgba(255,255,255,0.5)" />
-            <Tooltip contentStyle={{ background: "rgba(20,25,35,0.95)", border: "1px solid rgba(255,255,255,0.1)" }} />
-            <Bar dataKey="efficiency" fill="#E30613" radius={[8, 8, 0, 0]} />
-          </BarChart>
-        </ResponsiveContainer>
+      <div className="card" style={{ padding: '10px' }}>
+        <h3 style={{ color: '#fff', marginBottom: '8px' }}>All Workshop Jobs</h3>
+        <div style={{ overflowX: 'auto', maxHeight: '300px', overflowY: 'auto' }}>
+          <table>
+            <thead><tr><th>Date</th><th>Reg</th><th>Car</th><th>Job</th><th>Mechanic</th><th>Status</th><th>Est. Cost</th></tr></thead>
+            <tbody>
+              {[...data.workshop].sort((a, b) => b.date.localeCompare(a.date)).map(j => (
+                <tr key={j.id}>
+                  <td>{j.date}</td><td style={{ fontWeight: 600 }}>{j.reg}</td><td>{j.car}</td><td>{j.job}</td>
+                  <td style={{ color: '#F39C12' }}>{j.mechanic}</td>
+                  <td><span className={`status-badge ${j.status === 'Completed' ? 'status-completed' : j.status === 'In Progress' ? 'status-progress' : j.status === 'Awaiting Parts' ? 'status-awaiting' : 'status-queued'}`}>{j.status}</span></td>
+                  <td style={{ color: '#1ABC9C', fontWeight: 600 }}>{fmtGHS(j.estCost)}</td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
+        </div>
       </div>
     </div>
   );
