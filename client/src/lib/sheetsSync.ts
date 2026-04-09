@@ -300,7 +300,12 @@ const PAYMENTS    = ['Cash', 'MoMo', 'Bank Transfer', 'Credit', 'Cheque'];
 const WS_STATUSES = ['Queued', 'In Progress', 'Awaiting Parts', 'Completed'];
 const WORK_START  = '08:00';
 
-// ── Trigger: show menu when sheet opens ──────────────────────
+// ── Trigger: show menu + sidebar when sheet opens ────────────
+// NOTE: Google Apps Script does NOT allow showModalDialog() in onOpen().
+// Sidebars ARE allowed. The sidebar has buttons to open each form.
+// To make the FORM auto-open on load, set up a time-driven trigger:
+//   Triggers → Add Trigger → showSaleForm → From spreadsheet → On open
+// (This requires a separate installable trigger, not the simple onOpen)
 function onOpen() {
   const ui = SpreadsheetApp.getUi();
   ui.createMenu('📋 AGL Data Entry')
@@ -313,6 +318,68 @@ function onOpen() {
     .addItem('📊 View Summary', 'showSummary')
     .addItem('🔄 Refresh Formulas', 'refreshFormulas')
     .addToUi();
+  // Show the data entry sidebar automatically on open
+  showDataEntrySidebar();
+}
+
+// ── Installable trigger for auto-popup on open ────────────────
+// Run this function ONCE manually to install the trigger:
+function installOpenTrigger() {
+  // Remove existing open triggers to avoid duplicates
+  ScriptApp.getProjectTriggers().forEach(t => {
+    if (t.getEventType() === ScriptApp.EventType.ON_OPEN) {
+      ScriptApp.deleteTrigger(t);
+    }
+  });
+  ScriptApp.newTrigger('showSaleFormOnOpen')
+    .forSpreadsheet(SpreadsheetApp.openById(SHEET_ID))
+    .onOpen()
+    .create();
+  SpreadsheetApp.getUi().alert('✓ Auto-popup trigger installed! The sale form will open automatically each time the sheet is opened.');
+}
+
+// Called by the installable trigger (can show dialogs, unlike simple onOpen)
+function showSaleFormOnOpen() {
+  showSaleForm();
+}
+
+// ── Sidebar: quick-access panel shown on every open ───────────
+function showDataEntrySidebar() {
+  const html = HtmlService.createHtmlOutput(\`
+<!DOCTYPE html>
+<html>
+<head>
+<style>
+  body { font-family: Arial, sans-serif; font-size: 12px; padding: 10px; background: #1a0a0a; color: #f0e6d3; margin: 0; }
+  h2 { color: #D97706; font-size: 13px; margin: 0 0 4px; }
+  p { font-size: 10px; color: #c8b89a; margin: 0 0 10px; }
+  .btn { display: block; width: 100%; padding: 9px 10px; margin: 5px 0;
+    background: #7F1D1D; color: white; border: none; border-radius: 5px;
+    cursor: pointer; font-size: 12px; text-align: left; font-weight: bold; }
+  .btn:hover { background: #991B1B; }
+  .btn.green { background: #14532d; }
+  .btn.green:hover { background: #166534; }
+  .btn.blue { background: #1e3a5f; }
+  .btn.blue:hover { background: #1e40af; }
+  .divider { border-top: 1px solid #3a2a1a; margin: 8px 0; }
+  .tip { background: #2a1a0a; border-left: 3px solid #D97706; padding: 6px 8px; font-size: 10px; color: #c8b89a; border-radius: 0 4px 4px 0; margin-top: 10px; }
+</style>
+</head>
+<body>
+<h2>📋 AGL Data Entry</h2>
+<p>Click a button to open the entry form</p>
+<button class="btn" onclick="google.script.run.showSaleForm()">➕ Record Sale</button>
+<button class="btn green" onclick="google.script.run.showExpenseForm()">💸 Record Expense</button>
+<button class="btn" onclick="google.script.run.showWorkshopForm()">🔧 Log Workshop Job</button>
+<button class="btn blue" onclick="google.script.run.showClockInForm()">⏱ Clock In / Out</button>
+<button class="btn green" onclick="google.script.run.showPOForm()">📦 Purchase Order</button>
+<div class="divider"></div>
+<button class="btn blue" onclick="google.script.run.showSummary()">📊 View Summary</button>
+<div class="tip">⚠ Do NOT type directly into the sheet cells. Use these buttons to ensure data validation.</div>
+</body>
+</html>
+\`).setTitle('AGL Data Entry').setWidth(200);
+  SpreadsheetApp.getUi().showSidebar(html);
 }
 
 // ─────────────────────────────────────────────────────────────
