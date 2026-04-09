@@ -300,12 +300,12 @@ const PAYMENTS    = ['Cash', 'MoMo', 'Bank Transfer', 'Credit', 'Cheque'];
 const WS_STATUSES = ['Queued', 'In Progress', 'Awaiting Parts', 'Completed'];
 const WORK_START  = '08:00';
 
-// ── Trigger: show menu + sidebar when sheet opens ────────────
-// NOTE: Google Apps Script does NOT allow showModalDialog() in onOpen().
-// Sidebars ARE allowed. The sidebar has buttons to open each form.
-// To make the FORM auto-open on load, set up a time-driven trigger:
-//   Triggers → Add Trigger → showSaleForm → From spreadsheet → On open
-// (This requires a separate installable trigger, not the simple onOpen)
+// ── SIMPLE onOpen: builds menu + auto-installs installable trigger ──
+// The simple onOpen() CANNOT show modal dialogs (Google security restriction).
+// Instead it: (1) builds the menu, (2) shows the sidebar, and
+// (3) auto-installs an installable onOpen trigger the FIRST TIME the script runs.
+// The installable trigger CAN show modal dialogs — so from the SECOND open
+// onwards (and every open after that), the Record Sale form pops up automatically.
 function onOpen() {
   const ui = SpreadsheetApp.getUi();
   ui.createMenu('📋 AGL Data Entry')
@@ -318,29 +318,51 @@ function onOpen() {
     .addItem('📊 View Summary', 'showSummary')
     .addItem('🔄 Refresh Formulas', 'refreshFormulas')
     .addToUi();
-  // Show the data entry sidebar automatically on open
+
+  // Auto-install the installable trigger on first run (silently)
+  autoInstallOpenTrigger();
+
+  // Show sidebar as immediate fallback (works even on first open)
   showDataEntrySidebar();
 }
 
-// ── Installable trigger for auto-popup on open ────────────────
-// Run this function ONCE manually to install the trigger:
-function installOpenTrigger() {
-  // Remove existing open triggers to avoid duplicates
-  ScriptApp.getProjectTriggers().forEach(t => {
-    if (t.getEventType() === ScriptApp.EventType.ON_OPEN) {
-      ScriptApp.deleteTrigger(t);
+// ── Auto-install installable trigger (runs silently from onOpen) ──
+// Checks if the trigger already exists; only creates it once.
+// After this runs, every subsequent sheet open will show the sale form modal.
+function autoInstallOpenTrigger() {
+  try {
+    const triggers = ScriptApp.getProjectTriggers();
+    const alreadyInstalled = triggers.some(t =>
+      t.getHandlerFunction() === 'showSaleFormOnOpen' &&
+      t.getEventType() === ScriptApp.EventType.ON_OPEN
+    );
+    if (!alreadyInstalled) {
+      ScriptApp.newTrigger('showSaleFormOnOpen')
+        .forSpreadsheet(SpreadsheetApp.openById(SHEET_ID))
+        .onOpen()
+        .create();
     }
+  } catch(e) {
+    // Silently ignore — trigger may already exist or permissions not yet granted
+  }
+}
+
+// ── Called by the installable trigger on every open ──
+// Installable triggers CAN show modal dialogs — this fires the sale form popup.
+function showSaleFormOnOpen() {
+  showSaleForm();
+}
+
+// ── Manual trigger install (run once from Apps Script editor if needed) ──
+function installOpenTrigger() {
+  ScriptApp.getProjectTriggers().forEach(t => {
+    if (t.getHandlerFunction() === 'showSaleFormOnOpen') ScriptApp.deleteTrigger(t);
   });
   ScriptApp.newTrigger('showSaleFormOnOpen')
     .forSpreadsheet(SpreadsheetApp.openById(SHEET_ID))
     .onOpen()
     .create();
-  SpreadsheetApp.getUi().alert('✓ Auto-popup trigger installed! The sale form will open automatically each time the sheet is opened.');
-}
-
-// Called by the installable trigger (can show dialogs, unlike simple onOpen)
-function showSaleFormOnOpen() {
-  showSaleForm();
+  SpreadsheetApp.getUi().alert('✓ Done! The Record Sale form will now pop up automatically every time the sheet is opened.');
 }
 
 // ── Sidebar: quick-access panel shown on every open ───────────
