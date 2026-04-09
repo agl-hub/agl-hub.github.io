@@ -1,4 +1,4 @@
-// Auto-generated from Google Sheets — 2026-04-09 12:14
+// Auto-generated from Google Sheets — 2026-04-09 13:32
 // Spreadsheets: March Tracker + Inventory Sheet
 // February data merged. Dates normalized to YYYY-MM-DD.
 
@@ -6381,6 +6381,63 @@ export const snapshotSales: SnapshotSale[] = [
   },
   {
     "id": "s335",
+    "date": "2026-09-04",
+    "customer": "Fatawu",
+    "contact": "552188415",
+    "channel": "Walk-In",
+    "vehicle": "Accord 2020",
+    "item": "Proxil 0w-20",
+    "qty": 1,
+    "unitPrice": 700.0,
+    "total": 700.0,
+    "payment": "MoMo",
+    "receipt": "",
+    "rep": "Abigail",
+    "mechanic": "Fatawu",
+    "status": "Completed",
+    "workmanshipFee": 0.0,
+    "notes": ""
+  },
+  {
+    "id": "s336",
+    "date": "2026-09-04",
+    "customer": "Fatawu",
+    "contact": "552188415",
+    "channel": "Walk-In",
+    "vehicle": "Accord 2020",
+    "item": "4610 Oil filter",
+    "qty": 1,
+    "unitPrice": 150.0,
+    "total": 150.0,
+    "payment": "MoMo",
+    "receipt": "",
+    "rep": "Abigail",
+    "mechanic": "Fatawu",
+    "status": "Completed",
+    "workmanshipFee": 0.0,
+    "notes": ""
+  },
+  {
+    "id": "s337",
+    "date": "2026-09-04",
+    "customer": "Fatawu",
+    "contact": "552188415",
+    "channel": "Walk-In",
+    "vehicle": "Accord 2020",
+    "item": "Air filter 5AA",
+    "qty": 1,
+    "unitPrice": 200.0,
+    "total": 200.0,
+    "payment": "MoMo",
+    "receipt": "",
+    "rep": "Abigail",
+    "mechanic": "Fatawu",
+    "status": "Completed",
+    "workmanshipFee": 0.0,
+    "notes": ""
+  },
+  {
+    "id": "s338",
     "date": "2026-02-02",
     "customer": "",
     "contact": "",
@@ -6399,7 +6456,7 @@ export const snapshotSales: SnapshotSale[] = [
     "notes": ""
   },
   {
-    "id": "s336",
+    "id": "s339",
     "date": "2026-02-02",
     "customer": "",
     "contact": "",
@@ -6418,7 +6475,7 @@ export const snapshotSales: SnapshotSale[] = [
     "notes": ""
   },
   {
-    "id": "s337",
+    "id": "s340",
     "date": "2026-02-02",
     "customer": "",
     "contact": "",
@@ -6437,70 +6494,13 @@ export const snapshotSales: SnapshotSale[] = [
     "notes": ""
   },
   {
-    "id": "s338",
-    "date": "2026-02-02",
-    "customer": "",
-    "contact": "",
-    "channel": "",
-    "vehicle": "",
-    "item": "T5R",
-    "qty": 1,
-    "unitPrice": 150.0,
-    "total": 150.0,
-    "payment": "",
-    "receipt": "",
-    "rep": "",
-    "mechanic": "",
-    "status": "Collected",
-    "workmanshipFee": 0.0,
-    "notes": ""
-  },
-  {
-    "id": "s339",
-    "date": "2026-02-02",
-    "customer": "",
-    "contact": "",
-    "channel": "",
-    "vehicle": "",
-    "item": "5AA-A00",
-    "qty": 1,
-    "unitPrice": 200.0,
-    "total": 200.0,
-    "payment": "",
-    "receipt": "",
-    "rep": "",
-    "mechanic": "",
-    "status": "Collected",
-    "workmanshipFee": 0.0,
-    "notes": ""
-  },
-  {
-    "id": "s340",
-    "date": "2026-02-02",
-    "customer": "",
-    "contact": "",
-    "channel": "",
-    "vehicle": "",
-    "item": "AmsOil 5W -20 OE(5Litres)",
-    "qty": 5,
-    "unitPrice": 1000.0,
-    "total": 1000.0,
-    "payment": "",
-    "receipt": "",
-    "rep": "",
-    "mechanic": "",
-    "status": "Collected",
-    "workmanshipFee": 0.0,
-    "notes": ""
-  },
-  {
     "id": "s341",
     "date": "2026-02-02",
     "customer": "",
     "contact": "",
     "channel": "",
     "vehicle": "",
-    "item": "Oil Filter",
+    "item": "T5R",
     "qty": 1,
     "unitPrice": 150.0,
     "total": 150.0,
@@ -6519,6 +6519,63 @@ export const snapshotSales: SnapshotSale[] = [
     "contact": "",
     "channel": "",
     "vehicle": "",
+    "item": "5AA-A00",
+    "qty": 1,
+    "unitPrice": 200.0,
+    "total": 200.0,
+    "payment": "",
+    "receipt": "",
+    "rep": "",
+    "mechanic": "",
+    "status": "Collected",
+    "workmanshipFee": 0.0,
+    "notes": ""
+  },
+  {
+    "id": "s343",
+    "date": "2026-02-02",
+    "customer": "",
+    "contact": "",
+    "channel": "",
+    "vehicle": "",
+    "item": "AmsOil 5W -20 OE(5Litres)",
+    "qty": 5,
+    "unitPrice": 1000.0,
+    "total": 1000.0,
+    "payment": "",
+    "receipt": "",
+    "rep": "",
+    "mechanic": "",
+    "status": "Collected",
+    "workmanshipFee": 0.0,
+    "notes": ""
+  },
+  {
+    "id": "s344",
+    "date": "2026-02-02",
+    "customer": "",
+    "contact": "",
+    "channel": "",
+    "vehicle": "",
+    "item": "Oil Filter",
+    "qty": 1,
+    "unitPrice": 150.0,
+    "total": 150.0,
+    "payment": "",
+    "receipt": "",
+    "rep": "",
+    "mechanic": "",
+    "status": "Collected",
+    "workmanshipFee": 0.0,
+    "notes": ""
+  },
+  {
+    "id": "s345",
+    "date": "2026-02-02",
+    "customer": "",
+    "contact": "",
+    "channel": "",
+    "vehicle": "",
     "item": "28020",
     "qty": 1,
     "unitPrice": 150.0,
@@ -6532,7 +6589,7 @@ export const snapshotSales: SnapshotSale[] = [
     "notes": ""
   },
   {
-    "id": "s343",
+    "id": "s346",
     "date": "2026-02-02",
     "customer": "",
     "contact": "",
@@ -6551,7 +6608,7 @@ export const snapshotSales: SnapshotSale[] = [
     "notes": "TOTAL = 3,600"
   },
   {
-    "id": "s344",
+    "id": "s347",
     "date": "2026-02-03",
     "customer": "",
     "contact": "",
@@ -6570,7 +6627,7 @@ export const snapshotSales: SnapshotSale[] = [
     "notes": ""
   },
   {
-    "id": "s345",
+    "id": "s348",
     "date": "2026-02-03",
     "customer": "",
     "contact": "",
@@ -6589,7 +6646,7 @@ export const snapshotSales: SnapshotSale[] = [
     "notes": ""
   },
   {
-    "id": "s346",
+    "id": "s349",
     "date": "2026-02-03",
     "customer": "",
     "contact": "",
@@ -6608,7 +6665,7 @@ export const snapshotSales: SnapshotSale[] = [
     "notes": ""
   },
   {
-    "id": "s347",
+    "id": "s350",
     "date": "2026-02-03",
     "customer": "",
     "contact": "",
@@ -6627,7 +6684,7 @@ export const snapshotSales: SnapshotSale[] = [
     "notes": ""
   },
   {
-    "id": "s348",
+    "id": "s351",
     "date": "2026-02-03",
     "customer": "",
     "contact": "",
@@ -6646,7 +6703,7 @@ export const snapshotSales: SnapshotSale[] = [
     "notes": ""
   },
   {
-    "id": "s349",
+    "id": "s352",
     "date": "2026-02-03",
     "customer": "",
     "contact": "",
@@ -6665,7 +6722,7 @@ export const snapshotSales: SnapshotSale[] = [
     "notes": ""
   },
   {
-    "id": "s350",
+    "id": "s353",
     "date": "2026-02-03",
     "customer": "",
     "contact": "",
@@ -6684,7 +6741,7 @@ export const snapshotSales: SnapshotSale[] = [
     "notes": ""
   },
   {
-    "id": "s351",
+    "id": "s354",
     "date": "2026-02-03",
     "customer": "",
     "contact": "",
@@ -6703,7 +6760,7 @@ export const snapshotSales: SnapshotSale[] = [
     "notes": ""
   },
   {
-    "id": "s352",
+    "id": "s355",
     "date": "2026-02-03",
     "customer": "",
     "contact": "",
@@ -6722,7 +6779,7 @@ export const snapshotSales: SnapshotSale[] = [
     "notes": ""
   },
   {
-    "id": "s353",
+    "id": "s356",
     "date": "2026-02-03",
     "customer": "",
     "contact": "",
@@ -6741,7 +6798,7 @@ export const snapshotSales: SnapshotSale[] = [
     "notes": ""
   },
   {
-    "id": "s354",
+    "id": "s357",
     "date": "2026-02-03",
     "customer": "",
     "contact": "",
@@ -6760,7 +6817,7 @@ export const snapshotSales: SnapshotSale[] = [
     "notes": ""
   },
   {
-    "id": "s355",
+    "id": "s358",
     "date": "2026-02-03",
     "customer": "",
     "contact": "",
@@ -6779,7 +6836,7 @@ export const snapshotSales: SnapshotSale[] = [
     "notes": ""
   },
   {
-    "id": "s356",
+    "id": "s359",
     "date": "2026-02-03",
     "customer": "",
     "contact": "",
@@ -6798,7 +6855,7 @@ export const snapshotSales: SnapshotSale[] = [
     "notes": ""
   },
   {
-    "id": "s357",
+    "id": "s360",
     "date": "2026-02-03",
     "customer": "",
     "contact": "",
@@ -6817,70 +6874,13 @@ export const snapshotSales: SnapshotSale[] = [
     "notes": ""
   },
   {
-    "id": "s358",
-    "date": "2026-02-03",
-    "customer": "",
-    "contact": "",
-    "channel": "",
-    "vehicle": "",
-    "item": "Cataystic Cleaning",
-    "qty": 1,
-    "unitPrice": 900.0,
-    "total": 900.0,
-    "payment": "",
-    "receipt": "",
-    "rep": "",
-    "mechanic": "",
-    "status": "Collected",
-    "workmanshipFee": 0.0,
-    "notes": ""
-  },
-  {
-    "id": "s359",
-    "date": "2026-02-03",
-    "customer": "",
-    "contact": "",
-    "channel": "",
-    "vehicle": "",
-    "item": "Injector Cleaning",
-    "qty": 1,
-    "unitPrice": 900.0,
-    "total": 900.0,
-    "payment": "",
-    "receipt": "",
-    "rep": "",
-    "mechanic": "",
-    "status": "Collected",
-    "workmanshipFee": 0.0,
-    "notes": ""
-  },
-  {
-    "id": "s360",
-    "date": "2026-02-03",
-    "customer": "",
-    "contact": "",
-    "channel": "",
-    "vehicle": "",
-    "item": "Cataystic Cleaning",
-    "qty": 1,
-    "unitPrice": 900.0,
-    "total": 900.0,
-    "payment": "",
-    "receipt": "",
-    "rep": "",
-    "mechanic": "",
-    "status": "Collected",
-    "workmanshipFee": 0.0,
-    "notes": ""
-  },
-  {
     "id": "s361",
     "date": "2026-02-03",
     "customer": "",
     "contact": "",
     "channel": "",
     "vehicle": "",
-    "item": "Injector Cleaning",
+    "item": "Cataystic Cleaning",
     "qty": 1,
     "unitPrice": 900.0,
     "total": 900.0,
@@ -6899,6 +6899,63 @@ export const snapshotSales: SnapshotSale[] = [
     "contact": "",
     "channel": "",
     "vehicle": "",
+    "item": "Injector Cleaning",
+    "qty": 1,
+    "unitPrice": 900.0,
+    "total": 900.0,
+    "payment": "",
+    "receipt": "",
+    "rep": "",
+    "mechanic": "",
+    "status": "Collected",
+    "workmanshipFee": 0.0,
+    "notes": ""
+  },
+  {
+    "id": "s363",
+    "date": "2026-02-03",
+    "customer": "",
+    "contact": "",
+    "channel": "",
+    "vehicle": "",
+    "item": "Cataystic Cleaning",
+    "qty": 1,
+    "unitPrice": 900.0,
+    "total": 900.0,
+    "payment": "",
+    "receipt": "",
+    "rep": "",
+    "mechanic": "",
+    "status": "Collected",
+    "workmanshipFee": 0.0,
+    "notes": ""
+  },
+  {
+    "id": "s364",
+    "date": "2026-02-03",
+    "customer": "",
+    "contact": "",
+    "channel": "",
+    "vehicle": "",
+    "item": "Injector Cleaning",
+    "qty": 1,
+    "unitPrice": 900.0,
+    "total": 900.0,
+    "payment": "",
+    "receipt": "",
+    "rep": "",
+    "mechanic": "",
+    "status": "Collected",
+    "workmanshipFee": 0.0,
+    "notes": ""
+  },
+  {
+    "id": "s365",
+    "date": "2026-02-03",
+    "customer": "",
+    "contact": "",
+    "channel": "",
+    "vehicle": "",
     "item": "28113-A9100",
     "qty": 1,
     "unitPrice": 150.0,
@@ -6912,7 +6969,7 @@ export const snapshotSales: SnapshotSale[] = [
     "notes": ""
   },
   {
-    "id": "s363",
+    "id": "s366",
     "date": "2026-02-03",
     "customer": "",
     "contact": "",
@@ -6931,7 +6988,7 @@ export const snapshotSales: SnapshotSale[] = [
     "notes": ""
   },
   {
-    "id": "s364",
+    "id": "s367",
     "date": "2026-02-03",
     "customer": "",
     "contact": "",
@@ -6950,7 +7007,7 @@ export const snapshotSales: SnapshotSale[] = [
     "notes": ""
   },
   {
-    "id": "s365",
+    "id": "s368",
     "date": "2026-02-03",
     "customer": "",
     "contact": "",
@@ -6969,7 +7026,7 @@ export const snapshotSales: SnapshotSale[] = [
     "notes": ""
   },
   {
-    "id": "s366",
+    "id": "s369",
     "date": "2026-02-03",
     "customer": "",
     "contact": "",
@@ -6988,7 +7045,7 @@ export const snapshotSales: SnapshotSale[] = [
     "notes": ""
   },
   {
-    "id": "s367",
+    "id": "s370",
     "date": "2026-02-03",
     "customer": "",
     "contact": "",
@@ -7007,7 +7064,7 @@ export const snapshotSales: SnapshotSale[] = [
     "notes": ""
   },
   {
-    "id": "s368",
+    "id": "s371",
     "date": "2026-02-03",
     "customer": "",
     "contact": "",
@@ -7026,7 +7083,7 @@ export const snapshotSales: SnapshotSale[] = [
     "notes": ""
   },
   {
-    "id": "s369",
+    "id": "s372",
     "date": "2026-02-03",
     "customer": "",
     "contact": "",
@@ -7045,7 +7102,7 @@ export const snapshotSales: SnapshotSale[] = [
     "notes": ""
   },
   {
-    "id": "s370",
+    "id": "s373",
     "date": "2026-02-03",
     "customer": "",
     "contact": "",
@@ -7064,7 +7121,7 @@ export const snapshotSales: SnapshotSale[] = [
     "notes": ""
   },
   {
-    "id": "s371",
+    "id": "s374",
     "date": "2026-02-03",
     "customer": "",
     "contact": "",
@@ -7083,7 +7140,7 @@ export const snapshotSales: SnapshotSale[] = [
     "notes": ""
   },
   {
-    "id": "s372",
+    "id": "s375",
     "date": "2026-02-03",
     "customer": "",
     "contact": "",
@@ -7102,7 +7159,7 @@ export const snapshotSales: SnapshotSale[] = [
     "notes": ""
   },
   {
-    "id": "s373",
+    "id": "s376",
     "date": "2026-02-04",
     "customer": "",
     "contact": "",
@@ -7121,70 +7178,13 @@ export const snapshotSales: SnapshotSale[] = [
     "notes": ""
   },
   {
-    "id": "s374",
-    "date": "2026-02-04",
-    "customer": "",
-    "contact": "",
-    "channel": "",
-    "vehicle": "",
-    "item": "Catalystic Cleaning",
-    "qty": 1,
-    "unitPrice": 800.0,
-    "total": 800.0,
-    "payment": "",
-    "receipt": "",
-    "rep": "",
-    "mechanic": "",
-    "status": "Collected",
-    "workmanshipFee": 0.0,
-    "notes": ""
-  },
-  {
-    "id": "s375",
-    "date": "2026-02-04",
-    "customer": "",
-    "contact": "",
-    "channel": "",
-    "vehicle": "",
-    "item": "Ams Oil CVT(7Litres)",
-    "qty": 7,
-    "unitPrice": 1750.0,
-    "total": 1750.0,
-    "payment": "",
-    "receipt": "",
-    "rep": "",
-    "mechanic": "",
-    "status": "Collected",
-    "workmanshipFee": 0.0,
-    "notes": ""
-  },
-  {
-    "id": "s376",
-    "date": "2026-02-04",
-    "customer": "",
-    "contact": "",
-    "channel": "",
-    "vehicle": "",
-    "item": "Catalystic Cleaning",
-    "qty": 1,
-    "unitPrice": 800.0,
-    "total": 800.0,
-    "payment": "",
-    "receipt": "",
-    "rep": "",
-    "mechanic": "",
-    "status": "Collected",
-    "workmanshipFee": 0.0,
-    "notes": ""
-  },
-  {
     "id": "s377",
     "date": "2026-02-04",
     "customer": "",
     "contact": "",
     "channel": "",
     "vehicle": "",
-    "item": "Injector Cleaning",
+    "item": "Catalystic Cleaning",
     "qty": 1,
     "unitPrice": 800.0,
     "total": 800.0,
@@ -7203,6 +7203,63 @@ export const snapshotSales: SnapshotSale[] = [
     "contact": "",
     "channel": "",
     "vehicle": "",
+    "item": "Ams Oil CVT(7Litres)",
+    "qty": 7,
+    "unitPrice": 1750.0,
+    "total": 1750.0,
+    "payment": "",
+    "receipt": "",
+    "rep": "",
+    "mechanic": "",
+    "status": "Collected",
+    "workmanshipFee": 0.0,
+    "notes": ""
+  },
+  {
+    "id": "s379",
+    "date": "2026-02-04",
+    "customer": "",
+    "contact": "",
+    "channel": "",
+    "vehicle": "",
+    "item": "Catalystic Cleaning",
+    "qty": 1,
+    "unitPrice": 800.0,
+    "total": 800.0,
+    "payment": "",
+    "receipt": "",
+    "rep": "",
+    "mechanic": "",
+    "status": "Collected",
+    "workmanshipFee": 0.0,
+    "notes": ""
+  },
+  {
+    "id": "s380",
+    "date": "2026-02-04",
+    "customer": "",
+    "contact": "",
+    "channel": "",
+    "vehicle": "",
+    "item": "Injector Cleaning",
+    "qty": 1,
+    "unitPrice": 800.0,
+    "total": 800.0,
+    "payment": "",
+    "receipt": "",
+    "rep": "",
+    "mechanic": "",
+    "status": "Collected",
+    "workmanshipFee": 0.0,
+    "notes": ""
+  },
+  {
+    "id": "s381",
+    "date": "2026-02-04",
+    "customer": "",
+    "contact": "",
+    "channel": "",
+    "vehicle": "",
     "item": "4610",
     "qty": 1,
     "unitPrice": 150.0,
@@ -7216,7 +7273,7 @@ export const snapshotSales: SnapshotSale[] = [
     "notes": ""
   },
   {
-    "id": "s379",
+    "id": "s382",
     "date": "2026-02-04",
     "customer": "",
     "contact": "",
@@ -7235,7 +7292,7 @@ export const snapshotSales: SnapshotSale[] = [
     "notes": ""
   },
   {
-    "id": "s380",
+    "id": "s383",
     "date": "2026-02-04",
     "customer": "",
     "contact": "",
@@ -7254,7 +7311,7 @@ export const snapshotSales: SnapshotSale[] = [
     "notes": ""
   },
   {
-    "id": "s381",
+    "id": "s384",
     "date": "2026-02-04",
     "customer": "",
     "contact": "",
@@ -7273,7 +7330,7 @@ export const snapshotSales: SnapshotSale[] = [
     "notes": ""
   },
   {
-    "id": "s382",
+    "id": "s385",
     "date": "2026-02-04",
     "customer": "",
     "contact": "",
@@ -7292,7 +7349,7 @@ export const snapshotSales: SnapshotSale[] = [
     "notes": ""
   },
   {
-    "id": "s383",
+    "id": "s386",
     "date": "2026-02-04",
     "customer": "",
     "contact": "",
@@ -7311,7 +7368,7 @@ export const snapshotSales: SnapshotSale[] = [
     "notes": ""
   },
   {
-    "id": "s384",
+    "id": "s387",
     "date": "2026-02-05",
     "customer": "",
     "contact": "",
@@ -7330,7 +7387,7 @@ export const snapshotSales: SnapshotSale[] = [
     "notes": ""
   },
   {
-    "id": "s385",
+    "id": "s388",
     "date": "2026-02-05",
     "customer": "",
     "contact": "",
@@ -7349,7 +7406,7 @@ export const snapshotSales: SnapshotSale[] = [
     "notes": ""
   },
   {
-    "id": "s386",
+    "id": "s389",
     "date": "2026-02-05",
     "customer": "",
     "contact": "",
@@ -7368,7 +7425,7 @@ export const snapshotSales: SnapshotSale[] = [
     "notes": ""
   },
   {
-    "id": "s387",
+    "id": "s390",
     "date": "2026-02-05",
     "customer": "",
     "contact": "",
@@ -7387,7 +7444,7 @@ export const snapshotSales: SnapshotSale[] = [
     "notes": ""
   },
   {
-    "id": "s388",
+    "id": "s391",
     "date": "2026-02-05",
     "customer": "",
     "contact": "",
@@ -7406,7 +7463,7 @@ export const snapshotSales: SnapshotSale[] = [
     "notes": ""
   },
   {
-    "id": "s389",
+    "id": "s392",
     "date": "2026-02-05",
     "customer": "",
     "contact": "",
@@ -7425,7 +7482,7 @@ export const snapshotSales: SnapshotSale[] = [
     "notes": ""
   },
   {
-    "id": "s390",
+    "id": "s393",
     "date": "2026-02-05",
     "customer": "",
     "contact": "",
@@ -7444,7 +7501,7 @@ export const snapshotSales: SnapshotSale[] = [
     "notes": ""
   },
   {
-    "id": "s391",
+    "id": "s394",
     "date": "2026-02-05",
     "customer": "",
     "contact": "",
@@ -7463,7 +7520,7 @@ export const snapshotSales: SnapshotSale[] = [
     "notes": ""
   },
   {
-    "id": "s392",
+    "id": "s395",
     "date": "2026-02-05",
     "customer": "",
     "contact": "",
@@ -7482,7 +7539,7 @@ export const snapshotSales: SnapshotSale[] = [
     "notes": ""
   },
   {
-    "id": "s393",
+    "id": "s396",
     "date": "2026-02-05",
     "customer": "",
     "contact": "",
@@ -7501,7 +7558,7 @@ export const snapshotSales: SnapshotSale[] = [
     "notes": ""
   },
   {
-    "id": "s394",
+    "id": "s397",
     "date": "2026-02-06",
     "customer": "",
     "contact": "",
@@ -7520,7 +7577,7 @@ export const snapshotSales: SnapshotSale[] = [
     "notes": ""
   },
   {
-    "id": "s395",
+    "id": "s398",
     "date": "2026-02-06",
     "customer": "",
     "contact": "",
@@ -7539,7 +7596,7 @@ export const snapshotSales: SnapshotSale[] = [
     "notes": ""
   },
   {
-    "id": "s396",
+    "id": "s399",
     "date": "2026-02-06",
     "customer": "",
     "contact": "",
@@ -7558,7 +7615,7 @@ export const snapshotSales: SnapshotSale[] = [
     "notes": ""
   },
   {
-    "id": "s397",
+    "id": "s400",
     "date": "2026-02-06",
     "customer": "",
     "contact": "",
@@ -7577,7 +7634,7 @@ export const snapshotSales: SnapshotSale[] = [
     "notes": ""
   },
   {
-    "id": "s398",
+    "id": "s401",
     "date": "2026-02-06",
     "customer": "",
     "contact": "",
@@ -7596,7 +7653,7 @@ export const snapshotSales: SnapshotSale[] = [
     "notes": ""
   },
   {
-    "id": "s399",
+    "id": "s402",
     "date": "2026-02-06",
     "customer": "",
     "contact": "",
@@ -7615,7 +7672,7 @@ export const snapshotSales: SnapshotSale[] = [
     "notes": ""
   },
   {
-    "id": "s400",
+    "id": "s403",
     "date": "2026-02-06",
     "customer": "",
     "contact": "",
@@ -7634,7 +7691,7 @@ export const snapshotSales: SnapshotSale[] = [
     "notes": ""
   },
   {
-    "id": "s401",
+    "id": "s404",
     "date": "2026-02-06",
     "customer": "",
     "contact": "",
@@ -7653,7 +7710,7 @@ export const snapshotSales: SnapshotSale[] = [
     "notes": ""
   },
   {
-    "id": "s402",
+    "id": "s405",
     "date": "2026-02-06",
     "customer": "",
     "contact": "",
@@ -7672,7 +7729,7 @@ export const snapshotSales: SnapshotSale[] = [
     "notes": ""
   },
   {
-    "id": "s403",
+    "id": "s406",
     "date": "2026-02-07",
     "customer": "",
     "contact": "",
@@ -7691,7 +7748,7 @@ export const snapshotSales: SnapshotSale[] = [
     "notes": ""
   },
   {
-    "id": "s404",
+    "id": "s407",
     "date": "2026-02-07",
     "customer": "",
     "contact": "",
@@ -7710,7 +7767,7 @@ export const snapshotSales: SnapshotSale[] = [
     "notes": ""
   },
   {
-    "id": "s405",
+    "id": "s408",
     "date": "2026-02-07",
     "customer": "",
     "contact": "",
@@ -7729,7 +7786,7 @@ export const snapshotSales: SnapshotSale[] = [
     "notes": ""
   },
   {
-    "id": "s406",
+    "id": "s409",
     "date": "2026-02-07",
     "customer": "",
     "contact": "",
@@ -7748,7 +7805,7 @@ export const snapshotSales: SnapshotSale[] = [
     "notes": ""
   },
   {
-    "id": "s407",
+    "id": "s410",
     "date": "2026-02-07",
     "customer": "",
     "contact": "",
@@ -7767,7 +7824,7 @@ export const snapshotSales: SnapshotSale[] = [
     "notes": ""
   },
   {
-    "id": "s408",
+    "id": "s411",
     "date": "2026-02-07",
     "customer": "",
     "contact": "",
@@ -7786,7 +7843,7 @@ export const snapshotSales: SnapshotSale[] = [
     "notes": ""
   },
   {
-    "id": "s409",
+    "id": "s412",
     "date": "2026-02-07",
     "customer": "",
     "contact": "",
@@ -7805,7 +7862,7 @@ export const snapshotSales: SnapshotSale[] = [
     "notes": ""
   },
   {
-    "id": "s410",
+    "id": "s413",
     "date": "2026-02-07",
     "customer": "",
     "contact": "",
@@ -7824,7 +7881,7 @@ export const snapshotSales: SnapshotSale[] = [
     "notes": ""
   },
   {
-    "id": "s411",
+    "id": "s414",
     "date": "2026-02-07",
     "customer": "",
     "contact": "",
@@ -7843,7 +7900,7 @@ export const snapshotSales: SnapshotSale[] = [
     "notes": ""
   },
   {
-    "id": "s412",
+    "id": "s415",
     "date": "2026-02-07",
     "customer": "",
     "contact": "",
@@ -7862,7 +7919,7 @@ export const snapshotSales: SnapshotSale[] = [
     "notes": ""
   },
   {
-    "id": "s413",
+    "id": "s416",
     "date": "2026-02-07",
     "customer": "",
     "contact": "",
@@ -7881,7 +7938,7 @@ export const snapshotSales: SnapshotSale[] = [
     "notes": ""
   },
   {
-    "id": "s414",
+    "id": "s417",
     "date": "2026-02-07",
     "customer": "",
     "contact": "",
@@ -7900,7 +7957,7 @@ export const snapshotSales: SnapshotSale[] = [
     "notes": ""
   },
   {
-    "id": "s415",
+    "id": "s418",
     "date": "2026-02-07",
     "customer": "",
     "contact": "",
@@ -7919,7 +7976,7 @@ export const snapshotSales: SnapshotSale[] = [
     "notes": ""
   },
   {
-    "id": "s416",
+    "id": "s419",
     "date": "2026-02-07",
     "customer": "",
     "contact": "",
@@ -7938,7 +7995,7 @@ export const snapshotSales: SnapshotSale[] = [
     "notes": ""
   },
   {
-    "id": "s417",
+    "id": "s420",
     "date": "2026-02-07",
     "customer": "",
     "contact": "",
@@ -7957,7 +8014,7 @@ export const snapshotSales: SnapshotSale[] = [
     "notes": ""
   },
   {
-    "id": "s418",
+    "id": "s421",
     "date": "2026-02-07",
     "customer": "",
     "contact": "",
@@ -7976,7 +8033,7 @@ export const snapshotSales: SnapshotSale[] = [
     "notes": ""
   },
   {
-    "id": "s419",
+    "id": "s422",
     "date": "2026-02-07",
     "customer": "",
     "contact": "",
@@ -7995,7 +8052,7 @@ export const snapshotSales: SnapshotSale[] = [
     "notes": ""
   },
   {
-    "id": "s420",
+    "id": "s423",
     "date": "2026-02-09",
     "customer": "",
     "contact": "",
@@ -8014,7 +8071,7 @@ export const snapshotSales: SnapshotSale[] = [
     "notes": ""
   },
   {
-    "id": "s421",
+    "id": "s424",
     "date": "2026-02-09",
     "customer": "",
     "contact": "",
@@ -8033,7 +8090,7 @@ export const snapshotSales: SnapshotSale[] = [
     "notes": ""
   },
   {
-    "id": "s422",
+    "id": "s425",
     "date": "2026-02-09",
     "customer": "",
     "contact": "",
@@ -8052,7 +8109,7 @@ export const snapshotSales: SnapshotSale[] = [
     "notes": ""
   },
   {
-    "id": "s423",
+    "id": "s426",
     "date": "2026-02-09",
     "customer": "",
     "contact": "",
@@ -8071,7 +8128,7 @@ export const snapshotSales: SnapshotSale[] = [
     "notes": ""
   },
   {
-    "id": "s424",
+    "id": "s427",
     "date": "2026-02-09",
     "customer": "",
     "contact": "",
@@ -8090,7 +8147,7 @@ export const snapshotSales: SnapshotSale[] = [
     "notes": ""
   },
   {
-    "id": "s425",
+    "id": "s428",
     "date": "2026-02-09",
     "customer": "",
     "contact": "",
@@ -8109,7 +8166,7 @@ export const snapshotSales: SnapshotSale[] = [
     "notes": ""
   },
   {
-    "id": "s426",
+    "id": "s429",
     "date": "2026-02-09",
     "customer": "",
     "contact": "",
@@ -8128,7 +8185,7 @@ export const snapshotSales: SnapshotSale[] = [
     "notes": ""
   },
   {
-    "id": "s427",
+    "id": "s430",
     "date": "2026-02-09",
     "customer": "",
     "contact": "",
@@ -8147,7 +8204,7 @@ export const snapshotSales: SnapshotSale[] = [
     "notes": ""
   },
   {
-    "id": "s428",
+    "id": "s431",
     "date": "2026-02-09",
     "customer": "",
     "contact": "",
@@ -8166,7 +8223,7 @@ export const snapshotSales: SnapshotSale[] = [
     "notes": ""
   },
   {
-    "id": "s429",
+    "id": "s432",
     "date": "2026-02-09",
     "customer": "",
     "contact": "",
@@ -8185,7 +8242,7 @@ export const snapshotSales: SnapshotSale[] = [
     "notes": ""
   },
   {
-    "id": "s430",
+    "id": "s433",
     "date": "2026-02-09",
     "customer": "",
     "contact": "",
@@ -8204,7 +8261,7 @@ export const snapshotSales: SnapshotSale[] = [
     "notes": ""
   },
   {
-    "id": "s431",
+    "id": "s434",
     "date": "2026-02-09",
     "customer": "",
     "contact": "",
@@ -8223,7 +8280,7 @@ export const snapshotSales: SnapshotSale[] = [
     "notes": ""
   },
   {
-    "id": "s432",
+    "id": "s435",
     "date": "2026-02-09",
     "customer": "",
     "contact": "",
@@ -8242,7 +8299,7 @@ export const snapshotSales: SnapshotSale[] = [
     "notes": ""
   },
   {
-    "id": "s433",
+    "id": "s436",
     "date": "2026-02-09",
     "customer": "",
     "contact": "",
@@ -8261,7 +8318,7 @@ export const snapshotSales: SnapshotSale[] = [
     "notes": ""
   },
   {
-    "id": "s434",
+    "id": "s437",
     "date": "2026-02-10",
     "customer": "",
     "contact": "",
@@ -8280,7 +8337,7 @@ export const snapshotSales: SnapshotSale[] = [
     "notes": ""
   },
   {
-    "id": "s435",
+    "id": "s438",
     "date": "2026-02-10",
     "customer": "",
     "contact": "",
@@ -8299,7 +8356,7 @@ export const snapshotSales: SnapshotSale[] = [
     "notes": ""
   },
   {
-    "id": "s436",
+    "id": "s439",
     "date": "2026-02-10",
     "customer": "",
     "contact": "",
@@ -8318,7 +8375,7 @@ export const snapshotSales: SnapshotSale[] = [
     "notes": ""
   },
   {
-    "id": "s437",
+    "id": "s440",
     "date": "2026-02-10",
     "customer": "",
     "contact": "",
@@ -8337,7 +8394,7 @@ export const snapshotSales: SnapshotSale[] = [
     "notes": ""
   },
   {
-    "id": "s438",
+    "id": "s441",
     "date": "2026-02-10",
     "customer": "",
     "contact": "",
@@ -8356,7 +8413,7 @@ export const snapshotSales: SnapshotSale[] = [
     "notes": ""
   },
   {
-    "id": "s439",
+    "id": "s442",
     "date": "2026-02-10",
     "customer": "",
     "contact": "",
@@ -8375,7 +8432,7 @@ export const snapshotSales: SnapshotSale[] = [
     "notes": ""
   },
   {
-    "id": "s440",
+    "id": "s443",
     "date": "2026-02-10",
     "customer": "",
     "contact": "",
@@ -8394,7 +8451,7 @@ export const snapshotSales: SnapshotSale[] = [
     "notes": ""
   },
   {
-    "id": "s441",
+    "id": "s444",
     "date": "2026-02-10",
     "customer": "",
     "contact": "",
@@ -8413,7 +8470,7 @@ export const snapshotSales: SnapshotSale[] = [
     "notes": ""
   },
   {
-    "id": "s442",
+    "id": "s445",
     "date": "2026-02-10",
     "customer": "",
     "contact": "",
@@ -8432,7 +8489,7 @@ export const snapshotSales: SnapshotSale[] = [
     "notes": ""
   },
   {
-    "id": "s443",
+    "id": "s446",
     "date": "2026-02-10",
     "customer": "",
     "contact": "",
@@ -8451,7 +8508,7 @@ export const snapshotSales: SnapshotSale[] = [
     "notes": ""
   },
   {
-    "id": "s444",
+    "id": "s447",
     "date": "2026-02-11",
     "customer": "",
     "contact": "",
@@ -8470,7 +8527,7 @@ export const snapshotSales: SnapshotSale[] = [
     "notes": ""
   },
   {
-    "id": "s445",
+    "id": "s448",
     "date": "2026-02-11",
     "customer": "",
     "contact": "",
@@ -8489,7 +8546,7 @@ export const snapshotSales: SnapshotSale[] = [
     "notes": ""
   },
   {
-    "id": "s446",
+    "id": "s449",
     "date": "2026-02-11",
     "customer": "",
     "contact": "",
@@ -8508,7 +8565,7 @@ export const snapshotSales: SnapshotSale[] = [
     "notes": ""
   },
   {
-    "id": "s447",
+    "id": "s450",
     "date": "2026-02-11",
     "customer": "",
     "contact": "",
@@ -8527,7 +8584,7 @@ export const snapshotSales: SnapshotSale[] = [
     "notes": ""
   },
   {
-    "id": "s448",
+    "id": "s451",
     "date": "2026-02-11",
     "customer": "",
     "contact": "",
@@ -8546,7 +8603,7 @@ export const snapshotSales: SnapshotSale[] = [
     "notes": ""
   },
   {
-    "id": "s449",
+    "id": "s452",
     "date": "2026-02-12",
     "customer": "",
     "contact": "",
@@ -8565,7 +8622,7 @@ export const snapshotSales: SnapshotSale[] = [
     "notes": ""
   },
   {
-    "id": "s450",
+    "id": "s453",
     "date": "2026-02-12",
     "customer": "",
     "contact": "",
@@ -8584,7 +8641,7 @@ export const snapshotSales: SnapshotSale[] = [
     "notes": ""
   },
   {
-    "id": "s451",
+    "id": "s454",
     "date": "2026-02-12",
     "customer": "",
     "contact": "",
@@ -8603,7 +8660,7 @@ export const snapshotSales: SnapshotSale[] = [
     "notes": ""
   },
   {
-    "id": "s452",
+    "id": "s455",
     "date": "2026-02-12",
     "customer": "",
     "contact": "",
@@ -8622,7 +8679,7 @@ export const snapshotSales: SnapshotSale[] = [
     "notes": ""
   },
   {
-    "id": "s453",
+    "id": "s456",
     "date": "2026-02-12",
     "customer": "",
     "contact": "",
@@ -8641,7 +8698,7 @@ export const snapshotSales: SnapshotSale[] = [
     "notes": ""
   },
   {
-    "id": "s454",
+    "id": "s457",
     "date": "2026-02-12",
     "customer": "",
     "contact": "",
@@ -8660,7 +8717,7 @@ export const snapshotSales: SnapshotSale[] = [
     "notes": ""
   },
   {
-    "id": "s455",
+    "id": "s458",
     "date": "2026-02-12",
     "customer": "",
     "contact": "",
@@ -8679,7 +8736,7 @@ export const snapshotSales: SnapshotSale[] = [
     "notes": ""
   },
   {
-    "id": "s456",
+    "id": "s459",
     "date": "2026-02-12",
     "customer": "",
     "contact": "",
@@ -8698,7 +8755,7 @@ export const snapshotSales: SnapshotSale[] = [
     "notes": ""
   },
   {
-    "id": "s457",
+    "id": "s460",
     "date": "2026-02-12",
     "customer": "",
     "contact": "",
@@ -8717,7 +8774,7 @@ export const snapshotSales: SnapshotSale[] = [
     "notes": ""
   },
   {
-    "id": "s458",
+    "id": "s461",
     "date": "2026-02-12",
     "customer": "",
     "contact": "",
@@ -8736,7 +8793,7 @@ export const snapshotSales: SnapshotSale[] = [
     "notes": ""
   },
   {
-    "id": "s459",
+    "id": "s462",
     "date": "2026-02-12",
     "customer": "",
     "contact": "",
@@ -8755,7 +8812,7 @@ export const snapshotSales: SnapshotSale[] = [
     "notes": ""
   },
   {
-    "id": "s460",
+    "id": "s463",
     "date": "2026-02-12",
     "customer": "",
     "contact": "",
@@ -8774,7 +8831,7 @@ export const snapshotSales: SnapshotSale[] = [
     "notes": ""
   },
   {
-    "id": "s461",
+    "id": "s464",
     "date": "2026-02-12",
     "customer": "",
     "contact": "",
@@ -8793,7 +8850,7 @@ export const snapshotSales: SnapshotSale[] = [
     "notes": ""
   },
   {
-    "id": "s462",
+    "id": "s465",
     "date": "2026-02-12",
     "customer": "",
     "contact": "",
@@ -8812,7 +8869,7 @@ export const snapshotSales: SnapshotSale[] = [
     "notes": ""
   },
   {
-    "id": "s463",
+    "id": "s466",
     "date": "2026-02-13",
     "customer": "",
     "contact": "",
@@ -8831,7 +8888,7 @@ export const snapshotSales: SnapshotSale[] = [
     "notes": ""
   },
   {
-    "id": "s464",
+    "id": "s467",
     "date": "2026-02-13",
     "customer": "",
     "contact": "",
@@ -8850,7 +8907,7 @@ export const snapshotSales: SnapshotSale[] = [
     "notes": ""
   },
   {
-    "id": "s465",
+    "id": "s468",
     "date": "2026-02-13",
     "customer": "",
     "contact": "",
@@ -8869,7 +8926,7 @@ export const snapshotSales: SnapshotSale[] = [
     "notes": ""
   },
   {
-    "id": "s466",
+    "id": "s469",
     "date": "2026-02-13",
     "customer": "",
     "contact": "",
@@ -8888,7 +8945,7 @@ export const snapshotSales: SnapshotSale[] = [
     "notes": ""
   },
   {
-    "id": "s467",
+    "id": "s470",
     "date": "2026-02-13",
     "customer": "",
     "contact": "",
@@ -8907,7 +8964,7 @@ export const snapshotSales: SnapshotSale[] = [
     "notes": ""
   },
   {
-    "id": "s468",
+    "id": "s471",
     "date": "2026-02-13",
     "customer": "",
     "contact": "",
@@ -8926,7 +8983,7 @@ export const snapshotSales: SnapshotSale[] = [
     "notes": ""
   },
   {
-    "id": "s469",
+    "id": "s472",
     "date": "2026-02-14",
     "customer": "",
     "contact": "",
@@ -8945,7 +9002,7 @@ export const snapshotSales: SnapshotSale[] = [
     "notes": ""
   },
   {
-    "id": "s470",
+    "id": "s473",
     "date": "2026-02-14",
     "customer": "",
     "contact": "",
@@ -8964,7 +9021,7 @@ export const snapshotSales: SnapshotSale[] = [
     "notes": ""
   },
   {
-    "id": "s471",
+    "id": "s474",
     "date": "2026-02-14",
     "customer": "",
     "contact": "",
@@ -8983,7 +9040,7 @@ export const snapshotSales: SnapshotSale[] = [
     "notes": ""
   },
   {
-    "id": "s472",
+    "id": "s475",
     "date": "2026-02-14",
     "customer": "",
     "contact": "",
@@ -9002,7 +9059,7 @@ export const snapshotSales: SnapshotSale[] = [
     "notes": ""
   },
   {
-    "id": "s473",
+    "id": "s476",
     "date": "2026-02-14",
     "customer": "",
     "contact": "",
@@ -9021,7 +9078,7 @@ export const snapshotSales: SnapshotSale[] = [
     "notes": ""
   },
   {
-    "id": "s474",
+    "id": "s477",
     "date": "2026-02-14",
     "customer": "",
     "contact": "",
@@ -9040,7 +9097,7 @@ export const snapshotSales: SnapshotSale[] = [
     "notes": ""
   },
   {
-    "id": "s475",
+    "id": "s478",
     "date": "2026-02-14",
     "customer": "",
     "contact": "",
@@ -9059,7 +9116,7 @@ export const snapshotSales: SnapshotSale[] = [
     "notes": ""
   },
   {
-    "id": "s476",
+    "id": "s479",
     "date": "2026-02-14",
     "customer": "",
     "contact": "",
@@ -9078,7 +9135,7 @@ export const snapshotSales: SnapshotSale[] = [
     "notes": ""
   },
   {
-    "id": "s477",
+    "id": "s480",
     "date": "2026-02-14",
     "customer": "",
     "contact": "",
@@ -9097,7 +9154,7 @@ export const snapshotSales: SnapshotSale[] = [
     "notes": ""
   },
   {
-    "id": "s478",
+    "id": "s481",
     "date": "2026-02-15",
     "customer": "",
     "contact": "",
@@ -9116,7 +9173,7 @@ export const snapshotSales: SnapshotSale[] = [
     "notes": ""
   },
   {
-    "id": "s479",
+    "id": "s482",
     "date": "2026-02-15",
     "customer": "",
     "contact": "",
@@ -9135,7 +9192,7 @@ export const snapshotSales: SnapshotSale[] = [
     "notes": ""
   },
   {
-    "id": "s480",
+    "id": "s483",
     "date": "2026-02-15",
     "customer": "",
     "contact": "",
@@ -9154,7 +9211,7 @@ export const snapshotSales: SnapshotSale[] = [
     "notes": ""
   },
   {
-    "id": "s481",
+    "id": "s484",
     "date": "2026-02-15",
     "customer": "",
     "contact": "",
@@ -9173,7 +9230,7 @@ export const snapshotSales: SnapshotSale[] = [
     "notes": ""
   },
   {
-    "id": "s482",
+    "id": "s485",
     "date": "2026-02-15",
     "customer": "",
     "contact": "",
@@ -9192,7 +9249,7 @@ export const snapshotSales: SnapshotSale[] = [
     "notes": ""
   },
   {
-    "id": "s483",
+    "id": "s486",
     "date": "2026-02-15",
     "customer": "",
     "contact": "",
@@ -9211,7 +9268,7 @@ export const snapshotSales: SnapshotSale[] = [
     "notes": ""
   },
   {
-    "id": "s484",
+    "id": "s487",
     "date": "2026-02-16",
     "customer": "",
     "contact": "",
@@ -9230,7 +9287,7 @@ export const snapshotSales: SnapshotSale[] = [
     "notes": ""
   },
   {
-    "id": "s485",
+    "id": "s488",
     "date": "2026-02-16",
     "customer": "",
     "contact": "",
@@ -9249,7 +9306,7 @@ export const snapshotSales: SnapshotSale[] = [
     "notes": ""
   },
   {
-    "id": "s486",
+    "id": "s489",
     "date": "2026-02-16",
     "customer": "",
     "contact": "",
@@ -9268,7 +9325,7 @@ export const snapshotSales: SnapshotSale[] = [
     "notes": ""
   },
   {
-    "id": "s487",
+    "id": "s490",
     "date": "2026-02-16",
     "customer": "",
     "contact": "",
@@ -9287,7 +9344,7 @@ export const snapshotSales: SnapshotSale[] = [
     "notes": ""
   },
   {
-    "id": "s488",
+    "id": "s491",
     "date": "2026-02-18",
     "customer": "",
     "contact": "",
@@ -9306,7 +9363,7 @@ export const snapshotSales: SnapshotSale[] = [
     "notes": ""
   },
   {
-    "id": "s489",
+    "id": "s492",
     "date": "2026-02-18",
     "customer": "",
     "contact": "",
@@ -9325,7 +9382,7 @@ export const snapshotSales: SnapshotSale[] = [
     "notes": ""
   },
   {
-    "id": "s490",
+    "id": "s493",
     "date": "2026-02-18",
     "customer": "",
     "contact": "",
@@ -9344,7 +9401,7 @@ export const snapshotSales: SnapshotSale[] = [
     "notes": ""
   },
   {
-    "id": "s491",
+    "id": "s494",
     "date": "2026-02-19",
     "customer": "",
     "contact": "",
@@ -9363,7 +9420,7 @@ export const snapshotSales: SnapshotSale[] = [
     "notes": ""
   },
   {
-    "id": "s492",
+    "id": "s495",
     "date": "2026-02-19",
     "customer": "",
     "contact": "",
@@ -9382,7 +9439,7 @@ export const snapshotSales: SnapshotSale[] = [
     "notes": ""
   },
   {
-    "id": "s493",
+    "id": "s496",
     "date": "2026-02-19",
     "customer": "",
     "contact": "",
@@ -9401,7 +9458,7 @@ export const snapshotSales: SnapshotSale[] = [
     "notes": ""
   },
   {
-    "id": "s494",
+    "id": "s497",
     "date": "2026-02-19",
     "customer": "",
     "contact": "",
@@ -9420,7 +9477,7 @@ export const snapshotSales: SnapshotSale[] = [
     "notes": ""
   },
   {
-    "id": "s495",
+    "id": "s498",
     "date": "2026-02-19",
     "customer": "",
     "contact": "",
@@ -9439,7 +9496,7 @@ export const snapshotSales: SnapshotSale[] = [
     "notes": ""
   },
   {
-    "id": "s496",
+    "id": "s499",
     "date": "2026-02-20",
     "customer": "",
     "contact": "",
@@ -9458,7 +9515,7 @@ export const snapshotSales: SnapshotSale[] = [
     "notes": ""
   },
   {
-    "id": "s497",
+    "id": "s500",
     "date": "2026-02-20",
     "customer": "",
     "contact": "",
@@ -9477,7 +9534,7 @@ export const snapshotSales: SnapshotSale[] = [
     "notes": ""
   },
   {
-    "id": "s498",
+    "id": "s501",
     "date": "2026-02-20",
     "customer": "",
     "contact": "",
@@ -9496,7 +9553,7 @@ export const snapshotSales: SnapshotSale[] = [
     "notes": ""
   },
   {
-    "id": "s499",
+    "id": "s502",
     "date": "2026-02-20",
     "customer": "",
     "contact": "",
@@ -9515,7 +9572,7 @@ export const snapshotSales: SnapshotSale[] = [
     "notes": ""
   },
   {
-    "id": "s500",
+    "id": "s503",
     "date": "2026-02-20",
     "customer": "",
     "contact": "",
@@ -9534,7 +9591,7 @@ export const snapshotSales: SnapshotSale[] = [
     "notes": ""
   },
   {
-    "id": "s501",
+    "id": "s504",
     "date": "2026-02-20",
     "customer": "",
     "contact": "",
@@ -9553,7 +9610,7 @@ export const snapshotSales: SnapshotSale[] = [
     "notes": ""
   },
   {
-    "id": "s502",
+    "id": "s505",
     "date": "2026-02-21",
     "customer": "",
     "contact": "",
@@ -9572,7 +9629,7 @@ export const snapshotSales: SnapshotSale[] = [
     "notes": ""
   },
   {
-    "id": "s503",
+    "id": "s506",
     "date": "2026-02-21",
     "customer": "",
     "contact": "",
@@ -9591,7 +9648,7 @@ export const snapshotSales: SnapshotSale[] = [
     "notes": ""
   },
   {
-    "id": "s504",
+    "id": "s507",
     "date": "2026-02-21",
     "customer": "",
     "contact": "",
@@ -9610,7 +9667,7 @@ export const snapshotSales: SnapshotSale[] = [
     "notes": ""
   },
   {
-    "id": "s505",
+    "id": "s508",
     "date": "2026-02-21",
     "customer": "",
     "contact": "",
@@ -9629,7 +9686,7 @@ export const snapshotSales: SnapshotSale[] = [
     "notes": ""
   },
   {
-    "id": "s506",
+    "id": "s509",
     "date": "2026-02-21",
     "customer": "",
     "contact": "",
@@ -9648,7 +9705,7 @@ export const snapshotSales: SnapshotSale[] = [
     "notes": ""
   },
   {
-    "id": "s507",
+    "id": "s510",
     "date": "2026-02-21",
     "customer": "",
     "contact": "",
@@ -9667,7 +9724,7 @@ export const snapshotSales: SnapshotSale[] = [
     "notes": ""
   },
   {
-    "id": "s508",
+    "id": "s511",
     "date": "2026-02-21",
     "customer": "",
     "contact": "",
@@ -9686,7 +9743,7 @@ export const snapshotSales: SnapshotSale[] = [
     "notes": ""
   },
   {
-    "id": "s509",
+    "id": "s512",
     "date": "2026-02-21",
     "customer": "",
     "contact": "",
@@ -9705,7 +9762,7 @@ export const snapshotSales: SnapshotSale[] = [
     "notes": ""
   },
   {
-    "id": "s510",
+    "id": "s513",
     "date": "2026-02-21",
     "customer": "",
     "contact": "",
@@ -9724,7 +9781,7 @@ export const snapshotSales: SnapshotSale[] = [
     "notes": ""
   },
   {
-    "id": "s511",
+    "id": "s514",
     "date": "2026-02-21",
     "customer": "",
     "contact": "",
@@ -9743,7 +9800,7 @@ export const snapshotSales: SnapshotSale[] = [
     "notes": ""
   },
   {
-    "id": "s512",
+    "id": "s515",
     "date": "2026-02-21",
     "customer": "",
     "contact": "",
@@ -9762,7 +9819,7 @@ export const snapshotSales: SnapshotSale[] = [
     "notes": ""
   },
   {
-    "id": "s513",
+    "id": "s516",
     "date": "2026-02-21",
     "customer": "",
     "contact": "",
@@ -9781,7 +9838,7 @@ export const snapshotSales: SnapshotSale[] = [
     "notes": ""
   },
   {
-    "id": "s514",
+    "id": "s517",
     "date": "2026-02-21",
     "customer": "",
     "contact": "",
@@ -9800,7 +9857,7 @@ export const snapshotSales: SnapshotSale[] = [
     "notes": ""
   },
   {
-    "id": "s515",
+    "id": "s518",
     "date": "2026-02-21",
     "customer": "",
     "contact": "",
@@ -9819,7 +9876,7 @@ export const snapshotSales: SnapshotSale[] = [
     "notes": ""
   },
   {
-    "id": "s516",
+    "id": "s519",
     "date": "2026-02-21",
     "customer": "",
     "contact": "",
@@ -9838,7 +9895,7 @@ export const snapshotSales: SnapshotSale[] = [
     "notes": ""
   },
   {
-    "id": "s517",
+    "id": "s520",
     "date": "2026-02-21",
     "customer": "",
     "contact": "",
@@ -9857,7 +9914,7 @@ export const snapshotSales: SnapshotSale[] = [
     "notes": ""
   },
   {
-    "id": "s518",
+    "id": "s521",
     "date": "2026-02-23",
     "customer": "",
     "contact": "",
@@ -9876,7 +9933,7 @@ export const snapshotSales: SnapshotSale[] = [
     "notes": ""
   },
   {
-    "id": "s519",
+    "id": "s522",
     "date": "2026-02-23",
     "customer": "",
     "contact": "",
@@ -9895,7 +9952,7 @@ export const snapshotSales: SnapshotSale[] = [
     "notes": ""
   },
   {
-    "id": "s520",
+    "id": "s523",
     "date": "2026-02-23",
     "customer": "",
     "contact": "",
@@ -9914,7 +9971,7 @@ export const snapshotSales: SnapshotSale[] = [
     "notes": ""
   },
   {
-    "id": "s521",
+    "id": "s524",
     "date": "2026-02-23",
     "customer": "",
     "contact": "",
@@ -9933,7 +9990,7 @@ export const snapshotSales: SnapshotSale[] = [
     "notes": ""
   },
   {
-    "id": "s522",
+    "id": "s525",
     "date": "2026-02-23",
     "customer": "",
     "contact": "",
@@ -9952,7 +10009,7 @@ export const snapshotSales: SnapshotSale[] = [
     "notes": ""
   },
   {
-    "id": "s523",
+    "id": "s526",
     "date": "2026-02-23",
     "customer": "",
     "contact": "",
@@ -9971,7 +10028,7 @@ export const snapshotSales: SnapshotSale[] = [
     "notes": ""
   },
   {
-    "id": "s524",
+    "id": "s527",
     "date": "2026-02-23",
     "customer": "",
     "contact": "",
@@ -9990,7 +10047,7 @@ export const snapshotSales: SnapshotSale[] = [
     "notes": ""
   },
   {
-    "id": "s525",
+    "id": "s528",
     "date": "2026-02-23",
     "customer": "",
     "contact": "",
@@ -10009,7 +10066,7 @@ export const snapshotSales: SnapshotSale[] = [
     "notes": "TOTAL=4,650"
   },
   {
-    "id": "s526",
+    "id": "s529",
     "date": "2026-02-24",
     "customer": "",
     "contact": "",
@@ -10028,7 +10085,7 @@ export const snapshotSales: SnapshotSale[] = [
     "notes": ""
   },
   {
-    "id": "s527",
+    "id": "s530",
     "date": "2026-02-24",
     "customer": "",
     "contact": "",
@@ -10047,7 +10104,7 @@ export const snapshotSales: SnapshotSale[] = [
     "notes": ""
   },
   {
-    "id": "s528",
+    "id": "s531",
     "date": "2026-02-24",
     "customer": "",
     "contact": "",
@@ -10066,7 +10123,7 @@ export const snapshotSales: SnapshotSale[] = [
     "notes": ""
   },
   {
-    "id": "s529",
+    "id": "s532",
     "date": "2026-02-24",
     "customer": "",
     "contact": "",
@@ -10085,7 +10142,7 @@ export const snapshotSales: SnapshotSale[] = [
     "notes": ""
   },
   {
-    "id": "s530",
+    "id": "s533",
     "date": "2026-02-24",
     "customer": "",
     "contact": "",
@@ -10104,7 +10161,7 @@ export const snapshotSales: SnapshotSale[] = [
     "notes": ""
   },
   {
-    "id": "s531",
+    "id": "s534",
     "date": "2026-02-24",
     "customer": "",
     "contact": "",
@@ -10123,7 +10180,7 @@ export const snapshotSales: SnapshotSale[] = [
     "notes": ""
   },
   {
-    "id": "s532",
+    "id": "s535",
     "date": "2026-02-25",
     "customer": "",
     "contact": "",
@@ -10142,7 +10199,7 @@ export const snapshotSales: SnapshotSale[] = [
     "notes": ""
   },
   {
-    "id": "s533",
+    "id": "s536",
     "date": "2026-02-25",
     "customer": "",
     "contact": "",
@@ -10161,7 +10218,7 @@ export const snapshotSales: SnapshotSale[] = [
     "notes": ""
   },
   {
-    "id": "s534",
+    "id": "s537",
     "date": "2026-02-25",
     "customer": "",
     "contact": "",
@@ -10180,7 +10237,7 @@ export const snapshotSales: SnapshotSale[] = [
     "notes": ""
   },
   {
-    "id": "s535",
+    "id": "s538",
     "date": "2026-02-25",
     "customer": "",
     "contact": "",
@@ -10199,7 +10256,7 @@ export const snapshotSales: SnapshotSale[] = [
     "notes": ""
   },
   {
-    "id": "s536",
+    "id": "s539",
     "date": "2026-02-25",
     "customer": "",
     "contact": "",
@@ -10218,7 +10275,7 @@ export const snapshotSales: SnapshotSale[] = [
     "notes": "TOTAL=2,900"
   },
   {
-    "id": "s537",
+    "id": "s540",
     "date": "2026-02-26",
     "customer": "",
     "contact": "",
@@ -10237,7 +10294,7 @@ export const snapshotSales: SnapshotSale[] = [
     "notes": ""
   },
   {
-    "id": "s538",
+    "id": "s541",
     "date": "2026-02-26",
     "customer": "",
     "contact": "",
@@ -10256,7 +10313,7 @@ export const snapshotSales: SnapshotSale[] = [
     "notes": ""
   },
   {
-    "id": "s539",
+    "id": "s542",
     "date": "2026-02-26",
     "customer": "",
     "contact": "",
@@ -10275,7 +10332,7 @@ export const snapshotSales: SnapshotSale[] = [
     "notes": ""
   },
   {
-    "id": "s540",
+    "id": "s543",
     "date": "2026-02-26",
     "customer": "",
     "contact": "",
@@ -10294,7 +10351,7 @@ export const snapshotSales: SnapshotSale[] = [
     "notes": ""
   },
   {
-    "id": "s541",
+    "id": "s544",
     "date": "2026-02-26",
     "customer": "",
     "contact": "",
@@ -10313,70 +10370,13 @@ export const snapshotSales: SnapshotSale[] = [
     "notes": ""
   },
   {
-    "id": "s542",
-    "date": "2026-02-26",
-    "customer": "",
-    "contact": "",
-    "channel": "",
-    "vehicle": "",
-    "item": "4610",
-    "qty": 1,
-    "unitPrice": 150.0,
-    "total": 150.0,
-    "payment": "",
-    "receipt": "",
-    "rep": "",
-    "mechanic": "",
-    "status": "Collected",
-    "workmanshipFee": 0.0,
-    "notes": ""
-  },
-  {
-    "id": "s543",
-    "date": "2026-02-26",
-    "customer": "",
-    "contact": "",
-    "channel": "",
-    "vehicle": "",
-    "item": "LABOR",
-    "qty": 1,
-    "unitPrice": 200.0,
-    "total": 200.0,
-    "payment": "",
-    "receipt": "",
-    "rep": "",
-    "mechanic": "",
-    "status": "Collected",
-    "workmanshipFee": 0.0,
-    "notes": ""
-  },
-  {
-    "id": "s544",
-    "date": "2026-02-26",
-    "customer": "",
-    "contact": "",
-    "channel": "",
-    "vehicle": "",
-    "item": "6B2-A00",
-    "qty": 1,
-    "unitPrice": 200.0,
-    "total": 200.0,
-    "payment": "",
-    "receipt": "",
-    "rep": "",
-    "mechanic": "",
-    "status": "Collected",
-    "workmanshipFee": 0.0,
-    "notes": ""
-  },
-  {
     "id": "s545",
     "date": "2026-02-26",
     "customer": "",
     "contact": "",
     "channel": "",
     "vehicle": "",
-    "item": "TOG -A01",
+    "item": "4610",
     "qty": 1,
     "unitPrice": 150.0,
     "total": 150.0,
@@ -10395,10 +10395,10 @@ export const snapshotSales: SnapshotSale[] = [
     "contact": "",
     "channel": "",
     "vehicle": "",
-    "item": "NGK 95660",
+    "item": "LABOR",
     "qty": 1,
-    "unitPrice": 1000.0,
-    "total": 1000.0,
+    "unitPrice": 200.0,
+    "total": 200.0,
     "payment": "",
     "receipt": "",
     "rep": "",
@@ -10414,10 +10414,10 @@ export const snapshotSales: SnapshotSale[] = [
     "contact": "",
     "channel": "",
     "vehicle": "",
-    "item": "Ams Oil 5w-20 (5litres)",
-    "qty": 5,
-    "unitPrice": 1000.0,
-    "total": 1000.0,
+    "item": "6B2-A00",
+    "qty": 1,
+    "unitPrice": 200.0,
+    "total": 200.0,
     "payment": "",
     "receipt": "",
     "rep": "",
@@ -10433,7 +10433,7 @@ export const snapshotSales: SnapshotSale[] = [
     "contact": "",
     "channel": "",
     "vehicle": "",
-    "item": "4610",
+    "item": "TOG -A01",
     "qty": 1,
     "unitPrice": 150.0,
     "total": 150.0,
@@ -10452,6 +10452,63 @@ export const snapshotSales: SnapshotSale[] = [
     "contact": "",
     "channel": "",
     "vehicle": "",
+    "item": "NGK 95660",
+    "qty": 1,
+    "unitPrice": 1000.0,
+    "total": 1000.0,
+    "payment": "",
+    "receipt": "",
+    "rep": "",
+    "mechanic": "",
+    "status": "Collected",
+    "workmanshipFee": 0.0,
+    "notes": ""
+  },
+  {
+    "id": "s550",
+    "date": "2026-02-26",
+    "customer": "",
+    "contact": "",
+    "channel": "",
+    "vehicle": "",
+    "item": "Ams Oil 5w-20 (5litres)",
+    "qty": 5,
+    "unitPrice": 1000.0,
+    "total": 1000.0,
+    "payment": "",
+    "receipt": "",
+    "rep": "",
+    "mechanic": "",
+    "status": "Collected",
+    "workmanshipFee": 0.0,
+    "notes": ""
+  },
+  {
+    "id": "s551",
+    "date": "2026-02-26",
+    "customer": "",
+    "contact": "",
+    "channel": "",
+    "vehicle": "",
+    "item": "4610",
+    "qty": 1,
+    "unitPrice": 150.0,
+    "total": 150.0,
+    "payment": "",
+    "receipt": "",
+    "rep": "",
+    "mechanic": "",
+    "status": "Collected",
+    "workmanshipFee": 0.0,
+    "notes": ""
+  },
+  {
+    "id": "s552",
+    "date": "2026-02-26",
+    "customer": "",
+    "contact": "",
+    "channel": "",
+    "vehicle": "",
     "item": "T5R-A01",
     "qty": 1,
     "unitPrice": 150.0,
@@ -10465,7 +10522,7 @@ export const snapshotSales: SnapshotSale[] = [
     "notes": ""
   },
   {
-    "id": "s550",
+    "id": "s553",
     "date": "2026-02-26",
     "customer": "",
     "contact": "",
@@ -10484,7 +10541,7 @@ export const snapshotSales: SnapshotSale[] = [
     "notes": ""
   },
   {
-    "id": "s551",
+    "id": "s554",
     "date": "2026-02-26",
     "customer": "",
     "contact": "",
@@ -10503,7 +10560,7 @@ export const snapshotSales: SnapshotSale[] = [
     "notes": ""
   },
   {
-    "id": "s552",
+    "id": "s555",
     "date": "2026-02-26",
     "customer": "",
     "contact": "",
@@ -10522,7 +10579,7 @@ export const snapshotSales: SnapshotSale[] = [
     "notes": ""
   },
   {
-    "id": "s553",
+    "id": "s556",
     "date": "2026-02-27",
     "customer": "",
     "contact": "",
@@ -10541,7 +10598,7 @@ export const snapshotSales: SnapshotSale[] = [
     "notes": ""
   },
   {
-    "id": "s554",
+    "id": "s557",
     "date": "2026-02-27",
     "customer": "",
     "contact": "",
@@ -10560,7 +10617,7 @@ export const snapshotSales: SnapshotSale[] = [
     "notes": ""
   },
   {
-    "id": "s555",
+    "id": "s558",
     "date": "2026-02-27",
     "customer": "",
     "contact": "",
@@ -10579,7 +10636,7 @@ export const snapshotSales: SnapshotSale[] = [
     "notes": ""
   },
   {
-    "id": "s556",
+    "id": "s559",
     "date": "2026-02-27",
     "customer": "",
     "contact": "",
@@ -10598,7 +10655,7 @@ export const snapshotSales: SnapshotSale[] = [
     "notes": ""
   },
   {
-    "id": "s557",
+    "id": "s560",
     "date": "2026-02-27",
     "customer": "",
     "contact": "",
@@ -10617,7 +10674,7 @@ export const snapshotSales: SnapshotSale[] = [
     "notes": "\\"
   },
   {
-    "id": "s558",
+    "id": "s561",
     "date": "2026-02-27",
     "customer": "",
     "contact": "",
@@ -10636,7 +10693,7 @@ export const snapshotSales: SnapshotSale[] = [
     "notes": ""
   },
   {
-    "id": "s559",
+    "id": "s562",
     "date": "2026-02-27",
     "customer": "",
     "contact": "",
@@ -10655,7 +10712,7 @@ export const snapshotSales: SnapshotSale[] = [
     "notes": ""
   },
   {
-    "id": "s560",
+    "id": "s563",
     "date": "2026-02-27",
     "customer": "",
     "contact": "",
@@ -10674,7 +10731,7 @@ export const snapshotSales: SnapshotSale[] = [
     "notes": ""
   },
   {
-    "id": "s561",
+    "id": "s564",
     "date": "2026-02-27",
     "customer": "",
     "contact": "",
@@ -10693,7 +10750,7 @@ export const snapshotSales: SnapshotSale[] = [
     "notes": ""
   },
   {
-    "id": "s562",
+    "id": "s565",
     "date": "2026-02-27",
     "customer": "",
     "contact": "",
@@ -10712,7 +10769,7 @@ export const snapshotSales: SnapshotSale[] = [
     "notes": ""
   },
   {
-    "id": "s563",
+    "id": "s566",
     "date": "2026-02-27",
     "customer": "",
     "contact": "",
@@ -10731,7 +10788,7 @@ export const snapshotSales: SnapshotSale[] = [
     "notes": ""
   },
   {
-    "id": "s564",
+    "id": "s567",
     "date": "2026-02-27",
     "customer": "",
     "contact": "",
@@ -10750,7 +10807,7 @@ export const snapshotSales: SnapshotSale[] = [
     "notes": ""
   },
   {
-    "id": "s565",
+    "id": "s568",
     "date": "2026-02-27",
     "customer": "",
     "contact": "",
@@ -10769,7 +10826,7 @@ export const snapshotSales: SnapshotSale[] = [
     "notes": ""
   },
   {
-    "id": "s566",
+    "id": "s569",
     "date": "2026-02-27",
     "customer": "",
     "contact": "",
@@ -10788,7 +10845,7 @@ export const snapshotSales: SnapshotSale[] = [
     "notes": ""
   },
   {
-    "id": "s567",
+    "id": "s570",
     "date": "2026-02-27",
     "customer": "",
     "contact": "",
@@ -10807,7 +10864,7 @@ export const snapshotSales: SnapshotSale[] = [
     "notes": ""
   },
   {
-    "id": "s568",
+    "id": "s571",
     "date": "2026-02-27",
     "customer": "",
     "contact": "",
@@ -10826,7 +10883,7 @@ export const snapshotSales: SnapshotSale[] = [
     "notes": ""
   },
   {
-    "id": "s569",
+    "id": "s572",
     "date": "2026-02-28",
     "customer": "",
     "contact": "",
@@ -10845,7 +10902,7 @@ export const snapshotSales: SnapshotSale[] = [
     "notes": ""
   },
   {
-    "id": "s570",
+    "id": "s573",
     "date": "2026-02-28",
     "customer": "",
     "contact": "",
@@ -10864,7 +10921,7 @@ export const snapshotSales: SnapshotSale[] = [
     "notes": ""
   },
   {
-    "id": "s571",
+    "id": "s574",
     "date": "2026-02-28",
     "customer": "",
     "contact": "",
@@ -10883,7 +10940,7 @@ export const snapshotSales: SnapshotSale[] = [
     "notes": ""
   },
   {
-    "id": "s572",
+    "id": "s575",
     "date": "2026-02-28",
     "customer": "",
     "contact": "",
@@ -10902,7 +10959,7 @@ export const snapshotSales: SnapshotSale[] = [
     "notes": ""
   },
   {
-    "id": "s573",
+    "id": "s576",
     "date": "2026-02-28",
     "customer": "",
     "contact": "",
@@ -10921,7 +10978,7 @@ export const snapshotSales: SnapshotSale[] = [
     "notes": ""
   },
   {
-    "id": "s574",
+    "id": "s577",
     "date": "2026-02-28",
     "customer": "",
     "contact": "",
@@ -10940,70 +10997,13 @@ export const snapshotSales: SnapshotSale[] = [
     "notes": ""
   },
   {
-    "id": "s575",
-    "date": "2026-02-28",
-    "customer": "",
-    "contact": "",
-    "channel": "",
-    "vehicle": "",
-    "item": "4610",
-    "qty": 1,
-    "unitPrice": 150.0,
-    "total": 150.0,
-    "payment": "",
-    "receipt": "",
-    "rep": "",
-    "mechanic": "",
-    "status": "Collected",
-    "workmanshipFee": 0.0,
-    "notes": ""
-  },
-  {
-    "id": "s576",
-    "date": "2026-02-28",
-    "customer": "",
-    "contact": "",
-    "channel": "",
-    "vehicle": "",
-    "item": "NGK 95301",
-    "qty": 1,
-    "unitPrice": 1100.0,
-    "total": 1100.0,
-    "payment": "",
-    "receipt": "",
-    "rep": "",
-    "mechanic": "",
-    "status": "Collected",
-    "workmanshipFee": 0.0,
-    "notes": ""
-  },
-  {
-    "id": "s577",
-    "date": "2026-02-28",
-    "customer": "",
-    "contact": "",
-    "channel": "",
-    "vehicle": "",
-    "item": "5AA-A01",
-    "qty": 1,
-    "unitPrice": 200.0,
-    "total": 200.0,
-    "payment": "",
-    "receipt": "",
-    "rep": "",
-    "mechanic": "",
-    "status": "Collected",
-    "workmanshipFee": 0.0,
-    "notes": ""
-  },
-  {
     "id": "s578",
     "date": "2026-02-28",
     "customer": "",
     "contact": "",
     "channel": "",
     "vehicle": "",
-    "item": "T5R-A00",
+    "item": "4610",
     "qty": 1,
     "unitPrice": 150.0,
     "total": 150.0,
@@ -11022,10 +11022,10 @@ export const snapshotSales: SnapshotSale[] = [
     "contact": "",
     "channel": "",
     "vehicle": "",
-    "item": "NGK 92274",
+    "item": "NGK 95301",
     "qty": 1,
-    "unitPrice": 1800.0,
-    "total": 1800.0,
+    "unitPrice": 1100.0,
+    "total": 1100.0,
     "payment": "",
     "receipt": "",
     "rep": "",
@@ -11041,48 +11041,10 @@ export const snapshotSales: SnapshotSale[] = [
     "contact": "",
     "channel": "",
     "vehicle": "",
-    "item": "NGK 92274",
+    "item": "5AA-A01",
     "qty": 1,
-    "unitPrice": 1000.0,
-    "total": 1000.0,
-    "payment": "",
-    "receipt": "",
-    "rep": "",
-    "mechanic": "",
-    "status": "Collected",
-    "workmanshipFee": 0.0,
-    "notes": ""
-  },
-  {
-    "id": "s581",
-    "date": "2026-02-28",
-    "customer": "",
-    "contact": "",
-    "channel": "",
-    "vehicle": "",
-    "item": "Ams Oil 0w -20 SB (5litres)",
-    "qty": 5,
-    "unitPrice": 750.0,
-    "total": 750.0,
-    "payment": "",
-    "receipt": "",
-    "rep": "",
-    "mechanic": "",
-    "status": "Collected",
-    "workmanshipFee": 0.0,
-    "notes": ""
-  },
-  {
-    "id": "s582",
-    "date": "2026-02-28",
-    "customer": "",
-    "contact": "",
-    "channel": "",
-    "vehicle": "",
-    "item": "4610",
-    "qty": 1,
-    "unitPrice": 150.0,
-    "total": 150.0,
+    "unitPrice": 200.0,
+    "total": 200.0,
     "payment": "",
     "receipt": "",
     "rep": "",
@@ -19506,13 +19468,13 @@ export const snapshotInventory: SnapshotInventoryItem[] = [
 ];
 
 export const snapshotMeta = {
-  generatedAt: "2026-04-09T12:14:30.644899",
+  generatedAt: "2026-04-09T13:32:50.049330",
   sources: {
     marchTracker: "1pFBk2xCbILKxVSgwACQIrIscEimonnnyJNBKoiAVZ7U",
     inventorySheet: "1r8cZtmyjqLmUJSUZPOZopOk8PEGCJyhKnaS0NvqUniw",
   },
   counts: {
-    sales: 582,
+    sales: 580,
     expenses: 97,
     workshop: 123,
     purchaseOrders: 13,

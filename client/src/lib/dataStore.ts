@@ -14,7 +14,7 @@ export interface WorkshopJob {
   id: string; date: string; reg: string; car: string; owner?: string;
   job: string; mechanic: string; status: string; estCost?: number; notes: string;
 }
-export interface ClockInRecord { id: string; staff: string; date: string; timeIn: string; timeOut: string; late?: boolean; hours?: number; }
+export interface ClockInRecord { id: string; staff: string; name?: string; date: string; timeIn: string; timeOut: string; clockIn?: string; clockOut?: string; late?: boolean; hours?: number; }
 export interface Creditor {
   id: string; name: string; contact: string; amount: number; date: string;
   dueDate: string; category: string; priority: string; notes: string; paid: number;
@@ -32,11 +32,11 @@ export interface StockItem {
   qty: number; reorder: number; cost: number; sell: number;
 }
 export interface TrainingModule {
-  name: string; assignees: string[]; deadline: string;
-  completion: Record<string, number>;
+  name: string; assignees: string[]; deadline: string; status?: string; notes?: string;
+  completion?: Record<string, number>;
 }
 export interface StaffMember {
-  id: string; name: string; role: string; department: string; phone: string;
+  id: string; name: string; role: string; department: string; phone: string; email?: string; startDate?: string; status?: string; notes?: string;
   clockIn: string; clockOut: string; rating: number; salary: number;
 }
 

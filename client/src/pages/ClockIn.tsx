@@ -1,176 +1,211 @@
 import { useState, useMemo } from 'react';
-import { getData, updateData } from '../lib/dataStore';
+import { getData, updateData, fmtGHS } from '../lib/dataStore';
 import { useLayout } from '../components/MainLayout';
 
+const STAFF_NAMES = ['Yvonne', 'Abigail', 'Ben', 'Appiah', 'Kojo', 'Fatawu', 'Chris'];
+const LATE_PENALTY = 20; // GHS 20 for late arrival
+const NO_CLOCKOUT_PENALTY = 5; // GHS 5 for no clock-out
+const WORK_START = '08:00';
+const fmt = (n: number) => fmtGHS(n);
+
 export default function ClockIn() {
-  const { showToast } = useLayout();
-  const data = getData();
+  const { showToast, openModal } = useLayout();
   const [refresh, setRefresh] = useState(0);
-  const [selectedDate, setSelectedDate] = useState(new Date().toISOString().slice(0, 10));
-  const [selectedStaff, setSelectedStaff] = useState('');
+  const [dateFilter, setDateFilter] = useState(new Date().toISOString().slice(0, 10));
+  const [staffFilter, setStaffFilter] = useState('All');
+  void refresh;
 
-  const staffNames = useMemo(() => data.staff.map(s => s.name), [data.staff]);
+  const data = getData();
+  const records = data.clockin || [];
 
-  const todayRecords = useMemo(() => {
-    return data.clockin.filter(r => r.date === selectedDate);
-  }, [data.clockin, selectedDate, refresh]);
+  const filtered = useMemo(() => {
+    let r = records;
+    if (dateFilter) r = r.filter(c => c.date === dateFilter);
+    if (staffFilter !== 'All') r = r.filter(c => c.name === staffFilter);
+    return [...r].sort((a, b) => `${b.date} ${b.timeIn}`.localeCompare(`${a.date} ${a.timeIn}`));
+  }, [records, dateFilter, staffFilter]);
 
-  const presentCount = todayRecords.filter(r => r.timeIn).length;
-  const lateCount = todayRecords.filter(r => {
-    if (!r.timeIn) return false;
-    const [h, m] = r.timeIn.split(':').map(Number);
-    return h > 8 || (h === 8 && m > 15);
-  }).length;
-  const absentCount = staffNames.length - presentCount;
+  // Penalty calculations
+  const penaltySummary = useMemo(() => {
+    const today = new Date().toISOString().slice(0, 10);
+    const monthStart = today.slice(0, 7) + '-01';
+    const monthRecords = records.filter(r => r.date >= monthStart && r.date <= today);
+    return STAFF_NAMES.map(name => {
+      const myRecs = monthRecords.filter(r => r.name === name);
+      const lateCount = myRecs.filter(r => r.timeIn > WORK_START).length;
+      const noClockOut = myRecs.filter(r => !r.timeOut || r.timeOut === '-').length;
+      const penalty = (lateCount * LATE_PENALTY) + (noClockOut * NO_CLOCKOUT_PENALTY);
+      return { name, lateCount, noClockOut, penalty, days: myRecs.length };
+    }).filter(s => s.days > 0 || s.penalty > 0);
+  }, [records]);
 
-  const doClockIn = () => {
-    if (!selectedStaff) { showToast('Select a staff member', 'error'); return; }
-    const existing = data.clockin.find(r => r.staff === selectedStaff && r.date === selectedDate);
-    if (existing && existing.timeIn) { showToast(`${selectedStaff} already clocked in`, 'error'); return; }
+  const totalPenalties = penaltySummary.reduce((a, b) => a + b.penalty, 0);
+
+  const clockInNow = (name: string) => {
     const now = new Date();
-    const timeStr = `${String(now.getHours()).padStart(2, '0')}:${String(now.getMinutes()).padStart(2, '0')}`;
+    const time = now.toTimeString().slice(0, 5);
+    const date = now.toISOString().slice(0, 10);
+    const isLate = time > WORK_START;
     updateData(d => {
-      d.clockin.push({ id: `ci_${Date.now()}`, staff: selectedStaff, date: selectedDate, timeIn: timeStr, timeOut: '' });
+      d.clockin.push({ id: `ci_${Date.now()}`, staff: name, date, timeIn: time, timeOut: '', late: isLate, hours: 0 });
     });
-    showToast(`${selectedStaff} clocked in at ${timeStr}`, 'success');
     setRefresh(r => r + 1);
+    showToast(`${name} clocked in at ${time}${isLate ? ' (LATE — GHS 20 penalty)' : ''}`, isLate ? 'info' : 'success');
   };
 
-  const doClockOut = () => {
-    if (!selectedStaff) { showToast('Select a staff member', 'error'); return; }
-    const existing = data.clockin.find(r => r.staff === selectedStaff && r.date === selectedDate && r.timeIn && !r.timeOut);
-    if (!existing) { showToast(`${selectedStaff} has not clocked in or already clocked out`, 'error'); return; }
-    const now = new Date();
-    const timeStr = `${String(now.getHours()).padStart(2, '0')}:${String(now.getMinutes()).padStart(2, '0')}`;
+  const clockOutNow = (id: string) => {
+    const time = new Date().toTimeString().slice(0, 5);
     updateData(d => {
-      const rec = d.clockin.find(r => r.staff === selectedStaff && r.date === selectedDate && r.timeIn && !r.timeOut);
-      if (rec) rec.timeOut = timeStr;
+      const r = d.clockin.find(c => c.id === id);
+      if (r) {
+        r.timeOut = time;
+        const [ih, im] = r.timeIn.split(':').map(Number);
+        const [oh, om] = time.split(':').map(Number);
+        r.hours = parseFloat(((oh * 60 + om - ih * 60 - im) / 60).toFixed(2));
+      }
     });
-    showToast(`${selectedStaff} clocked out at ${timeStr}`, 'success');
     setRefresh(r => r + 1);
+    showToast('Clock-out recorded', 'success');
   };
 
-  const getHoursWorked = (timeIn: string, timeOut: string): string => {
-    if (!timeIn || !timeOut) return '—';
-    const [h1, m1] = timeIn.split(':').map(Number);
-    const [h2, m2] = timeOut.split(':').map(Number);
-    const diff = (h2 * 60 + m2) - (h1 * 60 + m1);
-    return `${(diff / 60).toFixed(1)}h`;
-  };
-
-  const isLate = (timeIn: string): boolean => {
-    if (!timeIn) return false;
-    const [h, m] = timeIn.split(':').map(Number);
-    return h > 8 || (h === 8 && m > 15);
-  };
+  const openManualEntry = () => openModal(<ManualEntryForm onDone={() => { setRefresh(r => r + 1); showToast('Entry recorded', 'success'); }} />);
 
   return (
     <div>
-      <div className="grid grid-4" style={{ marginBottom: '8px' }}>
-        <div className="card kpi-card green"><div className="kpi-label">Present</div><div className="kpi-value">{presentCount}</div><div className="kpi-sub">Clocked in today</div></div>
-        <div className="card kpi-card gold"><div className="kpi-label">Late</div><div className="kpi-value">{lateCount}</div><div className="kpi-sub">After 8:15 AM</div></div>
-        <div className="card kpi-card red"><div className="kpi-label">Absent</div><div className="kpi-value">{absentCount}</div><div className="kpi-sub">Not clocked in</div></div>
-        <div className="card kpi-card navy"><div className="kpi-label">Total Staff</div><div className="kpi-value">{staffNames.length}</div><div className="kpi-sub">Expected today</div></div>
-      </div>
-
-      {/* Quick Clock In/Out */}
-      <div className="card" style={{ padding: '12px', marginBottom: '8px' }}>
-        <h4 style={{ color: 'var(--text-dim)', marginBottom: '8px', fontSize: '10px', fontFamily: 'Rajdhani', fontWeight: 600 }}>QUICK CLOCK IN / OUT</h4>
-        <div style={{ display: 'flex', gap: '8px', alignItems: 'flex-end', flexWrap: 'wrap' }}>
-          <div style={{ flex: 1, minWidth: '150px' }}>
-            <label className="form-label">Staff Member</label>
-            <select className="form-control" value={selectedStaff} onChange={e => setSelectedStaff(e.target.value)}>
-              <option value="">Select staff...</option>
-              {staffNames.map(n => <option key={n} value={n}>{n}</option>)}
-            </select>
-          </div>
-          <div style={{ minWidth: '140px' }}>
-            <label className="form-label">Date</label>
-            <input type="date" className="form-control" value={selectedDate} onChange={e => setSelectedDate(e.target.value)} />
-          </div>
-          <button className="btn" style={{ background: '#1ABC9C', color: '#fff', fontWeight: 600 }} onClick={doClockIn}>Clock In</button>
-          <button className="btn" style={{ background: '#E30613', color: '#fff', fontWeight: 600 }} onClick={doClockOut}>Clock Out</button>
+      {/* Quick Clock-In Buttons */}
+      <div className="card" style={{ padding: '12px', marginBottom: '10px' }}>
+        <div style={{ fontSize: '11px', fontWeight: 700, color: '#fff', marginBottom: '8px' }}>Quick Clock-In</div>
+        <div style={{ display: 'flex', gap: '6px', flexWrap: 'wrap' }}>
+          {STAFF_NAMES.map(name => {
+            const todayRecord = records.find(r => r.date === new Date().toISOString().slice(0,10) && r.name === name && !r.timeOut);
+            const alreadyIn = records.some(r => r.date === new Date().toISOString().slice(0,10) && r.name === name && r.timeIn);
+            return (
+              <div key={name} style={{ display: 'flex', gap: '4px' }}>
+                <button
+                  className={`btn ${alreadyIn ? 'btn-secondary' : 'btn-primary'}`}
+                  style={{ fontSize: '10px', padding: '5px 10px' }}
+                  onClick={() => !alreadyIn && clockInNow(name)}
+                  disabled={alreadyIn}>
+                  {alreadyIn ? `✓ ${name}` : `⏱ ${name}`}
+                </button>
+                {todayRecord && (
+                  <button className="btn btn-success" style={{ fontSize: '10px', padding: '5px 8px' }} onClick={() => clockOutNow(todayRecord.id)}>Out</button>
+                )}
+              </div>
+            );
+          })}
+        </div>
+        <div style={{ fontSize: '8px', color: 'var(--text-dim)', marginTop: '8px' }}>
+          Work starts at {WORK_START} · Late arrival: GHS {LATE_PENALTY} penalty · No clock-out: GHS {NO_CLOCKOUT_PENALTY} penalty
         </div>
       </div>
 
-      {/* Attendance Table */}
-      <div className="card" style={{ padding: '10px' }}>
-        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '8px' }}>
-          <h4 style={{ color: 'var(--text-dim)', fontSize: '10px', fontFamily: 'Rajdhani', fontWeight: 600 }}>ATTENDANCE RECORDS — {selectedDate}</h4>
-          <span style={{ fontSize: '8px', color: 'var(--text-muted)' }}>{todayRecords.length} records</span>
-        </div>
-        <div style={{ overflowX: 'auto' }}>
+      {/* Penalty Summary */}
+      {penaltySummary.length > 0 && (
+        <div className="card" style={{ padding: '12px', marginBottom: '10px' }}>
+          <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '8px' }}>
+            <div className="chart-title" style={{ marginBottom: 0 }}>MTD Penalty Summary</div>
+            <span style={{ fontSize: '10px', color: '#BE123C', fontWeight: 700 }}>Total: {fmt(totalPenalties)}</span>
+          </div>
           <table>
-            <thead>
-              <tr><th>Staff</th><th>Clock In</th><th>Clock Out</th><th>Hours</th><th>Status</th></tr>
-            </thead>
+            <thead><tr><th>Staff</th><th>Days Logged</th><th>Late Arrivals</th><th>Late Penalty</th><th>No Clock-Out</th><th>No-Out Penalty</th><th>Total Penalty</th></tr></thead>
             <tbody>
-              {todayRecords.length === 0 ? (
-                <tr><td colSpan={5} style={{ textAlign: 'center', color: 'var(--text-muted)', padding: '20px' }}>No records for this date</td></tr>
-              ) : todayRecords.map(r => (
-                <tr key={r.id}>
-                  <td>
-                    <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
-                      <div className="staff-avatar">{r.staff.charAt(0)}</div>
-                      <span style={{ fontWeight: 600 }}>{r.staff}</span>
-                    </div>
-                  </td>
-                  <td style={{ color: '#1ABC9C', fontFamily: 'monospace' }}>{r.timeIn || '—'}</td>
-                  <td style={{ color: '#F39C12', fontFamily: 'monospace' }}>{r.timeOut || '—'}</td>
-                  <td style={{ fontWeight: 600 }}>{getHoursWorked(r.timeIn, r.timeOut)}</td>
-                  <td>
-                    <span className={`status-badge ${isLate(r.timeIn) ? 'status-progress' : 'status-completed'}`}>
-                      {isLate(r.timeIn) ? 'Late' : 'On Time'}
-                    </span>
-                  </td>
+              {penaltySummary.map(s => (
+                <tr key={s.name}>
+                  <td style={{ fontWeight: 700 }}>{s.name}</td>
+                  <td>{s.days}</td>
+                  <td style={{ color: s.lateCount > 0 ? '#D97706' : 'var(--text-dim)' }}>{s.lateCount}</td>
+                  <td style={{ color: '#D97706' }}>{fmt(s.lateCount * LATE_PENALTY)}</td>
+                  <td style={{ color: s.noClockOut > 0 ? '#BE123C' : 'var(--text-dim)' }}>{s.noClockOut}</td>
+                  <td style={{ color: '#BE123C' }}>{fmt(s.noClockOut * NO_CLOCKOUT_PENALTY)}</td>
+                  <td style={{ color: '#BE123C', fontWeight: 700, fontFamily: 'Georgia,serif' }}>{fmt(s.penalty)}</td>
                 </tr>
               ))}
             </tbody>
           </table>
         </div>
+      )}
+
+      {/* Filters + Manual Entry */}
+      <div style={{ display: 'flex', gap: '8px', alignItems: 'center', marginBottom: '10px', flexWrap: 'wrap' }}>
+        <button className="btn btn-secondary" style={{ fontSize: '10px', padding: '5px 12px' }} onClick={openManualEntry}>+ Manual Entry</button>
+        <input type="date" className="form-control" value={dateFilter} onChange={e => setDateFilter(e.target.value)} style={{ width: '140px', fontSize: '10px', padding: '4px 8px' }} />
+        <select className="form-control" value={staffFilter} onChange={e => setStaffFilter(e.target.value)} style={{ width: '130px', fontSize: '10px', padding: '4px 8px' }}>
+          <option>All</option>
+          {STAFF_NAMES.map(n => <option key={n}>{n}</option>)}
+        </select>
+        <button className="btn btn-secondary" style={{ fontSize: '9px', padding: '4px 8px' }} onClick={() => setDateFilter('')}>Show All Dates</button>
+        <span style={{ fontSize: '9px', color: 'var(--text-muted)', marginLeft: 'auto' }}>{filtered.length} records</span>
       </div>
 
-      {/* Monthly Summary */}
-      <div className="card" style={{ padding: '10px', marginTop: '8px' }}>
-        <h4 style={{ color: 'var(--text-dim)', marginBottom: '8px', fontSize: '10px', fontFamily: 'Rajdhani', fontWeight: 600 }}>MONTHLY ATTENDANCE SUMMARY</h4>
-        <div style={{ overflowX: 'auto' }}>
+      {/* Records Table */}
+      <div className="card" style={{ padding: '12px' }}>
+        <div style={{ overflowY: 'auto', maxHeight: '500px' }}>
           <table>
             <thead>
-              <tr><th>Staff</th><th>Days Present</th><th>Days Late</th><th>Total Hours</th><th>Attendance %</th></tr>
+              <tr>
+                <th>Date</th><th>Staff</th><th>Clock In</th><th>Clock Out</th>
+                <th>Hours</th><th>Late</th><th>Penalty</th><th>Actions</th>
+              </tr>
             </thead>
             <tbody>
-              {staffNames.map(name => {
-                const records = data.clockin.filter(r => r.staff === name);
-                const present = records.filter(r => r.timeIn).length;
-                const late = records.filter(r => isLate(r.timeIn)).length;
-                const totalMins = records.reduce((sum, r) => {
-                  if (!r.timeIn || !r.timeOut) return sum;
-                  const [h1, m1] = r.timeIn.split(':').map(Number);
-                  const [h2, m2] = r.timeOut.split(':').map(Number);
-                  return sum + (h2 * 60 + m2) - (h1 * 60 + m1);
-                }, 0);
-                const pct = records.length > 0 ? Math.round((present / Math.max(records.length, 1)) * 100) : 0;
+              {filtered.map(r => {
+                const isLate = r.timeIn > WORK_START;
+                const noOut = !r.timeOut || r.timeOut === '-';
+                const penalty = (isLate ? LATE_PENALTY : 0) + (noOut && r.date < new Date().toISOString().slice(0,10) ? NO_CLOCKOUT_PENALTY : 0);
                 return (
-                  <tr key={name}>
-                    <td style={{ fontWeight: 600 }}>{name}</td>
-                    <td>{present}</td>
-                    <td style={{ color: late > 0 ? '#F39C12' : 'inherit' }}>{late}</td>
-                    <td>{(totalMins / 60).toFixed(1)}h</td>
+                  <tr key={r.id}>
+                    <td style={{ fontSize: '8px' }}>{r.date}</td>
+                    <td style={{ fontWeight: 700 }}>{r.name}</td>
+                    <td style={{ color: isLate ? '#D97706' : '#059669', fontWeight: 600, fontFamily: 'monospace' }}>{r.timeIn}</td>
+                    <td style={{ color: noOut ? '#BE123C' : '#fff', fontFamily: 'monospace' }}>{r.timeOut || '—'}</td>
+                    <td style={{ textAlign: 'center' }}>{r.hours ? `${r.hours}h` : '—'}</td>
+                    <td>{isLate ? <span style={{ fontSize: '8px', color: '#D97706', fontWeight: 700 }}>LATE</span> : <span style={{ fontSize: '8px', color: 'var(--text-dim)' }}>On time</span>}</td>
+                    <td style={{ color: penalty > 0 ? '#BE123C' : 'var(--text-dim)', fontWeight: penalty > 0 ? 700 : 400 }}>{penalty > 0 ? fmt(penalty) : '-'}</td>
                     <td>
-                      <div style={{ display: 'flex', alignItems: 'center', gap: '6px' }}>
-                        <div className="progress-bar" style={{ flex: 1 }}>
-                          <div className="fill" style={{ width: `${pct}%`, background: pct >= 90 ? '#1ABC9C' : pct >= 75 ? '#F39C12' : '#E30613' }} />
-                        </div>
-                        <span style={{ fontSize: '9px', fontWeight: 600, color: pct >= 90 ? '#1ABC9C' : pct >= 75 ? '#F39C12' : '#E30613' }}>{pct}%</span>
-                      </div>
+                      {noOut && (
+                        <button style={{ fontSize: '8px', padding: '2px 6px', background: 'rgba(5,150,105,0.1)', border: '1px solid rgba(5,150,105,0.3)', borderRadius: '3px', color: '#059669', cursor: 'pointer' }} onClick={() => clockOutNow(r.id)}>Clock Out</button>
+                      )}
                     </td>
                   </tr>
                 );
               })}
+              {filtered.length === 0 && <tr><td colSpan={8} style={{ textAlign: 'center', color: 'var(--text-dim)', padding: '30px' }}>No records for selected filters</td></tr>}
             </tbody>
           </table>
         </div>
       </div>
+    </div>
+  );
+}
+
+function ManualEntryForm({ onDone }: { onDone: () => void }) {
+  const [form, setForm] = useState({ name: 'Yvonne', date: new Date().toISOString().slice(0,10), timeIn: '08:00', timeOut: '' });
+  const submit = () => {
+    const isLate = form.timeIn > WORK_START;
+    let hours = 0;
+    if (form.timeOut) {
+      const [ih, im] = form.timeIn.split(':').map(Number);
+      const [oh, om] = form.timeOut.split(':').map(Number);
+      hours = parseFloat(((oh * 60 + om - ih * 60 - im) / 60).toFixed(2));
+    }
+    updateData(d => { d.clockin.push({ id: `ci_${Date.now()}`, staff: form.name, date: form.date, timeIn: form.timeIn, timeOut: form.timeOut, late: isLate, hours }); });
+    onDone();
+  };
+  return (
+    <div style={{ display: 'flex', flexDirection: 'column', gap: '8px' }}>
+      <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '8px' }}>
+        <div className="form-group"><label className="form-label">Staff Name</label>
+          <select className="form-control" value={form.name} onChange={e => setForm(f=>({...f,name:e.target.value}))}>
+            {STAFF_NAMES.map(n => <option key={n}>{n}</option>)}
+          </select>
+        </div>
+        <div className="form-group"><label className="form-label">Date</label><input type="date" className="form-control" value={form.date} onChange={e => setForm(f=>({...f,date:e.target.value}))} /></div>
+        <div className="form-group"><label className="form-label">Clock In Time</label><input type="time" className="form-control" value={form.timeIn} onChange={e => setForm(f=>({...f,timeIn:e.target.value}))} /></div>
+        <div className="form-group"><label className="form-label">Clock Out Time</label><input type="time" className="form-control" value={form.timeOut} onChange={e => setForm(f=>({...f,timeOut:e.target.value}))} /></div>
+      </div>
+      {form.timeIn > WORK_START && <div style={{ padding: '6px 10px', background: 'rgba(217,119,6,0.1)', border: '1px solid rgba(217,119,6,0.3)', borderRadius: '4px', fontSize: '9px', color: '#D97706' }}>⚠ Late arrival — GHS {LATE_PENALTY} penalty will be applied</div>}
+      <button className="btn btn-primary" onClick={submit}>Save Entry</button>
     </div>
   );
 }
