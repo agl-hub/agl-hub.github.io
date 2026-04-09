@@ -1227,7 +1227,7 @@ function showSummary() {
     'Net Position: GHS ' + summary.netPosition.toFixed(2),
     'Workshop Jobs: ' + summary.workshopJobs + ' (' + summary.completedJobs + ' completed)'
   ];
-  ui.alert('AGL Summary', lines.join('\n'), ui.ButtonSet.OK);
+  ui.alert('AGL Summary', lines.join(String.fromCharCode(10)), ui.ButtonSet.OK);
 }
 
 function refreshFormulas() {
