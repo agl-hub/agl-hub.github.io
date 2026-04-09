@@ -1,5 +1,6 @@
-import { useState, useMemo } from 'react';
+import { useState, useMemo, useEffect } from 'react';
 import { getData, fmtGHS } from '../lib/dataStore';
+import { useDataRefresh } from '../lib/usePeriodData';
 
 const fmt = (n: number) => fmtGHS(n);
 
@@ -11,6 +12,7 @@ interface AuditEvent {
 }
 
 export default function AuditLog() {
+  const refresh = useDataRefresh();
   const [typeFilter, setTypeFilter] = useState<EventType | 'all'>('all');
   const [dateFrom, setDateFrom] = useState('');
   const [dateTo, setDateTo] = useState('');
@@ -18,7 +20,7 @@ export default function AuditLog() {
   const [groupBy, setGroupBy] = useState<'none' | 'date' | 'type'>('none');
   const [drill, setDrill] = useState<AuditEvent | null>(null);
 
-  const data = getData();
+  const data = useMemo(() => getData(), [refresh]);
 
   const allEvents = useMemo((): AuditEvent[] => {
     const events: AuditEvent[] = [];

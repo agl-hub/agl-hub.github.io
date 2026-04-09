@@ -13,9 +13,8 @@ export default function ClockIn() {
   const [refresh, setRefresh] = useState(0);
   const [dateFilter, setDateFilter] = useState(new Date().toISOString().slice(0, 10));
   const [staffFilter, setStaffFilter] = useState('All');
-  void refresh;
 
-  const data = getData();
+  const data = useMemo(() => getData(), [refresh]);
   const records = data.clockin || [];
 
   const filtered = useMemo(() => {

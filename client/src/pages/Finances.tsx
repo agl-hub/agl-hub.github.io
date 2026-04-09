@@ -1,16 +1,18 @@
-import { useState, useEffect, useRef } from 'react';
+import { useState, useMemo, useEffect, useRef } from 'react';
 import { getData, updateData, fmtGHS, today } from '../lib/dataStore';
+import { useDataRefresh } from '../lib/usePeriodData';
 import { useLayout } from '../components/MainLayout';
 
 declare const Chart: any;
 
 export default function Finances() {
   const { showToast, openSlidePanel } = useLayout();
-  const data = getData();
+  const refresh = useDataRefresh();
+  const [localRefresh, setLocalRefresh] = useState(0);
+  const data = useMemo(() => getData(), [refresh, localRefresh]);
   const chartRef = useRef<HTMLCanvasElement>(null);
   const chartInst = useRef<any>(null);
   const [tab, setTab] = useState<'expenses' | 'po'>('expenses');
-  const [refresh, setRefresh] = useState(0);
 
   const totalRevenue = data.sales.reduce((s, x) => s + x.total, 0);
   const totalExpenses = data.expenses.reduce((s, x) => s + x.amount, 0);
@@ -50,7 +52,7 @@ export default function Finances() {
           if (!item || !amount) { showToast('Fill in Item and Amount', 'error'); return; }
           updateData(d => { d.expenses.push({ id: `e_${Date.now()}`, date: today(), item, supplier, amount, purpose }); });
           showToast(`Expense recorded: ${item} — ${fmtGHS(amount)}`, 'success');
-          setRefresh(r => r + 1);
+          setLocalRefresh(r => r + 1);
         }}>Record Expense</button>
       </div>
     ));
@@ -74,7 +76,7 @@ export default function Finances() {
             d.purchaseOrders.push({ id: `po_${Date.now()}`, date: today(), poNumber, supplier, amount, items, notes });
           });
           showToast(`PO created: ${supplier}`, 'success');
-          setRefresh(r => r + 1);
+          setLocalRefresh(r => r + 1);
         }}>Create PO</button>
       </div>
     ));

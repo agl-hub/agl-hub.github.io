@@ -7,13 +7,12 @@ const ROLES = ['Sales Rep', 'Mechanic', 'Supervisor', 'Manager', 'CEO', 'Admin']
 const fmt = (n: number) => fmtGHS(n);
 
 export default function Staff() {
-  const { showToast, openModal } = useLayout();
+  const { showToast, openModal, closeModal } = useLayout();
   const [refresh, setRefresh] = useState(0);
   const [search, setSearch] = useState('');
   const [deptFilter, setDeptFilter] = useState('All');
-  void refresh;
 
-  const data = getData();
+  const data = useMemo(() => getData(), [refresh]);
   const staff = data.staff || [];
 
   const filtered = useMemo(() => {
@@ -29,8 +28,8 @@ export default function Staff() {
   const totalPayroll = staff.reduce((a, b) => a + (b.salary || 0), 0);
   const deptBreakdown = DEPARTMENTS.map(d => ({ dept: d, count: staff.filter(s => s.department === d).length }));
 
-  const openAddStaff = () => openModal(<StaffForm onDone={() => { setRefresh(r => r + 1); showToast('Staff member added', 'success'); }} />);
-  const openEditStaff = (member: any) => openModal(<StaffForm member={member} onDone={() => { setRefresh(r => r + 1); showToast('Staff updated', 'success'); }} />);
+  const openAddStaff = () => openModal(<StaffForm onDone={() => { setRefresh(r => r + 1); showToast('Staff member added', 'success'); closeModal(); }} />);
+  const openEditStaff = (member: any) => openModal(<StaffForm member={member} onDone={() => { setRefresh(r => r + 1); showToast('Staff updated', 'success'); closeModal(); }} />);
 
   const toggleStatus = (id: string) => {
     updateData(d => {

@@ -17,18 +17,18 @@ export default function NewDashboardPage() {
   const [refresh, setRefresh] = useState(0);
   const [drill, setDrill] = useState<{ title: string; rows: DrillRow[] } | null>(null);
 
-  const { data, sales, expenses, purchaseOrders, revenue, expenseTotal, poTotal, netProfit, margin, byPayment, byChannel, byDate, byRep, byProduct, bounds } = usePeriodData(filterState);
+  const { data, sales, expenses, purchaseOrders, revenue, expenseTotal, poTotal, netProfit, margin, byPayment, byChannel, byDate, byRep, byProduct, topProducts: topProds, bounds } = usePeriodData(filterState);
   void refresh; void purchaseOrders;
 
   const avgTxn = sales.length ? revenue / sales.length : 0;
   const workshopActive = data.workshop.filter(w => w.status !== 'Completed').length;
-  const creditOutstanding = sales.filter(s => s.payment === 'Credit').reduce((a, b) => a + b.total, 0);
+  const creditOutstanding = sales.filter(s => s.payment === 'Credit').reduce((a, b) => a + (b.total), 0);
 
-  const dailyData = useMemo(() => Object.keys(byDate).sort().map(d => ({ date: d.slice(5), full: d, rev: byDate[d] })), [byDate]);
-  const paymentData = useMemo(() => Object.entries(byPayment).map(([name, value]) => ({ name, value })), [byPayment]);
-  const channelData = useMemo(() => Object.entries(byChannel).sort((a, b) => b[1] - a[1]).map(([name, value]) => ({ name, value })), [byChannel]);
-  const topProducts = useMemo(() => Object.entries(byProduct).sort((a, b) => b[1] - a[1]).slice(0, 8).map(([name, value]) => ({ name, value })), [byProduct]);
-  const mtdData = useMemo(() => { const s = Object.keys(byDate).sort(); let c = 0; return s.map((d, i) => { c += byDate[d]; return { date: d.slice(5), cum: c, target: 4000 * (i + 1) }; }); }, [byDate]);
+  const dailyData = useMemo(() => byDate.map(d => ({ date: d.date.slice(5), full: d.date, rev: d.revenue })), [byDate]);
+  const paymentData = byPayment;
+  const channelData = byChannel;
+  const topProducts = useMemo(() => topProds.slice(0, 8).map(p => ({ name: p.item, value: p.revenue })), [topProds]);
+  const mtdData = useMemo(() => { let c = 0; return byDate.map((d, i) => { c += d.revenue; return { date: d.date.slice(5), cum: c, target: 4000 * (i + 1) }; }); }, [byDate]);
 
   const insights = useMemo(() => {
     const ins: { type: string; icon: string; title: string; text: string }[] = [];
@@ -199,7 +199,7 @@ export default function NewDashboardPage() {
 
         <div className="card" style={{ padding: '12px' }}>
           <div className="chart-title">Sales Rep Leaderboard</div>
-          {Object.entries(byRep).sort((a, b) => b[1] - a[1]).map(([name, rev], i) => (
+          {byRep.map(({ rep: name, revenue: rev }, i) => (
             <div key={name} style={{ display: 'flex', alignItems: 'center', gap: '8px', marginBottom: '8px', cursor: 'pointer' }}
               onClick={() => setDrill({ title: `${name}'s Sales`, rows: sales.filter(s => s.rep === name) })}>
               <div style={{ width: '18px', height: '18px', borderRadius: '50%', background: COLORS[i % COLORS.length], display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: '7px', color: '#fff', fontWeight: 700, flexShrink: 0 }}>{i+1}</div>
@@ -209,13 +209,13 @@ export default function NewDashboardPage() {
                   <span style={{ fontSize: '9px', color: COLORS[i % COLORS.length], fontWeight: 700 }}>{fmt(rev)}</span>
                 </div>
                 <div style={{ height: '3px', background: 'rgba(255,255,255,0.06)', borderRadius: '2px' }}>
-                  <div style={{ width: `${revenue > 0 ? (rev / revenue) * 100 : 0}%`, height: '100%', background: COLORS[i % COLORS.length], borderRadius: '2px' }} />
+                  <div style={{ width: `${revenue > 0 ? ((rev as number) / revenue) * 100 : 0}%`, height: '100%', background: COLORS[i % COLORS.length], borderRadius: '2px' }} />
                 </div>
                 <div style={{ fontSize: '8px', color: 'var(--text-dim)', marginTop: '1px' }}>{sales.filter(s => s.rep === name).length} sales</div>
               </div>
             </div>
           ))}
-          {Object.keys(byRep).length === 0 && <div style={{ fontSize: '9px', color: 'var(--text-dim)', textAlign: 'center', padding: '20px' }}>No data</div>}
+          {byRep.length === 0 && <div style={{ fontSize: '9px', color: 'var(--text-dim)', textAlign: 'center', padding: '20px' }}>No data</div>}
         </div>
       </div>
 
@@ -226,7 +226,7 @@ export default function NewDashboardPage() {
             <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '12px' }}>
               <h3 style={{ color: '#fff', fontSize: '13px', fontWeight: 700 }}>{drill.title}</h3>
               <div style={{ display: 'flex', gap: '8px', alignItems: 'center' }}>
-                <span style={{ fontSize: '10px', color: 'var(--text-dim)' }}>{drill.rows.length} records · Total: {fmt(drill.rows.reduce((a, b) => a + b.total, 0))}</span>
+                <span style={{ fontSize: '10px', color: 'var(--text-dim)' }}>{drill.rows.length} records · Total: {fmt(drill.rows.reduce((a: number, b: any) => a + (b.total), 0))}</span>
                 <button className="btn btn-secondary" style={{ fontSize: '9px', padding: '3px 8px' }} onClick={() => setDrill(null)}>✕ Close</button>
               </div>
             </div>

@@ -4,7 +4,7 @@ import {
   XAxis, YAxis, Tooltip, ResponsiveContainer, Legend, AreaChart, Area, ComposedChart,
 } from 'recharts';
 import { getData, fmtGHS } from '../lib/dataStore';
-import { getPeriodBounds, filterByPeriod } from '../lib/usePeriodData';
+import { getPeriodBounds, filterByPeriod, useDataRefresh } from '../lib/usePeriodData';
 
 const COLORS = ['#D97706','#4F46E5','#BE123C','#7F1D1D','#92400E','#1D4ED8','#059669','#6B21A8'];
 const fmt = (n: number) => fmtGHS(n);
@@ -15,7 +15,8 @@ const DOW = ['Sun','Mon','Tue','Wed','Thu','Fri','Sat'];
 const MONTHS = ['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'];
 
 export default function Reports() {
-  const data = getData();
+  const refresh = useDataRefresh();
+  const data = useMemo(() => getData(), [refresh]);
   const [period, setPeriod] = useState<ReportPeriod>('monthly');
   const [selectedDate, setSelectedDate] = useState(new Date().toISOString().slice(0, 10));
   const [selectedMonth, setSelectedMonth] = useState(new Date().toISOString().slice(0, 7));
@@ -39,7 +40,7 @@ export default function Reports() {
   const workshop = useMemo(() => filterByPeriod(data.workshop.map(w => ({ ...w, date: w.date || '2000-01-01' })), bounds), [data.workshop, bounds]);
 
   // Core metrics
-  const revenue = useMemo(() => sales.reduce((s, x) => s + x.total, 0), [sales]);
+  const revenue = useMemo(() => sales.reduce((s, x) => s + (x.total), 0), [sales]);
   const expTotal = useMemo(() => expenses.reduce((s, x) => s + x.amount, 0), [expenses]);
   const poTotal = useMemo(() => pos.reduce((s, x) => s + x.amount, 0), [pos]);
   const netProfit = revenue - expTotal - poTotal;
@@ -48,16 +49,16 @@ export default function Reports() {
   const uniqueCustomers = new Set(sales.map(s => s.customer)).size;
 
   // Daily breakdown
-  const byDate = useMemo(() => {
+  const byDateMap = useMemo(() => {
     const m: Record<string, number> = {};
     sales.forEach(s => { m[s.date] = (m[s.date] || 0) + s.total; });
     return m;
   }, [sales]);
 
   const dailyChartData = useMemo(() => {
-    const sorted = Object.keys(byDate).sort();
-    return sorted.map(d => ({ date: d.slice(5), full: d, rev: byDate[d] }));
-  }, [byDate]);
+    const sorted = Object.keys(byDateMap).sort();
+    return sorted.map(d => ({ date: d.slice(5), full: d, rev: byDateMap[d] }));
+  }, [byDateMap]);
 
   // Day-of-week breakdown
   const byDow = useMemo(() => {
@@ -138,7 +139,7 @@ export default function Reports() {
       const ym = `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, '0')}`;
       const mSales = data.sales.filter(s => s.date.startsWith(ym));
       const mExp = data.expenses.filter(e => e.date.startsWith(ym));
-      const rev = mSales.reduce((a, b) => a + b.total, 0);
+      const rev = mSales.reduce((a, b) => a + (b.total), 0);
       const exp = mExp.reduce((a, b) => a + b.amount, 0);
       months.push({ month: `${MONTHS[d.getMonth()]} ${d.getFullYear()}`, rev, exp, net: rev - exp });
     }
@@ -154,8 +155,9 @@ export default function Reports() {
   const insights = useMemo(() => {
     const ins: { icon: string; title: string; text: string; color: string }[] = [];
     if (revenue > 0) {
-      const bestDay = Object.entries(byDate).sort((a, b) => b[1] - a[1])[0];
-      if (bestDay) ins.push({ icon: '🏆', title: 'Best Day', text: `${bestDay[0]} — ${fmt(bestDay[1])} (${pct(bestDay[1], revenue)} of period revenue)`, color: '#D97706' });
+      const byDateArr = Object.entries(byDateMap).map(([date, revenue]) => ({ date, revenue }));
+      const bestDay = byDateArr.length > 0 ? [...byDateArr].sort((a, b) => b.revenue - a.revenue)[0] : null;
+      if (bestDay) ins.push({ icon: '🏆', title: 'Best Day', text: `${bestDay.date} — ${fmt(bestDay.revenue)} (${pct(bestDay.revenue, revenue)} of period revenue)`, color: '#D97706' });
       const bestDow = byDow.sort((a, b) => b.rev - a.rev)[0];
       if (bestDow?.rev > 0) ins.push({ icon: '📅', title: 'Best Day of Week', text: `${bestDow.name} averages ${fmt(bestDow.rev / Math.max(1, byDow.filter(d => d.name === bestDow.name).length))} per occurrence`, color: '#4F46E5' });
       const topProd = topProducts[0];
@@ -168,7 +170,7 @@ export default function Reports() {
       if (lowStock.length > 0) ins.push({ icon: '📉', title: 'Inventory Alert', text: `${lowStock.length} items at or below reorder level`, color: '#D97706' });
     }
     return ins;
-  }, [revenue, byDate, byDow, topProducts, byChannel, margin, wCompRate, overdueCreditors, totalOwed, lowStock]);
+  }, [revenue, byDateMap, byDow, topProducts, byChannel, margin, wCompRate, overdueCreditors, totalOwed, lowStock]);
 
   const periodLabel = bounds.label;
 
@@ -555,7 +557,7 @@ export default function Reports() {
             <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '12px' }}>
               <h3 style={{ color: '#fff', fontSize: '13px', fontWeight: 700 }}>{drillData.title}</h3>
               <div style={{ display: 'flex', gap: '8px', alignItems: 'center' }}>
-                <span style={{ fontSize: '10px', color: 'var(--text-dim)' }}>{drillData.rows.length} records · Total: {fmt(drillData.rows.reduce((a: number, b: any) => a + (b.total || 0), 0))}</span>
+                <span style={{ fontSize: '10px', color: 'var(--text-dim)' }}>{drillData.rows.length} records · Total: {fmt(drillData.rows.reduce((a: number, b: any) => a + ((b.total) || 0), 0))}</span>
                 <button className="btn btn-secondary" style={{ fontSize: '9px', padding: '3px 8px' }} onClick={() => setDrillData(null)}>✕ Close</button>
               </div>
             </div>

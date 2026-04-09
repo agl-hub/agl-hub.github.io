@@ -6,13 +6,12 @@ const MECHANICS = ['Appiah', 'Kojo', 'Fatawu', 'Chris'];
 const fmt = (n: number) => fmtGHS(n);
 
 export default function MechanicTracker() {
-  const { showToast, openModal } = useLayout();
+  const { showToast, openModal, closeModal } = useLayout();
   const [refresh, setRefresh] = useState(0);
   const [selectedMech, setSelectedMech] = useState<string | null>(null);
   const [recallFilter, setRecallFilter] = useState(false);
-  void refresh;
 
-  const data = getData();
+  const data = useMemo(() => getData(), [refresh]);
   const jobs = data.workshop;
 
   const stats = useMemo(() => {

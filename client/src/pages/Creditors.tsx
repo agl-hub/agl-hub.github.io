@@ -6,13 +6,12 @@ const fmt = (n: number) => fmtGHS(n);
 const today = () => new Date().toISOString().slice(0, 10);
 
 export default function Creditors() {
-  const { showToast, openModal } = useLayout();
+  const { showToast, openModal, closeModal } = useLayout();
   const [refresh, setRefresh] = useState(0);
   const [filter, setFilter] = useState<'all' | 'open' | 'overdue' | 'paid'>('open');
   const [search, setSearch] = useState('');
-  void refresh;
 
-  const data = getData();
+  const data = useMemo(() => getData(), [refresh]);
   const creditors = data.creditors || [];
   const payments = data.payments || [];
 
@@ -32,9 +31,9 @@ export default function Creditors() {
     return [...c].sort((a, b) => (b.dueDate || '').localeCompare(a.dueDate || ''));
   }, [creditors, filter, search]);
 
-  const openAddCreditor = () => openModal(<CreditorForm onDone={() => { setRefresh(r => r + 1); showToast('Creditor added', 'success'); }} />);
-  const openEditCreditor = (c: any) => openModal(<CreditorForm creditor={c} onDone={() => { setRefresh(r => r + 1); showToast('Creditor updated', 'success'); }} />);
-  const openPayment = (c: any) => openModal(<PaymentForm creditor={c} onDone={() => { setRefresh(r => r + 1); showToast('Payment recorded', 'success'); }} />);
+  const openAddCreditor = () => openModal(<CreditorForm onDone={() => { setRefresh(r => r + 1); showToast('Creditor added', 'success'); closeModal(); }} />);
+  const openEditCreditor = (c: any) => openModal(<CreditorForm creditor={c} onDone={() => { setRefresh(r => r + 1); showToast('Creditor updated', 'success'); closeModal(); }} />);
+  const openPayment = (c: any) => openModal(<PaymentForm creditor={c} onDone={() => { setRefresh(r => r + 1); showToast('Payment recorded', 'success'); closeModal(); }} />);
 
   const markPaid = (id: string) => {
     updateData(d => {

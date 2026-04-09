@@ -5,14 +5,13 @@ import { useLayout } from '../components/MainLayout';
 const fmt = (n: number) => fmtGHS(n);
 
 export default function Inventory() {
-  const { showToast, openModal } = useLayout();
+  const { showToast, openModal, closeModal } = useLayout();
   const [refresh, setRefresh] = useState(0);
   const [search, setSearch] = useState('');
   const [catFilter, setCatFilter] = useState('All');
   const [stockFilter, setStockFilter] = useState<'all' | 'low' | 'out'>('all');
-  void refresh;
 
-  const data = getData();
+  const data = useMemo(() => getData(), [refresh]);
   const inventory = data.inventory || [];
 
   const categories = useMemo(() => ['All', ...Array.from(new Set(inventory.map(i => i.category))).sort()], [inventory]);

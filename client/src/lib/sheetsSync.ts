@@ -93,48 +93,74 @@ export function importSnapshot(snapshot: SheetsSnapshot, mode: 'merge' | 'replac
       }
     }
 
-    // Expenses
+    // Expenses — map SnapshotExpense fields to Expense interface
     const existingExpIds = new Set(data.expenses.map(e => e.id));
-    for (const exp of snapshot.expenses) {
-      if (!existingExpIds.has(exp.id)) {
-        data.expenses.push(exp);
-        stats.expenses++;
-      } else {
-        skipped.expenses++;
-      }
+    for (const raw of (snapshot.expenses as any[])) {
+      if (existingExpIds.has(raw.id)) { skipped.expenses++; continue; }
+      const exp: Expense = {
+        id:       raw.id,
+        date:     raw.date || '',
+        item:     raw.item || raw.description || raw.category || 'Expense',
+        supplier: raw.supplier || raw.requestedBy || raw.vendor || '',
+        amount:   Number(raw.amount) || 0,
+        purpose:  raw.purpose || raw.notes || raw.budgetCode || '',
+      };
+      data.expenses.push(exp);
+      stats.expenses++;
     }
 
-    // Workshop
+    // Workshop — map SnapshotWorkshop fields to WorkshopJob interface
     const existingWIds = new Set(data.workshop.map(w => w.id));
-    for (const job of snapshot.workshop) {
-      if (!existingWIds.has(job.id)) {
-        data.workshop.push(job);
-        stats.workshop++;
-      } else {
-        skipped.workshop++;
-      }
+    for (const raw of (snapshot.workshop as any[])) {
+      if (existingWIds.has(raw.id)) { skipped.workshop++; continue; }
+      const job: WorkshopJob = {
+        id:       raw.id,
+        date:     raw.date || '',
+        reg:      raw.reg || raw.regNo || raw.vehicleReg || '',
+        car:      raw.car || raw.vehicle || raw.make || '',
+        owner:    raw.owner || raw.customer || '',
+        job:      raw.job || raw.jobDescription || raw.description || '',
+        mechanic: raw.mechanic || '',
+        status:   raw.status || 'Queued',
+        estCost:  Number(raw.estCost) || 0,
+        notes:    raw.notes || '',
+      };
+      data.workshop.push(job);
+      stats.workshop++;
     }
 
-    // Purchase Orders
+    // Purchase Orders — map SnapshotPurchaseOrder fields to PurchaseOrder interface
     const existingPOIds = new Set(data.purchaseOrders.map(p => p.id));
-    for (const po of snapshot.purchaseOrders) {
-      if (!existingPOIds.has(po.id)) {
-        data.purchaseOrders.push(po);
-        stats.purchaseOrders++;
-      } else {
-        skipped.purchaseOrders++;
-      }
+    for (const raw of (snapshot.purchaseOrders as any[])) {
+      if (existingPOIds.has(raw.id)) { skipped.purchaseOrders++; continue; }
+      const po: PurchaseOrder = {
+        id:       raw.id,
+        date:     raw.date || '',
+        poNumber: raw.poNumber || raw.poNo || raw.id,
+        supplier: raw.supplier || '',
+        amount:   Number(raw.amount) || Number(raw.total) || (Number(raw.qty) * Number(raw.unitCost)) || 0,
+        items:    raw.items || raw.item || '',
+        notes:    raw.notes || raw.status || '',
+      };
+      data.purchaseOrders.push(po);
+      stats.purchaseOrders++;
     }
 
-    // Clock-In
+    // Clock-In — map SnapshotClockIn fields to ClockInRecord interface
     const existingCIds = new Set(data.clockin.map(c => c.id));
-    for (const ci of snapshot.clockin) {
-      if (!existingCIds.has(ci.id)) {
-        data.clockin.push(ci);
-        stats.clockin++;
-      } else {
-        skipped.clockin++;
-      }
+    for (const raw of (snapshot.clockin as any[])) {
+      if (existingCIds.has(raw.id)) { skipped.clockin++; continue; }
+      const ci: ClockInRecord = {
+        id:      raw.id,
+        date:    raw.date || '',
+        staff:   raw.staff || raw.name || '',
+        timeIn:  raw.timeIn || raw.clockIn || '',
+        timeOut: raw.timeOut || raw.clockOut || '',
+        late:    raw.late === true || raw.late === 'true' || false,
+        hours:   Number(raw.hours) || 0,
+      };
+      data.clockin.push(ci);
+      stats.clockin++;
     }
 
     // Inventory — map sheet inventory to StockItem format

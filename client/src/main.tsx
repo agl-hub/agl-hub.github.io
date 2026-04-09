@@ -11,7 +11,7 @@ import {
 } from "./lib/sheetsSnapshot";
 
 // Auto-import snapshot on first load (only once per version)
-const SNAPSHOT_KEY = "agl_snapshot_loaded_v4";
+const SNAPSHOT_KEY = "agl_snapshot_loaded_v6";
 if (!localStorage.getItem(SNAPSHOT_KEY)) {
   try {
     importSnapshot(

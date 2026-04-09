@@ -59,7 +59,7 @@ export interface AGLData {
   };
   staff: StaffMember[];
   notifications: { id: string; title: string; body: string; time: string }[];
-  settings: { receiptCounter: number; poCounter: number; autoSync: boolean; syncOnEntry: boolean };
+  settings: { receiptCounter: number; poCounter: number; autoSync: boolean; syncOnEntry: boolean; kpiTargets?: Record<string, number> };
   inquiries: number;
 }
 

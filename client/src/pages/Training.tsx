@@ -9,12 +9,11 @@ type Dept = typeof DEPTS[number];
 const DEPT_LABELS: Record<Dept, string> = { sales: 'Sales Team', mechanics: 'Mechanics', supervisors: 'Supervisors', ceo: 'Management' };
 
 export default function Training() {
-  const { showToast, openModal } = useLayout();
+  const { showToast, openModal, closeModal } = useLayout();
   const [refresh, setRefresh] = useState(0);
   const [activeDept, setActiveDept] = useState<Dept>('sales');
-  void refresh;
 
-  const data = getData();
+  const data = useMemo(() => getData(), [refresh]);
   const modules = data.training[activeDept]?.modules || [];
 
   const stats = useMemo(() => DEPTS.map(d => ({

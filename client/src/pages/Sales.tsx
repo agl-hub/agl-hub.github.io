@@ -1,11 +1,13 @@
 import { useState, useMemo } from 'react';
 import { getData, updateData, fmtGHS } from '../lib/dataStore';
+import { useDataRefresh } from '../lib/usePeriodData';
 import { useLayout } from '../components/MainLayout';
 
 export default function Sales() {
   const { showToast, openSlidePanel, filterState } = useLayout();
-  const data = getData();
-  const [refresh, setRefresh] = useState(0);
+  const refresh = useDataRefresh();
+  const [localRefresh, setLocalRefresh] = useState(0);
+  const data = useMemo(() => getData(), [refresh, localRefresh]);
   const [search, setSearch] = useState('');
   const [statusFilter, setStatusFilter] = useState('All');
 
@@ -67,7 +69,7 @@ export default function Sales() {
             });
           });
           showToast(`Sale recorded: ${item}`, 'success');
-          setRefresh(r => r + 1);
+          setLocalRefresh(r => r + 1);
         }}>Record Sale</button>
       </div>
     ));
