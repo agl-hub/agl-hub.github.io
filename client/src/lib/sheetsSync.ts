@@ -1266,4 +1266,5 @@ function num(v) {
   if (v === null || v === undefined || v === '') return 0;
   return parseFloat(String(v).replace(/[^0-9.\-]/g, '')) || 0;
 }
+
 `;
