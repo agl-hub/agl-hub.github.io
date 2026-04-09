@@ -264,7 +264,7 @@ export default function MainLayout({ children }: { children: React.ReactNode }) 
           <label>Staff:</label>
           <select className="filter-pill" value={filterState.staff} onChange={e => setFilterState(prev => ({ ...prev, staff: e.target.value }))}>
             <option value="">All Staff</option>
-            <option>Yvonne</option><option>Abigail</option><option>Ben</option>
+            <option>Yvonne</option><option>Abigail</option><option>Bright</option><option>Ben</option>
             <option>Appiah</option><option>Kojo</option><option>Fatawu</option><option>Chris</option>
           </select>
           <div className="filter-divider" />

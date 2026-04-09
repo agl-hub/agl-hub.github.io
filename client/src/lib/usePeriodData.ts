@@ -35,7 +35,7 @@ export function useDataRefresh() {
   useEffect(() => {
     // Listen for storage events (cross-tab and from snapshot import in main.tsx)
     const onStorage = (e: StorageEvent) => {
-      if (e.key === 'agl_data') setTick(t => t + 1);
+      if (e.key === 'agl_ops_v2') setTick(t => t + 1);
     };
     window.addEventListener('storage', onStorage);
     // Poll after 800ms to catch the synchronous auto-import that fires before React mounts

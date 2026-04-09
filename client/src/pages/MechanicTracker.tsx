@@ -34,11 +34,11 @@ export default function MechanicTracker() {
   }, [jobs, selectedMech, recallFilter]);
 
   const openAddRecall = (jobId: string) => {
-    openModal(<RecallForm jobId={jobId} onDone={() => { setRefresh(r => r + 1); showToast('Recall logged — penalty applied', 'info'); }} />);
+    openModal(<RecallForm jobId={jobId} onDone={() => { setRefresh(r => r + 1); showToast('Recall logged — penalty applied', 'info'); closeModal(); }} />);
   };
 
   const openAddJob = () => {
-    openModal(<JobForm onDone={() => { setRefresh(r => r + 1); showToast('Job added', 'success'); }} />);
+    openModal(<JobForm onDone={() => { setRefresh(r => r + 1); showToast('Job added', 'success'); closeModal(); }} />);
   };
 
   const updateStatus = (id: string, status: string) => {
@@ -128,7 +128,7 @@ export default function MechanicTracker() {
                   <td style={{ fontSize: '8px', color: 'var(--text-dim)', maxWidth: '120px' }}>{(j as any).notes || '-'}</td>
                   <td>
                     <button style={{ fontSize: '8px', padding: '2px 6px', background: 'rgba(79,70,229,0.1)', border: '1px solid rgba(79,70,229,0.3)', borderRadius: '3px', color: '#818CF8', cursor: 'pointer' }}
-                      onClick={() => openModal(<JobForm job={j} onDone={() => { setRefresh(r => r + 1); showToast('Job updated', 'success'); }} />)}>Edit</button>
+                      onClick={() => openModal(<JobForm job={j} onDone={() => { setRefresh(r => r + 1); showToast('Job updated', 'success'); closeModal(); }} />)}>Edit</button>
                   </td>
                 </tr>
               ))}

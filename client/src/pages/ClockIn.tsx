@@ -2,7 +2,7 @@ import { useState, useMemo } from 'react';
 import { getData, updateData, fmtGHS } from '../lib/dataStore';
 import { useLayout } from '../components/MainLayout';
 
-const STAFF_NAMES = ['Yvonne', 'Abigail', 'Ben', 'Appiah', 'Kojo', 'Fatawu', 'Chris'];
+const STAFF_NAMES = ['Yvonne', 'Abigail', 'Bright', 'Ben', 'Appiah', 'Kojo', 'Fatawu', 'Chris'];
 const LATE_PENALTY = 20; // GHS 20 for late arrival
 const NO_CLOCKOUT_PENALTY = 5; // GHS 5 for no clock-out
 const WORK_START = '08:00';
@@ -20,7 +20,7 @@ export default function ClockIn() {
   const filtered = useMemo(() => {
     let r = records;
     if (dateFilter) r = r.filter(c => c.date === dateFilter);
-    if (staffFilter !== 'All') r = r.filter(c => c.name === staffFilter);
+    if (staffFilter !== 'All') r = r.filter(c => (c.name || c.staff) === staffFilter);
     return [...r].sort((a, b) => `${b.date} ${b.timeIn}`.localeCompare(`${a.date} ${a.timeIn}`));
   }, [records, dateFilter, staffFilter]);
 
@@ -30,7 +30,7 @@ export default function ClockIn() {
     const monthStart = today.slice(0, 7) + '-01';
     const monthRecords = records.filter(r => r.date >= monthStart && r.date <= today);
     return STAFF_NAMES.map(name => {
-      const myRecs = monthRecords.filter(r => r.name === name);
+      const myRecs = monthRecords.filter(r => (r.name || r.staff) === name);
       const lateCount = myRecs.filter(r => r.timeIn > WORK_START).length;
       const noClockOut = myRecs.filter(r => !r.timeOut || r.timeOut === '-').length;
       const penalty = (lateCount * LATE_PENALTY) + (noClockOut * NO_CLOCKOUT_PENALTY);
@@ -46,7 +46,7 @@ export default function ClockIn() {
     const date = now.toISOString().slice(0, 10);
     const isLate = time > WORK_START;
     updateData(d => {
-      d.clockin.push({ id: `ci_${Date.now()}`, staff: name, date, timeIn: time, timeOut: '', late: isLate, hours: 0 });
+      d.clockin.push({ id: `ci_${Date.now()}`, staff: name, name, date, timeIn: time, timeOut: '', late: isLate, hours: 0 });
     });
     setRefresh(r => r + 1);
     showToast(`${name} clocked in at ${time}${isLate ? ' (LATE — GHS 20 penalty)' : ''}`, isLate ? 'info' : 'success');
@@ -76,8 +76,8 @@ export default function ClockIn() {
         <div style={{ fontSize: '11px', fontWeight: 700, color: '#fff', marginBottom: '8px' }}>Quick Clock-In</div>
         <div style={{ display: 'flex', gap: '6px', flexWrap: 'wrap' }}>
           {STAFF_NAMES.map(name => {
-            const todayRecord = records.find(r => r.date === new Date().toISOString().slice(0,10) && r.name === name && !r.timeOut);
-            const alreadyIn = records.some(r => r.date === new Date().toISOString().slice(0,10) && r.name === name && r.timeIn);
+            const todayRecord = records.find(r => r.date === new Date().toISOString().slice(0,10) && (r.name || r.staff) === name && !r.timeOut);
+            const alreadyIn = records.some(r => r.date === new Date().toISOString().slice(0,10) && (r.name || r.staff) === name && r.timeIn);
             return (
               <div key={name} style={{ display: 'flex', gap: '4px' }}>
                 <button
@@ -155,7 +155,7 @@ export default function ClockIn() {
                 return (
                   <tr key={r.id}>
                     <td style={{ fontSize: '8px' }}>{r.date}</td>
-                    <td style={{ fontWeight: 700 }}>{r.name}</td>
+                    <td style={{ fontWeight: 700 }}>{r.name || r.staff}</td>
                     <td style={{ color: isLate ? '#D97706' : '#059669', fontWeight: 600, fontFamily: 'monospace' }}>{r.timeIn}</td>
                     <td style={{ color: noOut ? '#BE123C' : '#fff', fontFamily: 'monospace' }}>{r.timeOut || '—'}</td>
                     <td style={{ textAlign: 'center' }}>{r.hours ? `${r.hours}h` : '—'}</td>
@@ -188,7 +188,7 @@ function ManualEntryForm({ onDone }: { onDone: () => void }) {
       const [oh, om] = form.timeOut.split(':').map(Number);
       hours = parseFloat(((oh * 60 + om - ih * 60 - im) / 60).toFixed(2));
     }
-    updateData(d => { d.clockin.push({ id: `ci_${Date.now()}`, staff: form.name, date: form.date, timeIn: form.timeIn, timeOut: form.timeOut, late: isLate, hours }); });
+    updateData(d => { d.clockin.push({ id: `ci_${Date.now()}`, staff: form.name, name: form.name, date: form.date, timeIn: form.timeIn, timeOut: form.timeOut, late: isLate, hours }); });
     onDone();
   };
   return (

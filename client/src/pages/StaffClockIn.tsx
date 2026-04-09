@@ -2,7 +2,7 @@ import { useState, useMemo } from 'react';
 import { getData, updateData, today, now } from '../lib/dataStore';
 import { useLayout } from '../components/MainLayout';
 
-const STAFF = ['Yvonne','Abigail','Ben','Appiah','Kojo','Fatawu','Chris'];
+const STAFF = ['Yvonne','Abigail','Bright','Ben','Appiah','Kojo','Fatawu','Chris'];
 
 export default function StaffClockIn() {
   const { showToast } = useLayout();

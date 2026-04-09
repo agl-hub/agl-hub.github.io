@@ -218,8 +218,8 @@ export default function Reports() {
             <ResponsiveContainer width="100%" height={180}>
               <ComposedChart data={dailyChartData} onClick={e => e?.activePayload && setDrillData({ title: `Sales on ${e.activePayload[0].payload.full}`, rows: sales.filter(s => s.date === e.activePayload![0].payload.full) })}>
                 <defs><linearGradient id="rg2" x1="0" y1="0" x2="0" y2="1"><stop offset="5%" stopColor="#D97706" stopOpacity={0.25}/><stop offset="95%" stopColor="#D97706" stopOpacity={0}/></linearGradient></defs>
-                <XAxis dataKey="date" tick={{ fill: '#718096', fontSize: 8 }} axisLine={false} tickLine={false} />
-                <YAxis tick={{ fill: '#718096', fontSize: 8 }} axisLine={false} tickLine={false} tickFormatter={v => `${(v/1000).toFixed(0)}k`} />
+                <XAxis dataKey="date" tick={{ fill: '#c8b89a', fontSize: 8 }} axisLine={false} tickLine={false} />
+                <YAxis tick={{ fill: '#c8b89a', fontSize: 8 }} axisLine={false} tickLine={false} tickFormatter={v => `${(v/1000).toFixed(0)}k`} />
                 <Tooltip formatter={(v: number) => [fmt(v), 'Revenue']} contentStyle={{ background: '#1a1f2e', border: '1px solid #2d3748', fontSize: '10px' }} />
                 <Area type="monotone" dataKey="rev" fill="url(#rg2)" stroke="none" />
                 <Line type="monotone" dataKey="rev" stroke="#D97706" strokeWidth={2} dot={{ r: 2, fill: '#D97706' }} activeDot={{ r: 5, cursor: 'pointer' }} />
@@ -231,8 +231,8 @@ export default function Reports() {
           <div className="chart-title">Revenue by Day of Week</div>
           <ResponsiveContainer width="100%" height={180}>
             <BarChart data={byDow}>
-              <XAxis dataKey="name" tick={{ fill: '#718096', fontSize: 8 }} axisLine={false} tickLine={false} />
-              <YAxis tick={{ fill: '#718096', fontSize: 8 }} axisLine={false} tickLine={false} tickFormatter={v => `${(v/1000).toFixed(0)}k`} />
+              <XAxis dataKey="name" tick={{ fill: '#c8b89a', fontSize: 8 }} axisLine={false} tickLine={false} />
+              <YAxis tick={{ fill: '#c8b89a', fontSize: 8 }} axisLine={false} tickLine={false} tickFormatter={v => `${(v/1000).toFixed(0)}k`} />
               <Tooltip formatter={(v: number) => [fmt(v), 'Revenue']} contentStyle={{ background: '#1a1f2e', border: '1px solid #2d3748', fontSize: '10px' }} />
               <Bar dataKey="rev" radius={[3, 3, 0, 0]}>
                 {byDow.map((_, i) => <Cell key={i} fill={COLORS[i % COLORS.length]} />)}
@@ -264,8 +264,8 @@ export default function Reports() {
           {byChannel.length > 0 ? (
             <ResponsiveContainer width="100%" height={165}>
               <BarChart data={byChannel} layout="vertical" onClick={e => e?.activePayload && setDrillData({ title: `${e.activePayload[0].payload.name} Sales`, rows: sales.filter(s => s.channel === e.activePayload![0].payload.name) })} style={{ cursor: 'pointer' }}>
-                <XAxis type="number" tick={{ fill: '#718096', fontSize: 8 }} axisLine={false} tickLine={false} tickFormatter={v => `${(v/1000).toFixed(0)}k`} />
-                <YAxis type="category" dataKey="name" tick={{ fill: '#718096', fontSize: 8 }} axisLine={false} tickLine={false} width={70} />
+                <XAxis type="number" tick={{ fill: '#c8b89a', fontSize: 8 }} axisLine={false} tickLine={false} tickFormatter={v => `${(v/1000).toFixed(0)}k`} />
+                <YAxis type="category" dataKey="name" tick={{ fill: '#c8b89a', fontSize: 8 }} axisLine={false} tickLine={false} width={70} />
                 <Tooltip formatter={(v: number) => [fmt(v), 'Revenue']} contentStyle={{ background: '#1a1f2e', border: '1px solid #2d3748', fontSize: '10px' }} />
                 <Bar dataKey="value" radius={[0, 3, 3, 0]}>
                   {byChannel.map((_, i) => <Cell key={i} fill={COLORS[i % COLORS.length]} />)}
@@ -322,8 +322,8 @@ export default function Reports() {
           {topProducts.length > 0 ? (
             <ResponsiveContainer width="100%" height={220}>
               <BarChart data={topProducts.slice(0, 8)} layout="vertical">
-                <XAxis type="number" tick={{ fill: '#718096', fontSize: 8 }} axisLine={false} tickLine={false} tickFormatter={v => `${(v/1000).toFixed(0)}k`} />
-                <YAxis type="category" dataKey="name" tick={{ fill: '#718096', fontSize: 7 }} axisLine={false} tickLine={false} width={90} />
+                <XAxis type="number" tick={{ fill: '#c8b89a', fontSize: 8 }} axisLine={false} tickLine={false} tickFormatter={v => `${(v/1000).toFixed(0)}k`} />
+                <YAxis type="category" dataKey="name" tick={{ fill: '#c8b89a', fontSize: 7 }} axisLine={false} tickLine={false} width={90} />
                 <Tooltip formatter={(v: number) => [fmt(v), 'Revenue']} contentStyle={{ background: '#1a1f2e', border: '1px solid #2d3748', fontSize: '10px' }} />
                 <Bar dataKey="rev" radius={[0, 3, 3, 0]}>
                   {topProducts.slice(0, 8).map((_, i) => <Cell key={i} fill={COLORS[i % COLORS.length]} />)}
@@ -360,8 +360,8 @@ export default function Reports() {
           {byRep.length > 0 ? (
             <ResponsiveContainer width="100%" height={200}>
               <BarChart data={byRep}>
-                <XAxis dataKey="name" tick={{ fill: '#718096', fontSize: 8 }} axisLine={false} tickLine={false} />
-                <YAxis tick={{ fill: '#718096', fontSize: 8 }} axisLine={false} tickLine={false} tickFormatter={v => `${(v/1000).toFixed(0)}k`} />
+                <XAxis dataKey="name" tick={{ fill: '#c8b89a', fontSize: 8 }} axisLine={false} tickLine={false} />
+                <YAxis tick={{ fill: '#c8b89a', fontSize: 8 }} axisLine={false} tickLine={false} tickFormatter={v => `${(v/1000).toFixed(0)}k`} />
                 <Tooltip formatter={(v: number) => [fmt(v), 'Revenue']} contentStyle={{ background: '#1a1f2e', border: '1px solid #2d3748', fontSize: '10px' }} />
                 <Bar dataKey="rev" radius={[3, 3, 0, 0]}>
                   {byRep.map((_, i) => <Cell key={i} fill={COLORS[i % COLORS.length]} />)}
@@ -411,8 +411,8 @@ export default function Reports() {
           <div className="chart-title">6-Month Revenue vs Expenses</div>
           <ResponsiveContainer width="100%" height={180}>
             <BarChart data={monthlyComparison}>
-              <XAxis dataKey="month" tick={{ fill: '#718096', fontSize: 7 }} axisLine={false} tickLine={false} />
-              <YAxis tick={{ fill: '#718096', fontSize: 8 }} axisLine={false} tickLine={false} tickFormatter={v => `${(v/1000).toFixed(0)}k`} />
+              <XAxis dataKey="month" tick={{ fill: '#c8b89a', fontSize: 7 }} axisLine={false} tickLine={false} />
+              <YAxis tick={{ fill: '#c8b89a', fontSize: 8 }} axisLine={false} tickLine={false} tickFormatter={v => `${(v/1000).toFixed(0)}k`} />
               <Tooltip formatter={(v: number) => [fmt(v), '']} contentStyle={{ background: '#1a1f2e', border: '1px solid #2d3748', fontSize: '10px' }} />
               <Bar dataKey="rev" fill="#D97706" radius={[2, 2, 0, 0]} name="Revenue" />
               <Bar dataKey="exp" fill="#BE123C" radius={[2, 2, 0, 0]} name="Expenses" />

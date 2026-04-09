@@ -102,7 +102,7 @@ export default function DailyEntry() {
               <select className="form-control" value={form.channel} onChange={e => setForm(f => ({ ...f, channel: e.target.value }))}>{['Walk-In','WhatsApp','Phone','Facebook','Instagram','Wholesale','Workshop'].map(c => <option key={c}>{c}</option>)}</select>
             </div>
             <div className="form-group"><label className="form-label">Sales Rep</label>
-              <select className="form-control" value={form.rep} onChange={e => setForm(f => ({ ...f, rep: e.target.value }))}>{['Yvonne','Abigail','Ben','Chris'].map(r => <option key={r}>{r}</option>)}</select>
+              <select className="form-control" value={form.rep} onChange={e => setForm(f => ({ ...f, rep: e.target.value }))}>{['Yvonne','Abigail','Bright'].map(r => <option key={r}>{r}</option>)}</select>
             </div>
           </div>
           <div className="form-row">

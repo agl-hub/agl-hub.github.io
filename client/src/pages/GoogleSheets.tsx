@@ -372,7 +372,7 @@ export default function GoogleSheets() {
               { step: '4', title: 'Paste URL here', desc: 'Go to the Import tab, paste the URL into the Apps Script URL field, and click Save URL.' },
             ].map(s => (
               <div key={s.step} style={{ display: 'flex', gap: '10px', marginBottom: '10px', alignItems: 'flex-start' }}>
-                <div style={{ width: '22px', height: '22px', borderRadius: '50%', background: '#1ABC9C', color: '#000', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: '10px', fontWeight: 700, flexShrink: 0 }}>{s.step}</div>
+                <div style={{ width: '22px', height: '22px', borderRadius: '50%', background: '#1ABC9C', color: '#c8b89a', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: '10px', fontWeight: 700, flexShrink: 0 }}>{s.step}</div>
                 <div>
                   <div style={{ fontWeight: 700, fontSize: '11px', color: '#fff', marginBottom: '2px' }}>{s.title}</div>
                   <div style={{ fontSize: '9px', color: 'var(--text-dim)', lineHeight: 1.5 }}>{s.desc}</div>

@@ -307,6 +307,8 @@ h4 { font-size: 10px; }
 
 /* ── Grid ── */
 .grid { display: grid; gap: 9px; }
+.grid-6 { grid-template-columns: repeat(6, 1fr); }
+.grid-5 { grid-template-columns: repeat(5, 1fr); }
 .grid-4 { grid-template-columns: repeat(4, 1fr); }
 .grid-3 { grid-template-columns: repeat(3, 1fr); }
 .grid-2 { grid-template-columns: repeat(2, 1fr); }
@@ -340,29 +342,29 @@ h4 { font-size: 10px; }
 /* ── KPI Cards ── */
 .kpi-card {
   text-align: center;
-  padding: 9px 7px;
+  padding: 5px 6px;
   border-top: 2px solid transparent;
 }
 
 .kpi-card .kpi-label {
-  font-size: 8pt;
+  font-size: 7pt;
   color: var(--text-dim);
   text-transform: uppercase;
-  letter-spacing: 1.1px;
-  margin-bottom: 5px;
+  letter-spacing: 0.8px;
+  margin-bottom: 2px;
   font-weight: 600;
   font-family: 'Source Serif 4', Georgia, serif;
 }
 
 .kpi-card .kpi-value {
   font-family: 'Source Serif 4', Georgia, serif;
-  font-size: 19px;
+  font-size: 13px;
   font-weight: 700;
   color: var(--beige);
   font-variant-numeric: tabular-nums;
 }
 
-.kpi-card .kpi-sub { font-size: 8pt; color: var(--text-dim); margin-top: 3px; }
+.kpi-card .kpi-sub { font-size: 7pt; color: var(--text-dim); margin-top: 1px; }
 
 .kpi-card.red   { border-top-color: var(--ruby);   background: linear-gradient(180deg, rgba(190,18,60,0.09), transparent); }
 .kpi-card.red   .kpi-value { color: var(--ruby-light); }
@@ -671,8 +673,8 @@ textarea.form-control { resize: vertical; min-height: 70px; }
     white-space: nowrap; -webkit-overflow-scrolling: touch;
   }
   .filter-bar::-webkit-scrollbar { display: none; }
-  .kpi-card { padding: 12px 8px; }
-  .kpi-card .kpi-value { font-size: 16px; }
+  .kpi-card { padding: 5px 6px; }
+  .kpi-card .kpi-value { font-size: 12px; }
   table { width: 100%; min-width: 500px; }
   .form-row { grid-template-columns: 1fr; gap: 8px; }
 }
@@ -680,8 +682,8 @@ textarea.form-control { resize: vertical; min-height: 70px; }
 /* ── Print Styles ── */
 @media print {
   body {
-    background: #ffffff !important;
-    color: #000000 !important;
+    background: #0C0F18 !important;
+    color: var(--beige) !important;
     margin: 0; padding: 0;
     font-size: 10pt;
     font-family: Georgia, 'Times New Roman', serif !important;
@@ -695,10 +697,11 @@ textarea.form-control { resize: vertical; min-height: 70px; }
     border: 1px solid #dddddd !important;
     box-shadow: none !important;
     break-inside: avoid;
-    color: #000; margin-bottom: 12px;
+    color: var(--text-main); margin-bottom: 12px;
   }
-  .kpi-value { color: #000 !important; }
-  h1, h2, h3, h4, h5, .text-dim { color: #333 !important; }
+  /* kpi-value keeps its color in print */
+  h1, h2, h3, h4, h5 { color: var(--beige) !important; }
+  .text-dim { color: var(--text-dim) !important; }
   * { -webkit-print-color-adjust: exact !important; print-color-adjust: exact !important; }
   .page { display: none !important; }
   .page.active { display: block !important; }

@@ -84,7 +84,7 @@ function seedDemoData(data: AGLData): AGLData {
   const customers = ['Kwame Asante','Ama Serwaa','Kofi Mensah','Abena Osei','Yaw Boateng','Efua Darko','Nana Agyemang','Akua Manu','Kwesi Appiah','Adjoa Frimpong','Samuel Tetteh','Grace Owusu','Daniel Annan','Felicia Addo','Emmanuel Quaye','Richard Boadu','Patience Gyamfi','Isaac Nyarko','Mercy Adei','Frank Asare'];
   const channels = ['Walk-In','WhatsApp','Phone','Facebook','Instagram','Wholesale','Workshop'];
   const payments = ['Cash','MoMo','Bank Transfer','Credit'];
-  const reps = ['Yvonne','Abigail'];
+  const reps = ['Yvonne','Abigail','Bright'];
   const mechanics = ['Appiah','Kojo','Fatawu','Chris'];
   const statuses = ['Completed','Completed','Completed','Pending Payment','Completed'];
 
@@ -140,7 +140,7 @@ function seedDemoData(data: AGLData): AGLData {
   const kanbanTasks = [
     { title: 'Restock brake pads inventory', desc: 'Running low on popular brake pad models', assignee: 'Ben (Supervisor)', priority: 'High', column: 'To Do' },
     { title: 'Update price list for Q2', desc: 'Review and adjust pricing for all items', assignee: 'Yvonne', priority: 'Medium', column: 'In Progress' },
-    { title: 'Fix workshop drainage', desc: 'Water pooling near bay 3', assignee: 'Chris', priority: 'High', column: 'In Progress' },
+    { title: 'Fix workshop drainage', desc: 'Water pooling near bay 3', assignee: 'Appiah', priority: 'High', column: 'In Progress' },
     { title: 'Train new sales staff', desc: 'Onboarding for Abigail on POS system', assignee: 'Ben (Supervisor)', priority: 'Medium', column: 'Review' },
     { title: 'Monthly inventory count', desc: 'Full physical stock count', assignee: 'Yvonne', priority: 'Low', column: 'Done' },
     { title: 'Install CCTV cameras', desc: 'Security upgrade for workshop area', assignee: 'CEO', priority: 'High', column: 'To Do' },
@@ -149,7 +149,7 @@ function seedDemoData(data: AGLData): AGLData {
   data.kanban = kanbanTasks.map((t, i) => ({ ...t, id: `k_${i}`, created: `2026-03-${String(ri(1, 20)).padStart(2, '0')}` }));
 
   // Clock-in
-  const staff = ['Yvonne','Abigail','Ben','Appiah','Kojo','Fatawu','Chris'];
+  const staff = ['Yvonne','Abigail','Bright','Ben','Appiah','Kojo','Fatawu','Chris'];
   for (let d = 15; d <= 20; d++) {
     const date = `2026-03-${String(d).padStart(2, '0')}`;
     staff.forEach(s => {
@@ -204,11 +204,11 @@ function seedDemoData(data: AGLData): AGLData {
   // Training
   data.training = {
     sales: { modules: [
-      { name: 'Customer Greeting Protocol', assignees: ['Yvonne','Abigail'], deadline: '2026-03-25', completion: { Yvonne: 100, Abigail: 80 } },
-      { name: 'Sales Flow & Closing', assignees: ['Yvonne','Abigail'], deadline: '2026-03-28', completion: { Yvonne: 60, Abigail: 40 } },
-      { name: 'Phone Etiquette', assignees: ['Yvonne','Abigail'], deadline: '2026-04-01', completion: { Yvonne: 30, Abigail: 20 } },
-      { name: 'Complaint Handling', assignees: ['Yvonne','Abigail'], deadline: '2026-04-05', completion: { Yvonne: 0, Abigail: 0 } },
-      { name: 'MoMo Payment Process', assignees: ['Yvonne','Abigail'], deadline: '2026-03-22', completion: { Yvonne: 100, Abigail: 100 } },
+      { name: 'Customer Greeting Protocol', assignees: ['Yvonne','Abigail','Bright'], deadline: '2026-03-25', completion: { Yvonne: 100, Abigail: 80, Bright: 60 } },
+      { name: 'Sales Flow & Closing', assignees: ['Yvonne','Abigail','Bright'], deadline: '2026-03-28', completion: { Yvonne: 60, Abigail: 40, Bright: 30 } },
+      { name: 'Phone Etiquette', assignees: ['Yvonne','Abigail','Bright'], deadline: '2026-04-01', completion: { Yvonne: 30, Abigail: 20, Bright: 10 } },
+      { name: 'Complaint Handling', assignees: ['Yvonne','Abigail','Bright'], deadline: '2026-04-05', completion: { Yvonne: 0, Abigail: 0, Bright: 0 } },
+      { name: 'MoMo Payment Process', assignees: ['Yvonne','Abigail','Bright'], deadline: '2026-03-22', completion: { Yvonne: 100, Abigail: 100, Bright: 100 } },
     ] },
     mechanics: { modules: [
       { name: 'PRF Process', assignees: ['Appiah','Kojo','Fatawu','Chris'], deadline: '2026-03-30', completion: { Appiah: 100, Kojo: 80, Fatawu: 60, Chris: 70 } },
@@ -231,6 +231,7 @@ function seedDemoData(data: AGLData): AGLData {
   // Staff
   data.staff = [
     { id: 'st_1', name: 'Yvonne', role: 'Sales Rep', department: 'Sales', phone: '0244-111-222', clockIn: '08:02', clockOut: '', rating: 4, salary: 2500 },
+    { id: 'st_8', name: 'Bright', role: 'Sales Rep', department: 'Sales', phone: '0244-888-999', clockIn: '08:00', clockOut: '', rating: 4, salary: 2500 },
     { id: 'st_2', name: 'Abigail', role: 'Sales Rep', department: 'Sales', phone: '0244-333-444', clockIn: '08:15', clockOut: '', rating: 3, salary: 2200 },
     { id: 'st_3', name: 'Ben', role: 'Supervisor', department: 'Operations', phone: '0244-555-666', clockIn: '07:55', clockOut: '', rating: 5, salary: 3500 },
     { id: 'st_4', name: 'Appiah', role: 'Mechanic', department: 'Workshop', phone: '0244-777-888', clockIn: '08:00', clockOut: '', rating: 5, salary: 2800 },

@@ -71,8 +71,8 @@ export default function NewDashboardPage() {
             <ResponsiveContainer width="100%" height={165}>
               <AreaChart data={dailyData} onClick={e => e?.activePayload && drillByDate(e.activePayload[0].payload.full)} style={{ cursor: 'pointer' }}>
                 <defs><linearGradient id="rg" x1="0" y1="0" x2="0" y2="1"><stop offset="5%" stopColor="#D97706" stopOpacity={0.3}/><stop offset="95%" stopColor="#D97706" stopOpacity={0}/></linearGradient></defs>
-                <XAxis dataKey="date" tick={{ fill: '#718096', fontSize: 8 }} axisLine={false} tickLine={false} />
-                <YAxis tick={{ fill: '#718096', fontSize: 8 }} axisLine={false} tickLine={false} tickFormatter={v => `${(v/1000).toFixed(0)}k`} />
+                <XAxis dataKey="date" tick={{ fill: '#c8b89a', fontSize: 8 }} axisLine={false} tickLine={false} />
+                <YAxis tick={{ fill: '#c8b89a', fontSize: 8 }} axisLine={false} tickLine={false} tickFormatter={v => `${(v/1000).toFixed(0)}k`} />
                 <Tooltip formatter={(v: number) => [fmt(v), 'Revenue']} contentStyle={{ background: '#1a1f2e', border: '1px solid #2d3748', fontSize: '10px' }} />
                 <Area type="monotone" dataKey="rev" stroke="#D97706" fill="url(#rg)" strokeWidth={2} dot={false} activeDot={{ r: 4 }} />
               </AreaChart>
@@ -139,8 +139,8 @@ export default function NewDashboardPage() {
           {channelData.length > 0 ? (
             <ResponsiveContainer width="100%" height={165}>
               <BarChart data={channelData} layout="vertical" onClick={e => e?.activePayload && drillByChannel(e.activePayload[0].payload.name)} style={{ cursor: 'pointer' }}>
-                <XAxis type="number" tick={{ fill: '#718096', fontSize: 8 }} axisLine={false} tickLine={false} tickFormatter={v => `${(v/1000).toFixed(0)}k`} />
-                <YAxis type="category" dataKey="name" tick={{ fill: '#718096', fontSize: 8 }} axisLine={false} tickLine={false} width={65} />
+                <XAxis type="number" tick={{ fill: '#c8b89a', fontSize: 8 }} axisLine={false} tickLine={false} tickFormatter={v => `${(v/1000).toFixed(0)}k`} />
+                <YAxis type="category" dataKey="name" tick={{ fill: '#c8b89a', fontSize: 8 }} axisLine={false} tickLine={false} width={65} />
                 <Tooltip formatter={(v: number) => [fmt(v), 'Revenue']} contentStyle={{ background: '#1a1f2e', border: '1px solid #2d3748', fontSize: '10px' }} />
                 <Bar dataKey="value" radius={[0, 3, 3, 0]}>
                   {channelData.map((_, i) => <Cell key={i} fill={COLORS[i % COLORS.length]} />)}
@@ -155,8 +155,8 @@ export default function NewDashboardPage() {
           {mtdData.length > 0 ? (
             <ResponsiveContainer width="100%" height={165}>
               <LineChart data={mtdData}>
-                <XAxis dataKey="date" tick={{ fill: '#718096', fontSize: 8 }} axisLine={false} tickLine={false} />
-                <YAxis tick={{ fill: '#718096', fontSize: 8 }} axisLine={false} tickLine={false} tickFormatter={v => `${(v/1000).toFixed(0)}k`} />
+                <XAxis dataKey="date" tick={{ fill: '#c8b89a', fontSize: 8 }} axisLine={false} tickLine={false} />
+                <YAxis tick={{ fill: '#c8b89a', fontSize: 8 }} axisLine={false} tickLine={false} tickFormatter={v => `${(v/1000).toFixed(0)}k`} />
                 <Tooltip formatter={(v: number) => [fmt(v), '']} contentStyle={{ background: '#1a1f2e', border: '1px solid #2d3748', fontSize: '10px' }} />
                 <Line type="monotone" dataKey="cum" stroke="#D97706" strokeWidth={2} dot={false} name="Actual" />
                 <Line type="monotone" dataKey="target" stroke="#4F46E5" strokeWidth={1} strokeDasharray="4 2" dot={false} name="Target" />
@@ -309,7 +309,7 @@ function NewSaleForm({ onDone }: { onDone: () => void }) {
         </div>
         <div className="form-group"><label className="form-label">Sales Rep</label>
           <select className="form-control" value={form.rep} onChange={e => setForm(f=>({...f,rep:e.target.value}))}>
-            {['Yvonne','Abigail','Ben','Appiah','Kojo','Fatawu','Chris'].map(r=><option key={r}>{r}</option>)}
+            {['Yvonne','Abigail','Bright'].map(r=><option key={r}>{r}</option>)}
           </select>
         </div>
         <div className="form-group"><label className="form-label">Vehicle Reg</label><input className="form-control" value={form.vehicle} onChange={e => setForm(f=>({...f,vehicle:e.target.value}))} placeholder="GR-1234-24" /></div>

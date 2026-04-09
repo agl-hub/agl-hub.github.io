@@ -2,7 +2,7 @@ import { useState, useMemo } from 'react';
 import { getData, updateData } from '../lib/dataStore';
 import { useLayout } from '../components/MainLayout';
 
-const STAFF_NAMES = ['Yvonne', 'Abigail', 'Ben', 'Appiah', 'Kojo', 'Fatawu', 'Chris'];
+const STAFF_NAMES = ['Yvonne', 'Abigail', 'Bright', 'Ben', 'Appiah', 'Kojo', 'Fatawu', 'Chris'];
 const DEPTS = ['sales', 'mechanics', 'supervisors', 'ceo'] as const;
 type Dept = typeof DEPTS[number];
 
