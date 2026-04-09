@@ -103,10 +103,10 @@ export default function Sales() {
                   <td>{s.time}</td>
                   <td style={{ fontWeight: 600 }}>{s.customer}</td>
                   <td>{s.item}</td>
-                  <td><span style={{ fontSize: '8px', padding: '1px 5px', borderRadius: '3px', background: 'rgba(22,160,133,0.1)', color: '#1ABC9C' }}>{s.channel}</span></td>
+                  <td><span style={{ fontSize: '8px', padding: '1px 5px', borderRadius: '3px', background: 'rgba(22,160,133,0.1)', color: '#10B981' }}>{s.channel}</span></td>
                   <td>{s.qty}</td>
                   <td>{fmtGHS(s.price)}</td>
-                  <td style={{ color: '#1ABC9C', fontWeight: 600 }}>{fmtGHS(s.total)}</td>
+                  <td style={{ color: '#10B981', fontWeight: 600 }}>{fmtGHS(s.total)}</td>
                   <td>{s.payment}</td>
                   <td style={{ fontFamily: 'monospace', fontSize: '8px' }}>{s.receipt}</td>
                   <td>{s.rep}</td>

@@ -54,7 +54,7 @@ export default function Inventory() {
         <div style={{ padding: '10px', background: 'rgba(255,255,255,0.03)', borderRadius: 'var(--radius-sm)', marginBottom: '12px' }}>
           <div style={{ fontSize: '11px', color: '#fff', fontWeight: 600 }}>{item.name}</div>
           <div style={{ fontSize: '9px', color: 'var(--text-dim)' }}>SKU: {item.sku} | In Stock: {item.qty}</div>
-          <div style={{ fontSize: '12px', color: '#1ABC9C', fontWeight: 700, marginTop: '4px' }}>{fmtGHS(item.sell)} each</div>
+          <div style={{ fontSize: '12px', color: '#10B981', fontWeight: 700, marginTop: '4px' }}>{fmtGHS(item.sell)} each</div>
         </div>
         <div className="form-group"><label className="form-label">Quantity</label><input className="form-control" id="qs-qty" type="number" defaultValue="1" min="1" /></div>
         <div className="form-group"><label className="form-label">Customer</label><input className="form-control" id="qs-cust" placeholder="Customer name" /></div>
@@ -114,10 +114,10 @@ export default function Inventory() {
                     <td style={{ fontWeight: 600 }}>{item.name}</td>
                     <td>{item.category}</td>
                     <td style={{ fontFamily: 'monospace', fontSize: '9px' }}>{item.sku}</td>
-                    <td style={{ color: isOut ? '#FF2D3A' : isLow ? '#F39C12' : '#1ABC9C', fontWeight: 600 }}>{item.qty}</td>
+                    <td style={{ color: isOut ? '#E11D48' : isLow ? '#F59E0B' : '#10B981', fontWeight: 600 }}>{item.qty}</td>
                     <td>{item.reorder}</td>
                     <td>{fmtGHS(item.cost)}</td>
-                    <td style={{ color: '#1ABC9C', fontWeight: 600 }}>{fmtGHS(item.sell)}</td>
+                    <td style={{ color: '#10B981', fontWeight: 600 }}>{fmtGHS(item.sell)}</td>
                     <td>{fmtGHS(item.qty * item.cost)}</td>
                     <td><span className={`status-badge ${isOut ? 'status-awaiting' : isLow ? 'status-progress' : 'status-completed'}`}>{isOut ? 'Out of Stock' : isLow ? 'Low Stock' : 'In Stock'}</span></td>
                     <td><button className="btn btn-xs btn-primary" onClick={() => quickSale(item)} disabled={isOut}>Sell</button></td>

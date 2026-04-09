@@ -26,7 +26,7 @@ export default function Workshop() {
     jobs.forEach(j => { mechMap[j.mechanic] = (mechMap[j.mechanic] || 0) + 1; });
     chartInst.current = new Chart(chartRef.current, {
       type: 'bar',
-      data: { labels: Object.keys(mechMap), datasets: [{ data: Object.values(mechMap), backgroundColor: ['#E30613','#16A085','#F39C12','#3B82F6'], borderRadius: 4 }] },
+      data: { labels: Object.keys(mechMap), datasets: [{ data: Object.values(mechMap), backgroundColor: ['#BE123C','#D97706','#F59E0B','#4F46E5'], borderRadius: 4 }] },
       options: { responsive: true, maintainAspectRatio: false, plugins: { legend: { display: false } }, scales: { x: { ticks: { color: '#718096', font: { size: 9 } }, grid: { color: 'rgba(255,255,255,0.03)' } }, y: { ticks: { color: '#718096', font: { size: 9 } }, grid: { color: 'rgba(255,255,255,0.03)' } } } },
     });
     return () => { chartInst.current?.destroy(); };
@@ -98,7 +98,7 @@ export default function Workshop() {
                 <div className="vc-job">{j.job}</div>
                 <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginTop: '4px' }}>
                   <span style={{ fontSize: '11px', color: 'var(--text-dim)' }}>{j.date}</span>
-                  <span style={{ fontFamily: 'Rajdhani', fontWeight: 700, color: '#1ABC9C' }}>{fmtGHS(j.estCost ?? 0)}</span>
+                  <span style={{ fontFamily: 'Rajdhani', fontWeight: 700, color: '#10B981' }}>{fmtGHS(j.estCost ?? 0)}</span>
                 </div>
                 <div style={{ display: 'flex', gap: '4px', marginTop: '6px' }}>
                   {j.status === 'Queued' && <button className="btn btn-xs btn-success" onClick={() => { updateData(d => { const f = d.workshop.find(w => w.id === j.id); if (f) f.status = 'In Progress'; }); setRefresh(r => r + 1); showToast(`${j.reg} started`, 'success'); }}>Start</button>}
@@ -125,8 +125,8 @@ export default function Workshop() {
               {jobs.filter(j => j.status === 'Completed').map(j => (
                 <tr key={j.id}>
                   <td>{j.date}</td><td style={{ fontWeight: 600 }}>{j.reg}</td><td>{j.car}</td><td>{j.owner}</td>
-                  <td>{j.job}</td><td style={{ color: '#F39C12' }}>{j.mechanic}</td>
-                  <td style={{ color: '#1ABC9C', fontWeight: 600 }}>{fmtGHS(j.estCost ?? 0)}</td>
+                  <td>{j.job}</td><td style={{ color: '#F59E0B' }}>{j.mechanic}</td>
+                  <td style={{ color: '#10B981', fontWeight: 600 }}>{fmtGHS(j.estCost ?? 0)}</td>
                   <td><span className="status-badge status-completed">Completed</span></td>
                 </tr>
               ))}

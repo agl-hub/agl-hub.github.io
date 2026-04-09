@@ -106,7 +106,7 @@ export default function NewDashboardPage() {
     if (chartPaymentRef.current) {
       chartsRef.current.push(new Chart(chartPaymentRef.current, {
         type: 'doughnut',
-        data: { labels: ['Cash','MoMo','Bank','Credit'], datasets: [{ data: [cashTotal, momoTotal, bankTotal, creditTotal], backgroundColor: ['#16A085','#F39C12','#3B82F6','#E30613'] }] },
+        data: { labels: ['Cash','MoMo','Bank','Credit'], datasets: [{ data: [cashTotal, momoTotal, bankTotal, creditTotal], backgroundColor: ['#D97706','#F59E0B','#4F46E5','#BE123C'] }] },
         options: { responsive: true, maintainAspectRatio: false, plugins: { legend: { position: 'bottom', labels: { color: '#A0AEC0', font: { size: 9 } } } } },
       }));
     }
@@ -117,7 +117,7 @@ export default function NewDashboardPage() {
       const chLabels = Object.keys(channelMap);
       chartsRef.current.push(new Chart(chartChannelsRef.current, {
         type: 'bar',
-        data: { labels: chLabels, datasets: [{ data: chLabels.map(c => channelMap[c]), backgroundColor: '#E30613', borderRadius: 4 }] },
+        data: { labels: chLabels, datasets: [{ data: chLabels.map(c => channelMap[c]), backgroundColor: '#BE123C', borderRadius: 4 }] },
         options: { ...baseOpts, indexAxis: 'y' as const },
       }));
     }
@@ -129,8 +129,8 @@ export default function NewDashboardPage() {
       chartsRef.current.push(new Chart(chartMTDRef.current, {
         type: 'line',
         data: { labels: sortedDays.map(d => d.slice(5)), datasets: [
-          { label: 'Actual', data: cumData, borderColor: '#16A085', backgroundColor: 'rgba(22,160,133,0.1)', fill: true, tension: 0.3 },
-          { label: 'Target', data: targetLine, borderColor: '#E30613', borderDash: [5, 5], pointRadius: 0 },
+          { label: 'Actual', data: cumData, borderColor: '#D97706', backgroundColor: 'rgba(22,160,133,0.1)', fill: true, tension: 0.3 },
+          { label: 'Target', data: targetLine, borderColor: '#BE123C', borderDash: [5, 5], pointRadius: 0 },
         ] },
         options: { ...baseOpts, plugins: { legend: { display: true, labels: { color: '#A0AEC0', font: { size: 9 } } } } },
       }));
@@ -140,7 +140,7 @@ export default function NewDashboardPage() {
       const catMap: Record<string, number> = {};
       filteredSales.forEach(s => { catMap[s.item] = (catMap[s.item] || 0) + s.total; });
       const catLabels = Object.keys(catMap).slice(0, 6);
-      const colors = ['#E30613','#16A085','#F39C12','#3B82F6','#E67E22','#8B5CF6'];
+      const colors = ['#BE123C','#D97706','#F59E0B','#4F46E5','#D97706','#7C3AED'];
       chartsRef.current.push(new Chart(chartCatRef.current, {
         type: 'pie',
         data: { labels: catLabels, datasets: [{ data: catLabels.map(c => catMap[c]), backgroundColor: colors }] },
@@ -157,10 +157,10 @@ export default function NewDashboardPage() {
         <h3 style={{ fontFamily: 'Rajdhani', marginBottom: '18px', color: '#fff' }}>
           {type === 'revenue' ? 'Revenue Breakdown' : type === 'outflow' ? 'Outflow Breakdown' : type === 'net' ? 'Net Position Details' : 'Conversion Details'}
         </h3>
-        <div className="finance-metric"><span className="fm-label">Total Revenue</span><span className="fm-value" style={{ color: '#1ABC9C' }}>{fmtGHS(totalRevenue)}</span></div>
-        <div className="finance-metric"><span className="fm-label">Total Expenses</span><span className="fm-value" style={{ color: '#FF2D3A' }}>{fmtGHS(totalExpenses)}</span></div>
-        <div className="finance-metric"><span className="fm-label">Purchase Orders</span><span className="fm-value" style={{ color: '#F39C12' }}>{fmtGHS(totalPOs)}</span></div>
-        <div className="finance-metric"><span className="fm-label">Net Position</span><span className="fm-value" style={{ color: netPosition >= 0 ? '#1ABC9C' : '#FF2D3A' }}>{fmtGHS(netPosition)}</span></div>
+        <div className="finance-metric"><span className="fm-label">Total Revenue</span><span className="fm-value" style={{ color: '#10B981' }}>{fmtGHS(totalRevenue)}</span></div>
+        <div className="finance-metric"><span className="fm-label">Total Expenses</span><span className="fm-value" style={{ color: '#E11D48' }}>{fmtGHS(totalExpenses)}</span></div>
+        <div className="finance-metric"><span className="fm-label">Purchase Orders</span><span className="fm-value" style={{ color: '#F59E0B' }}>{fmtGHS(totalPOs)}</span></div>
+        <div className="finance-metric"><span className="fm-label">Net Position</span><span className="fm-value" style={{ color: netPosition >= 0 ? '#10B981' : '#E11D48' }}>{fmtGHS(netPosition)}</span></div>
         <div className="finance-metric"><span className="fm-label">Transactions</span><span className="fm-value">{filteredSales.length}</span></div>
       </div>
     );
@@ -183,9 +183,9 @@ export default function NewDashboardPage() {
           <div className="kpi-value">{fmtGHS(totalOutflow)}</div>
           <div className="kpi-sub">Expenses + POs</div>
         </div>
-        <div className="card kpi-card clickable" onClick={() => openKPIDrilldown('net')} style={{ borderTopColor: netPosition >= 0 ? '#16A085' : '#E30613' }}>
+        <div className="card kpi-card clickable" onClick={() => openKPIDrilldown('net')} style={{ borderTopColor: netPosition >= 0 ? '#D97706' : '#BE123C' }}>
           <div className="kpi-label">Net Position</div>
-          <div className="kpi-value" style={{ color: netPosition >= 0 ? '#1ABC9C' : '#FF2D3A' }}>{fmtGHS(netPosition)}</div>
+          <div className="kpi-value" style={{ color: netPosition >= 0 ? '#10B981' : '#E11D48' }}>{fmtGHS(netPosition)}</div>
           <div className="kpi-sub">{netPosition >= 0 ? 'Positive' : 'Negative'}</div>
         </div>
         <div className="card kpi-card gold clickable" onClick={() => openKPIDrilldown('conversion')}>
@@ -197,9 +197,9 @@ export default function NewDashboardPage() {
 
       {/* ROW 2: Payment Breakdown */}
       <div className="grid grid-5" style={{ marginBottom: '8px' }}>
-        <div className="card kpi-card"><div className="kpi-label">Cash</div><div className="kpi-value" style={{ color: '#1ABC9C' }}>{fmtGHS(cashTotal)}</div></div>
-        <div className="card kpi-card"><div className="kpi-label">MoMo</div><div className="kpi-value" style={{ color: '#F39C12' }}>{fmtGHS(momoTotal)}</div></div>
-        <div className="card kpi-card"><div className="kpi-label">Bank</div><div className="kpi-value" style={{ color: '#3B82F6' }}>{fmtGHS(bankTotal)}</div></div>
+        <div className="card kpi-card"><div className="kpi-label">Cash</div><div className="kpi-value" style={{ color: '#10B981' }}>{fmtGHS(cashTotal)}</div></div>
+        <div className="card kpi-card"><div className="kpi-label">MoMo</div><div className="kpi-value" style={{ color: '#F59E0B' }}>{fmtGHS(momoTotal)}</div></div>
+        <div className="card kpi-card"><div className="kpi-label">Bank</div><div className="kpi-value" style={{ color: '#4F46E5' }}>{fmtGHS(bankTotal)}</div></div>
         <div className="card kpi-card navy"><div className="kpi-label">Workshop Jobs</div><div className="kpi-value">{workshopJobs}</div></div>
         <div className="card kpi-card amber"><div className="kpi-label">Conversion</div><div className="kpi-value">{conversion}%</div></div>
       </div>
@@ -265,7 +265,7 @@ export default function NewDashboardPage() {
               {filteredSales.slice(0, 50).map(s => (
                 <tr key={s.id}>
                   <td>{s.time}</td><td>{s.customer}</td><td>{s.item}</td><td>{s.channel}</td>
-                  <td>{s.qty}</td><td style={{ color: '#1ABC9C', fontWeight: 600 }}>{fmtGHS(s.total)}</td>
+                  <td>{s.qty}</td><td style={{ color: '#10B981', fontWeight: 600 }}>{fmtGHS(s.total)}</td>
                   <td>{s.payment}</td><td style={{ fontFamily: 'monospace', fontSize: '8pt' }}>{s.receipt}</td>
                   <td><span className={`status-badge status-${s.status.toLowerCase().replace(/\s+/g, '')}`}>{s.status}</span></td>
                 </tr>

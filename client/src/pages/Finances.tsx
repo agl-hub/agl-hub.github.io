@@ -26,7 +26,7 @@ export default function Finances() {
     if (typeof Chart === 'undefined' || !chartRef.current) return;
     chartInst.current?.destroy();
     const labels = Object.keys(expByCat).slice(0, 8);
-    const colors = ['#E30613','#16A085','#F39C12','#3B82F6','#E67E22','#8B5CF6','#EC4899','#14B8A6'];
+    const colors = ['#BE123C','#D97706','#F59E0B','#4F46E5','#D97706','#8B5CF6','#EC4899','#14B8A6'];
     chartInst.current = new Chart(chartRef.current, {
       type: 'doughnut',
       data: { labels, datasets: [{ data: labels.map(l => expByCat[l]), backgroundColor: colors }] },
@@ -86,7 +86,7 @@ export default function Finances() {
         <div className="card kpi-card green"><div className="kpi-label">Total Revenue</div><div className="kpi-value">{fmtGHS(totalRevenue)}</div></div>
         <div className="card kpi-card red"><div className="kpi-label">Expenses</div><div className="kpi-value">{fmtGHS(totalExpenses)}</div></div>
         <div className="card kpi-card gold"><div className="kpi-label">Purchase Orders</div><div className="kpi-value">{fmtGHS(totalPOs)}</div></div>
-        <div className="card kpi-card" style={{ borderTopColor: netPosition >= 0 ? '#16A085' : '#E30613' }}><div className="kpi-label">Net Position</div><div className="kpi-value" style={{ color: netPosition >= 0 ? '#1ABC9C' : '#FF2D3A' }}>{fmtGHS(netPosition)}</div></div>
+        <div className="card kpi-card" style={{ borderTopColor: netPosition >= 0 ? '#D97706' : '#BE123C' }}><div className="kpi-label">Net Position</div><div className="kpi-value" style={{ color: netPosition >= 0 ? '#10B981' : '#E11D48' }}>{fmtGHS(netPosition)}</div></div>
         <div className="card kpi-card navy"><div className="kpi-label">Profit Margin</div><div className="kpi-value">{profitMargin.toFixed(1)}%</div></div>
       </div>
 
@@ -107,7 +107,7 @@ export default function Finances() {
                 <thead><tr><th>Date</th><th>Item</th><th>Supplier</th><th>Amount</th><th>Purpose</th></tr></thead>
                 <tbody>
                   {[...data.expenses].sort((a, b) => b.date.localeCompare(a.date)).map(e => (
-                    <tr key={e.id}><td>{e.date}</td><td>{e.item}</td><td>{e.supplier}</td><td style={{ color: '#FF2D3A', fontWeight: 600 }}>{fmtGHS(e.amount)}</td><td style={{ color: 'var(--text-dim)' }}>{e.purpose}</td></tr>
+                    <tr key={e.id}><td>{e.date}</td><td>{e.item}</td><td>{e.supplier}</td><td style={{ color: '#E11D48', fontWeight: 600 }}>{fmtGHS(e.amount)}</td><td style={{ color: 'var(--text-dim)' }}>{e.purpose}</td></tr>
                   ))}
                 </tbody>
               </table>
@@ -119,7 +119,7 @@ export default function Finances() {
                 <thead><tr><th>Date</th><th>PO #</th><th>Supplier</th><th>Items</th><th>Amount</th></tr></thead>
                 <tbody>
                   {[...data.purchaseOrders].sort((a, b) => b.date.localeCompare(a.date)).map(po => (
-                    <tr key={po.id}><td>{po.date}</td><td style={{ fontFamily: 'monospace', fontSize: '8pt' }}>{po.poNumber}</td><td>{po.supplier}</td><td>{po.items}</td><td style={{ color: '#F39C12', fontWeight: 600 }}>{fmtGHS(po.amount)}</td></tr>
+                    <tr key={po.id}><td>{po.date}</td><td style={{ fontFamily: 'monospace', fontSize: '8pt' }}>{po.poNumber}</td><td>{po.supplier}</td><td>{po.items}</td><td style={{ color: '#F59E0B', fontWeight: 600 }}>{fmtGHS(po.amount)}</td></tr>
                   ))}
                 </tbody>
               </table>
@@ -131,11 +131,11 @@ export default function Finances() {
 
       <div className="card" style={{ padding: '14px' }}>
         <h3 style={{ color: '#fff', marginBottom: '12px' }}>Financial Summary</h3>
-        <div className="finance-metric"><span className="fm-label">Gross Revenue</span><span className="fm-value" style={{ color: '#1ABC9C' }}>{fmtGHS(totalRevenue)}</span></div>
-        <div className="finance-metric"><span className="fm-label">Total Expenses</span><span className="fm-value" style={{ color: '#FF2D3A' }}>{fmtGHS(totalExpenses)}</span></div>
-        <div className="finance-metric"><span className="fm-label">Purchase Orders</span><span className="fm-value" style={{ color: '#F39C12' }}>{fmtGHS(totalPOs)}</span></div>
-        <div className="finance-metric"><span className="fm-label">Total Outflow</span><span className="fm-value" style={{ color: '#FF2D3A' }}>{fmtGHS(totalOutflow)}</span></div>
-        <div className="finance-metric" style={{ borderBottom: 'none' }}><span className="fm-label" style={{ fontWeight: 700, color: '#fff' }}>Net Position</span><span className="fm-value" style={{ color: netPosition >= 0 ? '#1ABC9C' : '#FF2D3A', fontSize: '18px' }}>{fmtGHS(netPosition)}</span></div>
+        <div className="finance-metric"><span className="fm-label">Gross Revenue</span><span className="fm-value" style={{ color: '#10B981' }}>{fmtGHS(totalRevenue)}</span></div>
+        <div className="finance-metric"><span className="fm-label">Total Expenses</span><span className="fm-value" style={{ color: '#E11D48' }}>{fmtGHS(totalExpenses)}</span></div>
+        <div className="finance-metric"><span className="fm-label">Purchase Orders</span><span className="fm-value" style={{ color: '#F59E0B' }}>{fmtGHS(totalPOs)}</span></div>
+        <div className="finance-metric"><span className="fm-label">Total Outflow</span><span className="fm-value" style={{ color: '#E11D48' }}>{fmtGHS(totalOutflow)}</span></div>
+        <div className="finance-metric" style={{ borderBottom: 'none' }}><span className="fm-label" style={{ fontWeight: 700, color: '#fff' }}>Net Position</span><span className="fm-value" style={{ color: netPosition >= 0 ? '#10B981' : '#E11D48', fontSize: '18px' }}>{fmtGHS(netPosition)}</span></div>
       </div>
     </div>
   );

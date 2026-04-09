@@ -7,7 +7,8 @@ import {
   SHEET1_ID, SHEET2_ID, SHEET1_URL, SHEET2_URL,
   type SyncState,
 } from '../lib/sheetsSync';
-import { sheetsSnapshot } from '../lib/sheetsSnapshot';
+import { snapshotSales, snapshotExpenses, snapshotWorkshop, snapshotPurchaseOrders, snapshotClockIn, snapshotInventory } from '../lib/sheetsSnapshot';
+const sheetsSnapshot = { sales: snapshotSales, expenses: snapshotExpenses, workshop: snapshotWorkshop, purchaseOrders: snapshotPurchaseOrders, clockin: snapshotClockIn, inventory: snapshotInventory };
 
 export default function GoogleSheets() {
   const { showToast } = useLayout();
@@ -39,7 +40,7 @@ export default function GoogleSheets() {
     setImporting(true);
     setTimeout(() => {
       try {
-        const result = importSnapshot(sheetsSnapshot, mode);
+        const result = importSnapshot(sheetsSnapshot as any, mode);
         const total = Object.values(result.added).reduce((a, b) => a + b, 0);
         const skippedTotal = Object.values(result.skipped).reduce((a, b) => a + b, 0);
         showToast(`Imported ${total} records (${skippedTotal} already existed)`, 'success');
