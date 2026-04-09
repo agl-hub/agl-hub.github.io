@@ -17,7 +17,7 @@ export default function Workshop() {
   const inProgress = jobs.filter(j => j.status === 'In Progress').length;
   const awaiting = jobs.filter(j => j.status === 'Awaiting Parts').length;
   const completed = jobs.filter(j => j.status === 'Completed').length;
-  const totalEstCost = jobs.reduce((s, j) => s + j.estCost, 0);
+  const totalEstCost = jobs.reduce((s, j) => s + (j.estCost ?? 0), 0);
 
   useEffect(() => {
     if (typeof Chart === 'undefined' || !chartRef.current) return;
@@ -98,7 +98,7 @@ export default function Workshop() {
                 <div className="vc-job">{j.job}</div>
                 <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginTop: '4px' }}>
                   <span style={{ fontSize: '11px', color: 'var(--text-dim)' }}>{j.date}</span>
-                  <span style={{ fontFamily: 'Rajdhani', fontWeight: 700, color: '#1ABC9C' }}>{fmtGHS(j.estCost)}</span>
+                  <span style={{ fontFamily: 'Rajdhani', fontWeight: 700, color: '#1ABC9C' }}>{fmtGHS(j.estCost ?? 0)}</span>
                 </div>
                 <div style={{ display: 'flex', gap: '4px', marginTop: '6px' }}>
                   {j.status === 'Queued' && <button className="btn btn-xs btn-success" onClick={() => { updateData(d => { const f = d.workshop.find(w => w.id === j.id); if (f) f.status = 'In Progress'; }); setRefresh(r => r + 1); showToast(`${j.reg} started`, 'success'); }}>Start</button>}
@@ -126,7 +126,7 @@ export default function Workshop() {
                 <tr key={j.id}>
                   <td>{j.date}</td><td style={{ fontWeight: 600 }}>{j.reg}</td><td>{j.car}</td><td>{j.owner}</td>
                   <td>{j.job}</td><td style={{ color: '#F39C12' }}>{j.mechanic}</td>
-                  <td style={{ color: '#1ABC9C', fontWeight: 600 }}>{fmtGHS(j.estCost)}</td>
+                  <td style={{ color: '#1ABC9C', fontWeight: 600 }}>{fmtGHS(j.estCost ?? 0)}</td>
                   <td><span className="status-badge status-completed">Completed</span></td>
                 </tr>
               ))}

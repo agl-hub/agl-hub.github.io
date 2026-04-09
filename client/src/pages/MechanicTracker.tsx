@@ -19,7 +19,7 @@ export default function MechanicTracker() {
       mechMap[j.mechanic].total++;
       if (j.status === 'Completed') mechMap[j.mechanic].completed++;
       else if (j.status === 'In Progress') mechMap[j.mechanic].inProgress++;
-      mechMap[j.mechanic].totalRev += j.estCost;
+      mechMap[j.mechanic].totalRev += (j.estCost ?? 0);
     });
     Object.values(mechMap).forEach((m: any) => {
       m.efficiency = m.total ? Math.round((m.completed / m.total) * 100) : 0;
@@ -98,7 +98,7 @@ export default function MechanicTracker() {
                   <td>{j.date}</td><td style={{ fontWeight: 600 }}>{j.reg}</td><td>{j.car}</td><td>{j.job}</td>
                   <td style={{ color: '#F39C12' }}>{j.mechanic}</td>
                   <td><span className={`status-badge ${j.status === 'Completed' ? 'status-completed' : j.status === 'In Progress' ? 'status-progress' : j.status === 'Awaiting Parts' ? 'status-awaiting' : 'status-queued'}`}>{j.status}</span></td>
-                  <td style={{ color: '#1ABC9C', fontWeight: 600 }}>{fmtGHS(j.estCost)}</td>
+                  <td style={{ color: '#1ABC9C', fontWeight: 600 }}>{fmtGHS(j.estCost ?? 0)}</td>
                 </tr>
               ))}
             </tbody>

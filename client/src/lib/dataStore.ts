@@ -11,10 +11,10 @@ export interface Sale {
 export interface Expense { id: string; date: string; item: string; supplier: string; amount: number; purpose: string; }
 export interface PurchaseOrder { id: string; date: string; poNumber: string; supplier: string; amount: number; items: string; notes: string; }
 export interface WorkshopJob {
-  id: string; date: string; reg: string; car: string; owner: string;
-  job: string; mechanic: string; status: string; estCost: number; notes: string;
+  id: string; date: string; reg: string; car: string; owner?: string;
+  job: string; mechanic: string; status: string; estCost?: number; notes: string;
 }
-export interface ClockInRecord { id: string; staff: string; date: string; timeIn: string; timeOut: string; }
+export interface ClockInRecord { id: string; staff: string; date: string; timeIn: string; timeOut: string; late?: boolean; hours?: number; }
 export interface Creditor {
   id: string; name: string; contact: string; amount: number; date: string;
   dueDate: string; category: string; priority: string; notes: string; paid: number;
