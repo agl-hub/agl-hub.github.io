@@ -1220,13 +1220,14 @@ function getSummary() {
 function showSummary() {
   const summary = getSummary();
   const ui = SpreadsheetApp.getUi();
-  ui.alert('AGL Summary',
-    'Total Sales: ' + summary.totalSales + '\n' +
-    'Total Revenue: GHS ' + summary.totalRevenue.toFixed(2) + '\n' +
-    'Total Expenses: GHS ' + summary.totalExpenses.toFixed(2) + '\n' +
-    'Net Position: GHS ' + summary.netPosition.toFixed(2) + '\n' +
-    'Workshop Jobs: ' + summary.workshopJobs + ' (' + summary.completedJobs + ' completed)',
-    ui.ButtonSet.OK);
+  const lines = [
+    'Total Sales: ' + summary.totalSales,
+    'Total Revenue: GHS ' + summary.totalRevenue.toFixed(2),
+    'Total Expenses: GHS ' + summary.totalExpenses.toFixed(2),
+    'Net Position: GHS ' + summary.netPosition.toFixed(2),
+    'Workshop Jobs: ' + summary.workshopJobs + ' (' + summary.completedJobs + ' completed)'
+  ];
+  ui.alert('AGL Summary', lines.join('\n'), ui.ButtonSet.OK);
 }
 
 function refreshFormulas() {
