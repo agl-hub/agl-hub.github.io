@@ -1,232 +1,131 @@
-import { useState } from "react";
-
-interface InventoryItem {
-  id: string;
-  name: string;
-  sku: string;
-  quantity: number;
-  minStock: number;
-  unitPrice: number;
-  category: string;
-  lastRestocked: string;
-}
-
-const inventoryItems: InventoryItem[] = [
-  {
-    id: "1",
-    name: "Engine Oil 10W-40",
-    sku: "OIL-001",
-    quantity: 45,
-    minStock: 20,
-    unitPrice: 85,
-    category: "Oils & Fluids",
-    lastRestocked: "2026-04-01",
-  },
-  {
-    id: "2",
-    name: "Brake Pads (Front)",
-    sku: "BRK-001",
-    quantity: 12,
-    minStock: 15,
-    unitPrice: 250,
-    category: "Brakes",
-    lastRestocked: "2026-03-28",
-  },
-  {
-    id: "3",
-    name: "Air Filter",
-    sku: "FLT-001",
-    quantity: 28,
-    minStock: 10,
-    unitPrice: 45,
-    category: "Filters",
-    lastRestocked: "2026-04-02",
-  },
-  {
-    id: "4",
-    name: "Spark Plugs (Set of 4)",
-    sku: "SPK-001",
-    quantity: 8,
-    minStock: 10,
-    unitPrice: 120,
-    category: "Ignition",
-    lastRestocked: "2026-03-25",
-  },
-  {
-    id: "5",
-    name: "Battery (12V 60Ah)",
-    sku: "BAT-001",
-    quantity: 5,
-    minStock: 5,
-    unitPrice: 800,
-    category: "Electrical",
-    lastRestocked: "2026-04-03",
-  },
-];
+import { useState, useMemo } from 'react';
+import { getData, updateData, fmtGHS } from '../lib/dataStore';
+import { useLayout } from '../components/MainLayout';
 
 export default function Inventory() {
-  const [items, setItems] = useState(inventoryItems);
-  const [searchTerm, setSearchTerm] = useState("");
-  const [selectedCategory, setSelectedCategory] = useState("all");
+  const { showToast, openSlidePanel } = useLayout();
+  const data = getData();
+  const [refresh, setRefresh] = useState(0);
+  const [search, setSearch] = useState('');
 
-  const filteredItems = items.filter((item) => {
-    const matchesSearch = item.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
-      item.sku.toLowerCase().includes(searchTerm.toLowerCase());
-    const matchesCategory = selectedCategory === "all" || item.category === selectedCategory;
-    return matchesSearch && matchesCategory;
-  });
+  const items = useMemo(() => {
+    let list = data.inventory;
+    if (search) list = list.filter(i => i.name.toLowerCase().includes(search.toLowerCase()) || i.sku.toLowerCase().includes(search.toLowerCase()));
+    return list;
+  }, [data.inventory, search, refresh]);
 
-  const lowStockItems = items.filter((item) => item.quantity <= item.minStock);
-  const totalValue = items.reduce((sum, item) => sum + item.quantity * item.unitPrice, 0);
-  const categories = ["all", ...Array.from(new Set(items.map((item) => item.category)))];
+  const totalItems = data.inventory.length;
+  const totalValue = data.inventory.reduce((s, i) => s + i.qty * i.cost, 0);
+  const lowStock = data.inventory.filter(i => i.qty <= i.reorder).length;
+  const categories = Array.from(new Set(data.inventory.map(i => i.category))).length;
+
+  const addItem = () => {
+    openSlidePanel('Add Inventory Item', (
+      <div style={{ color: 'var(--text)' }}>
+        <div className="form-group"><label className="form-label">Item Name</label><input className="form-control" id="inv-name" placeholder="Item name" /></div>
+        <div className="form-group"><label className="form-label">Category</label><input className="form-control" id="inv-cat" placeholder="Category" /></div>
+        <div className="form-group"><label className="form-label">SKU</label><input className="form-control" id="inv-sku" placeholder="SKU code" /></div>
+        <div className="grid grid-2" style={{ gap: '6px' }}>
+          <div className="form-group"><label className="form-label">Quantity</label><input className="form-control" id="inv-qty" type="number" placeholder="0" /></div>
+          <div className="form-group"><label className="form-label">Reorder Level</label><input className="form-control" id="inv-reorder" type="number" placeholder="0" /></div>
+          <div className="form-group"><label className="form-label">Cost Price</label><input className="form-control" id="inv-cost" type="number" placeholder="0" /></div>
+          <div className="form-group"><label className="form-label">Sell Price</label><input className="form-control" id="inv-sell" type="number" placeholder="0" /></div>
+        </div>
+        <button className="btn btn-primary" style={{ marginTop: '12px' }} onClick={() => {
+          const name = (document.getElementById('inv-name') as HTMLInputElement)?.value;
+          const category = (document.getElementById('inv-cat') as HTMLInputElement)?.value;
+          const sku = (document.getElementById('inv-sku') as HTMLInputElement)?.value;
+          const qty = Number((document.getElementById('inv-qty') as HTMLInputElement)?.value) || 0;
+          const reorder = Number((document.getElementById('inv-reorder') as HTMLInputElement)?.value) || 0;
+          const cost = Number((document.getElementById('inv-cost') as HTMLInputElement)?.value) || 0;
+          const sell = Number((document.getElementById('inv-sell') as HTMLInputElement)?.value) || 0;
+          if (!name) { showToast('Item name is required', 'error'); return; }
+          updateData(d => { d.inventory.push({ id: `inv_${Date.now()}`, name, category, sku, qty, reorder, cost, sell }); });
+          showToast(`Added: ${name}`, 'success');
+          setRefresh(r => r + 1);
+        }}>Add Item</button>
+      </div>
+    ));
+  };
+
+  const quickSale = (item: typeof data.inventory[0]) => {
+    openSlidePanel(`Quick Sale: ${item.name}`, (
+      <div style={{ color: 'var(--text)' }}>
+        <div style={{ padding: '10px', background: 'rgba(255,255,255,0.03)', borderRadius: 'var(--radius-sm)', marginBottom: '12px' }}>
+          <div style={{ fontSize: '11px', color: '#fff', fontWeight: 600 }}>{item.name}</div>
+          <div style={{ fontSize: '9px', color: 'var(--text-dim)' }}>SKU: {item.sku} | In Stock: {item.qty}</div>
+          <div style={{ fontSize: '12px', color: '#1ABC9C', fontWeight: 700, marginTop: '4px' }}>{fmtGHS(item.sell)} each</div>
+        </div>
+        <div className="form-group"><label className="form-label">Quantity</label><input className="form-control" id="qs-qty" type="number" defaultValue="1" min="1" /></div>
+        <div className="form-group"><label className="form-label">Customer</label><input className="form-control" id="qs-cust" placeholder="Customer name" /></div>
+        <div className="form-group"><label className="form-label">Payment</label>
+          <select className="form-control" id="qs-pay"><option>Cash</option><option>MoMo</option><option>Bank Transfer</option><option>Credit</option></select>
+        </div>
+        <button className="btn btn-primary" style={{ marginTop: '12px' }} onClick={() => {
+          const qty = Number((document.getElementById('qs-qty') as HTMLInputElement)?.value) || 1;
+          const customer = (document.getElementById('qs-cust') as HTMLInputElement)?.value || 'Walk-In';
+          const payment = (document.getElementById('qs-pay') as HTMLSelectElement)?.value;
+          if (qty > item.qty) { showToast('Insufficient stock!', 'error'); return; }
+          updateData(d => {
+            const inv = d.inventory.find(i => i.id === item.id);
+            if (inv) inv.qty -= qty;
+            const rcpt = `AGL-RCT-${String(d.settings.receiptCounter++).padStart(3, '0')}`;
+            d.sales.push({
+              id: `s_${Date.now()}`, date: new Date().toISOString().slice(0, 10),
+              time: new Date().toTimeString().slice(0, 5), customer, contact: '',
+              channel: 'Walk-In', rep: 'POS', item: item.name, qty, price: item.sell,
+              total: qty * item.sell, payment, receipt: rcpt, status: 'Completed',
+              vehicle: '', notes: 'Quick POS sale',
+            });
+          });
+          showToast(`Sold ${qty}x ${item.name} — ${fmtGHS(qty * item.sell)}`, 'success');
+          setRefresh(r => r + 1);
+        }}>Complete Sale</button>
+      </div>
+    ));
+  };
 
   return (
-    <div className="flex flex-col gap-lg">
-      <div className="flex justify-between items-center">
-        <h2 className="text-2xl font-bold">Inventory / POS</h2>
-        <button className="btn btn-primary">+ Add Item</button>
+    <div>
+      <div className="grid grid-4" style={{ marginBottom: '8px' }}>
+        <div className="card kpi-card navy"><div className="kpi-label">Total Items</div><div className="kpi-value">{totalItems}</div></div>
+        <div className="card kpi-card green"><div className="kpi-label">Stock Value</div><div className="kpi-value" style={{ fontSize: '16px' }}>{fmtGHS(totalValue)}</div></div>
+        <div className="card kpi-card red"><div className="kpi-label">Low Stock</div><div className="kpi-value">{lowStock}</div></div>
+        <div className="card kpi-card gold"><div className="kpi-label">Categories</div><div className="kpi-value">{categories}</div></div>
       </div>
 
-      {/* Summary Cards */}
-      <div className="grid grid-4 gap-md">
-        <div className="card">
-          <div className="kpi-label">Total Items</div>
-          <div className="kpi-value">{items.length}</div>
-          <div className="kpi-sub">In stock</div>
-        </div>
-        <div className="card">
-          <div className="kpi-label">Total Value</div>
-          <div className="kpi-value">GHS {totalValue.toLocaleString()}</div>
-          <div className="kpi-sub">Inventory worth</div>
-        </div>
-        <div className="card">
-          <div className="kpi-label">Low Stock</div>
-          <div className="kpi-value text-warning">{lowStockItems.length}</div>
-          <div className="kpi-sub">Need restocking</div>
-        </div>
-        <div className="card">
-          <div className="kpi-label">Categories</div>
-          <div className="kpi-value">{categories.length - 1}</div>
-          <div className="kpi-sub">Product types</div>
-        </div>
+      <div style={{ display: 'flex', gap: '6px', marginBottom: '8px' }}>
+        <input className="form-control" placeholder="Search items..." value={search} onChange={e => setSearch(e.target.value)} style={{ flex: 1 }} />
+        <button className="btn btn-primary" onClick={addItem}>+ Add Item</button>
       </div>
 
-      {/* Low Stock Alert */}
-      {lowStockItems.length > 0 && (
-        <div className="card border-l-4 border-warning bg-warning/5">
-          <h3 className="font-bold text-warning mb-md">⚠️ Low Stock Alert</h3>
-          <div className="flex flex-col gap-sm">
-            {lowStockItems.map((item) => (
-              <div key={item.id} className="flex justify-between items-center text-sm">
-                <span>{item.name} (SKU: {item.sku})</span>
-                <span className="font-bold">{item.quantity} / {item.minStock}</span>
-              </div>
-            ))}
-          </div>
-        </div>
-      )}
-
-      {/* Search & Filter */}
-      <div className="card">
-        <div className="grid grid-2 gap-md mb-lg">
-          <input
-            type="text"
-            placeholder="Search by name or SKU..."
-            value={searchTerm}
-            onChange={(e) => setSearchTerm(e.target.value)}
-            className="form-control"
-          />
-          <select
-            value={selectedCategory}
-            onChange={(e) => setSelectedCategory(e.target.value)}
-            className="form-control"
-          >
-            {categories.map((cat) => (
-              <option key={cat} value={cat}>
-                {cat === "all" ? "All Categories" : cat}
-              </option>
-            ))}
-          </select>
-        </div>
-      </div>
-
-      {/* Inventory Table */}
-      <div className="card">
-        <h3 className="text-lg font-bold mb-lg">Inventory Items</h3>
-        <table className="table">
-          <thead>
-            <tr>
-              <th>Item Name</th>
-              <th>SKU</th>
-              <th>Category</th>
-              <th>Quantity</th>
-              <th>Min Stock</th>
-              <th>Unit Price</th>
-              <th>Total Value</th>
-              <th>Status</th>
-              <th>Actions</th>
-            </tr>
-          </thead>
-          <tbody>
-            {filteredItems.map((item) => (
-              <tr key={item.id}>
-                <td className="font-bold">{item.name}</td>
-                <td className="font-mono text-sm">{item.sku}</td>
-                <td>{item.category}</td>
-                <td className="font-bold">{item.quantity}</td>
-                <td>{item.minStock}</td>
-                <td className="font-mono">GHS {item.unitPrice}</td>
-                <td className="font-bold">GHS {(item.quantity * item.unitPrice).toLocaleString()}</td>
-                <td>
-                  {item.quantity <= item.minStock ? (
-                    <span className="badge badge-warning">Low Stock</span>
-                  ) : item.quantity > item.minStock * 2 ? (
-                    <span className="badge badge-success">Adequate</span>
-                  ) : (
-                    <span className="badge badge-info">Normal</span>
-                  )}
-                </td>
-                <td>
-                  <div className="flex gap-sm">
-                    <button className="btn btn-secondary btn-sm">Edit</button>
-                    <button className="btn btn-secondary btn-sm">Restock</button>
-                  </div>
-                </td>
-              </tr>
-            ))}
-          </tbody>
-        </table>
-      </div>
-
-      {/* Quick POS */}
-      <div className="card">
-        <h3 className="text-lg font-bold mb-lg">Quick Sale</h3>
-        <div className="grid grid-2 gap-lg">
-          <div>
-            <label className="form-label">Select Item</label>
-            <select className="form-control">
-              <option>Select an item...</option>
-              {items.map((item) => (
-                <option key={item.id} value={item.id}>
-                  {item.name} - GHS {item.unitPrice}
-                </option>
-              ))}
-            </select>
-          </div>
-          <div>
-            <label className="form-label">Quantity</label>
-            <input type="number" min="1" defaultValue="1" className="form-control" />
-          </div>
-        </div>
-        <div className="mt-lg">
-          <div className="flex justify-between items-center text-lg font-bold mb-lg">
-            <span>Total:</span>
-            <span>GHS 0.00</span>
-          </div>
-          <div className="flex gap-md">
-            <button className="btn btn-secondary flex-1">Clear</button>
-            <button className="btn btn-primary flex-1">Complete Sale</button>
-          </div>
+      <div className="card" style={{ padding: '10px' }}>
+        <div style={{ overflowX: 'auto', maxHeight: '500px', overflowY: 'auto' }}>
+          <table>
+            <thead>
+              <tr><th>Item</th><th>Category</th><th>SKU</th><th>Qty</th><th>Reorder</th><th>Cost</th><th>Sell</th><th>Value</th><th>Status</th><th>Action</th></tr>
+            </thead>
+            <tbody>
+              {items.map(item => {
+                const isLow = item.qty <= item.reorder;
+                const isOut = item.qty === 0;
+                return (
+                  <tr key={item.id}>
+                    <td style={{ fontWeight: 600 }}>{item.name}</td>
+                    <td>{item.category}</td>
+                    <td style={{ fontFamily: 'monospace', fontSize: '9px' }}>{item.sku}</td>
+                    <td style={{ color: isOut ? '#FF2D3A' : isLow ? '#F39C12' : '#1ABC9C', fontWeight: 600 }}>{item.qty}</td>
+                    <td>{item.reorder}</td>
+                    <td>{fmtGHS(item.cost)}</td>
+                    <td style={{ color: '#1ABC9C', fontWeight: 600 }}>{fmtGHS(item.sell)}</td>
+                    <td>{fmtGHS(item.qty * item.cost)}</td>
+                    <td><span className={`status-badge ${isOut ? 'status-awaiting' : isLow ? 'status-progress' : 'status-completed'}`}>{isOut ? 'Out of Stock' : isLow ? 'Low Stock' : 'In Stock'}</span></td>
+                    <td><button className="btn btn-xs btn-primary" onClick={() => quickSale(item)} disabled={isOut}>Sell</button></td>
+                  </tr>
+                );
+              })}
+            </tbody>
+          </table>
         </div>
       </div>
     </div>

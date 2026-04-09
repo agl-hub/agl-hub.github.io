@@ -1,55 +1,51 @@
 import { useMemo, useEffect, useRef } from 'react';
 import { getData, fmtGHS } from '../lib/dataStore';
+import { useLayout } from '../components/MainLayout';
 
 declare const Chart: any;
 
 export default function MechanicTracker() {
+  const { filterState } = useLayout();
   const data = getData();
   const chartRef = useRef<HTMLCanvasElement>(null);
   const chartInst = useRef<any>(null);
 
   const mechanics = useMemo(() => {
-    const names = Array.from(new Set(data.workshop.map(j => j.mechanic)));
-    return names.map(name => {
-      const jobs = data.workshop.filter(j => j.mechanic === name);
-      const completed = jobs.filter(j => j.status === 'Completed');
-      const inProgress = jobs.filter(j => j.status === 'In Progress');
-      const totalRev = completed.reduce((s, j) => s + j.estCost, 0);
-      const efficiency = jobs.length > 0 ? Math.round((completed.length / jobs.length) * 100) : 0;
-      const rating = Math.min(5, Math.max(1, Math.round(efficiency / 20)));
-      return { name, total: jobs.length, completed: completed.length, inProgress: inProgress.length, totalRev, efficiency, rating };
-    }).sort((a, b) => b.totalRev - a.totalRev);
+    const mechMap: Record<string, any> = {};
+    data.workshop.forEach(j => {
+      if (!mechMap[j.mechanic]) {
+        mechMap[j.mechanic] = { name: j.mechanic, total: 0, completed: 0, inProgress: 0, rating: 4, efficiency: 0, totalRev: 0 };
+      }
+      mechMap[j.mechanic].total++;
+      if (j.status === 'Completed') mechMap[j.mechanic].completed++;
+      else if (j.status === 'In Progress') mechMap[j.mechanic].inProgress++;
+      mechMap[j.mechanic].totalRev += j.estCost;
+    });
+    Object.values(mechMap).forEach((m: any) => {
+      m.efficiency = m.total ? Math.round((m.completed / m.total) * 100) : 0;
+    });
+    return Object.values(mechMap);
   }, [data.workshop]);
-
-  const totalJobs = data.workshop.length;
-  const totalCompleted = data.workshop.filter(j => j.status === 'Completed').length;
-  const avgEfficiency = mechanics.length > 0 ? Math.round(mechanics.reduce((s, m) => s + m.efficiency, 0) / mechanics.length) : 0;
-  const topMechanic = mechanics[0]?.name || 'N/A';
 
   useEffect(() => {
     if (typeof Chart === 'undefined' || !chartRef.current) return;
     chartInst.current?.destroy();
     chartInst.current = new Chart(chartRef.current, {
       type: 'bar',
-      data: {
-        labels: mechanics.map(m => m.name),
-        datasets: [
-          { label: 'Completed', data: mechanics.map(m => m.completed), backgroundColor: '#16A085', borderRadius: 4 },
-          { label: 'In Progress', data: mechanics.map(m => m.inProgress), backgroundColor: '#F39C12', borderRadius: 4 },
-        ],
-      },
-      options: { responsive: true, maintainAspectRatio: false, plugins: { legend: { labels: { color: '#A0AEC0', font: { size: 9 } } } }, scales: { x: { ticks: { color: '#718096', font: { size: 9 } }, grid: { color: 'rgba(255,255,255,0.03)' } }, y: { ticks: { color: '#718096', font: { size: 9 } }, grid: { color: 'rgba(255,255,255,0.03)' } } } },
+      data: { labels: mechanics.map(m => m.name), datasets: [{ data: mechanics.map(m => m.total), backgroundColor: ['#E30613','#16A085','#F39C12','#3B82F6'], borderRadius: 4 }] },
+      options: { responsive: true, maintainAspectRatio: false, plugins: { legend: { display: false } }, scales: { x: { ticks: { color: '#718096', font: { size: 9 } }, grid: { color: 'rgba(255,255,255,0.03)' } }, y: { ticks: { color: '#718096', font: { size: 9 } }, grid: { color: 'rgba(255,255,255,0.03)' } } } },
     });
     return () => { chartInst.current?.destroy(); };
   }, [mechanics]);
 
   return (
     <div>
-      <div className="grid grid-4" style={{ marginBottom: '8px' }}>
-        <div className="card kpi-card navy"><div className="kpi-label">Total Jobs</div><div className="kpi-value">{totalJobs}</div></div>
-        <div className="card kpi-card green"><div className="kpi-label">Completed</div><div className="kpi-value">{totalCompleted}</div></div>
-        <div className="card kpi-card gold"><div className="kpi-label">Avg Efficiency</div><div className="kpi-value">{avgEfficiency}%</div></div>
-        <div className="card kpi-card red"><div className="kpi-label">Top Mechanic</div><div className="kpi-value" style={{ fontSize: '16px' }}>{topMechanic}</div></div>
+      <div className="grid grid-5" style={{ marginBottom: '8px' }}>
+        <div className="card kpi-card green"><div className="kpi-label">Total Mechanics</div><div className="kpi-value">{mechanics.length}</div></div>
+        <div className="card kpi-card amber"><div className="kpi-label">Avg Efficiency</div><div className="kpi-value">{mechanics.length ? Math.round(mechanics.reduce((s, m) => s + m.efficiency, 0) / mechanics.length) : 0}%</div></div>
+        <div className="card kpi-card gold"><div className="kpi-label">Total Jobs</div><div className="kpi-value">{data.workshop.length}</div></div>
+        <div className="card kpi-card navy"><div className="kpi-label">Completed</div><div className="kpi-value">{data.workshop.filter(j => j.status === 'Completed').length}</div></div>
+        <div className="card kpi-card red"><div className="kpi-label">Total Revenue</div><div className="kpi-value">{fmtGHS(mechanics.reduce((s, m) => s + m.totalRev, 0))}</div></div>
       </div>
 
       <div className="grid" style={{ gridTemplateColumns: '1fr 1fr', marginBottom: '8px' }}>

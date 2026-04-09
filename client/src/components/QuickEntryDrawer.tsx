@@ -1,78 +1,96 @@
 import { useState } from "react";
 import { Plus } from "lucide-react";
 import { Drawer } from "vaul";
-import { trpc } from "@/lib/trpc";
-import { toast } from "sonner";
+import { updateData } from "../lib/dataStore";
+import { useLayout } from "./MainLayout";
 
 type Tab = "sale" | "expense" | "po";
 
 export default function QuickEntryDrawer() {
+  const { showToast } = useLayout();
   const [open, setOpen] = useState(false);
   const [tab, setTab] = useState<Tab>("sale");
-
-  const createSale = trpc.sales.create.useMutation();
-  const createExpense = trpc.expenses.create.useMutation();
-  const createPO = trpc.purchaseOrders.create.useMutation();
-
   const [form, setForm] = useState<any>({});
   const update = (k: string, v: any) => setForm((f: any) => ({ ...f, [k]: v }));
 
-  const submit = async () => {
+  const submit = () => {
+    const today = new Date().toISOString().slice(0, 10);
+    const now = new Date().toLocaleTimeString("en-GB", { hour: "2-digit", minute: "2-digit" });
     try {
       if (tab === "sale") {
-        await createSale.mutateAsync({
-          transactionDate: new Date(),
-          channel: form.channel || "POS",
-          partService: form.partService || "Item",
-          totalAmount: parseFloat(form.totalAmount) || 0,
-          paymentMethod: form.paymentMethod || "Cash",
-          status: "Completed",
+        updateData(d => {
+          d.sales.push({
+            id: `s_${Date.now()}`,
+            date: today,
+            time: now,
+            channel: form.channel || "POS",
+            item: form.partService || "Item",
+            customer: form.customer || "Walk-in",
+            contact: "",
+            rep: form.rep || "Staff",
+            qty: 1,
+            price: parseFloat(form.totalAmount) || 0,
+            total: parseFloat(form.totalAmount) || 0,
+            payment: form.paymentMethod || "Cash",
+            receipt: `RCP-${Date.now()}`,
+            vehicle: "",
+            status: "Completed",
+            notes: "",
+          });
         });
       } else if (tab === "expense") {
-        await createExpense.mutateAsync({
-          expenseDate: new Date(),
-          category: form.category || "General",
-          description: form.description || "",
-          amount: parseFloat(form.amount) || 0,
+        updateData(d => {
+          d.expenses.push({
+            id: `e_${Date.now()}`,
+            date: today,
+            item: form.category || "General",
+            supplier: form.description || "General",
+            amount: parseFloat(form.amount) || 0,
+            purpose: form.description || "",
+          });
         });
       } else {
-        await createPO.mutateAsync({
-          poNumber: form.poNumber || `PO-${Date.now()}`,
-          poDate: new Date(),
-          vendor: form.vendor || "",
-          description: form.description || "",
-          amount: parseFloat(form.amount) || 0,
-          status: "Pending",
+        updateData(d => {
+          d.purchaseOrders.push({
+            id: `po_${Date.now()}`,
+            poNumber: form.poNumber || `PO-${Date.now()}`,
+            date: today,
+            supplier: form.vendor || "",
+            amount: parseFloat(form.amount) || 0,
+            items: form.description || "",
+            notes: "",
+          });
         });
       }
-      toast.success(`${tab} saved`);
+      showToast(`${tab} saved`, "success");
       setOpen(false);
       setForm({});
     } catch (e: any) {
-      toast.error(e?.message || "Save failed");
+      showToast(e?.message || "Save failed", "error");
     }
   };
 
   return (
     <Drawer.Root open={open} onOpenChange={setOpen}>
-      <Drawer.Trigger asChild>
+          <Drawer.Trigger asChild>
         <button
           type="button"
-          aria-label="Quick entry"
+          title="Quick Entry"
           style={{
-            background: "#2563eb",
-            color: "#fff",
-            border: "none",
-            borderRadius: 6,
-            padding: "6px 10px",
             display: "inline-flex",
             alignItems: "center",
-            gap: 6,
+            gap: 4,
+            padding: "5px 10px",
+            background: "var(--primary, #E30613)",
+            color: "#fff",
+            border: "none",
+            borderRadius: 4,
             cursor: "pointer",
-            fontSize: 12,
+            fontSize: 11,
+            fontWeight: 600,
           }}
         >
-          <Plus size={14} /> Quick Entry
+          <Plus size={14} /> Quick Add
         </button>
       </Drawer.Trigger>
       <Drawer.Portal>
@@ -107,9 +125,9 @@ export default function QuickEntryDrawer() {
                 style={{
                   flex: 1,
                   padding: "6px 8px",
-                  background: tab === t ? "#2563eb" : "transparent",
-                  color: tab === t ? "#fff" : "var(--text, #fff)",
-                  border: "1px solid var(--border, #374151)",
+                  background: tab === t ? "var(--primary, #E30613)" : "transparent",
+                  color: "#fff",
+                  border: "1px solid var(--card-border, #374151)",
                   borderRadius: 4,
                   cursor: "pointer",
                   fontSize: 11,
@@ -126,6 +144,7 @@ export default function QuickEntryDrawer() {
               <>
                 <Field label="Channel" value={form.channel || ""} onChange={(v) => update("channel", v)} />
                 <Field label="Item / Service" value={form.partService || ""} onChange={(v) => update("partService", v)} />
+                <Field label="Customer" value={form.customer || ""} onChange={(v) => update("customer", v)} />
                 <Field label="Amount (GHS)" type="number" value={form.totalAmount || ""} onChange={(v) => update("totalAmount", v)} />
                 <Field label="Payment Method" value={form.paymentMethod || ""} onChange={(v) => update("paymentMethod", v)} />
               </>

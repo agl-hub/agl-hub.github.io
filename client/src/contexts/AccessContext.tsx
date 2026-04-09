@@ -1,6 +1,5 @@
-import React, { createContext, useContext, useMemo } from "react";
+import React, { createContext, useContext, useMemo, useState } from "react";
 import { useLocation } from "wouter";
-import { trpc } from "@/lib/trpc";
 
 export type AccessRole = "guest" | "viewer" | "admin";
 
@@ -18,26 +17,21 @@ export function AccessProvider({ children }: { children: React.ReactNode }) {
   const [location] = useLocation();
   const isPublic = location.startsWith("/public");
 
-  const meQuery = trpc.auth.me.useQuery(undefined, {
-    enabled: !isPublic,
-    retry: false,
-  });
-  const user = meQuery.data ?? null;
+  // Static site: default to admin role so all features are accessible
+  const [role] = useState<AccessRole>("admin");
 
   const value = useMemo<AccessContextValue>(() => {
     if (isPublic) {
       return { isPublic: true, role: "guest", canEdit: false, canViewFinance: false, user: null };
     }
-    const role: AccessRole =
-      (user as any)?.role === "admin" ? "admin" : user ? "viewer" : "guest";
     return {
       isPublic: false,
       role,
       canEdit: role === "admin",
       canViewFinance: role !== "guest",
-      user: user as any,
+      user: { name: "Admin", role },
     };
-  }, [isPublic, user]);
+  }, [isPublic, role]);
 
   return <AccessContext.Provider value={value}>{children}</AccessContext.Provider>;
 }

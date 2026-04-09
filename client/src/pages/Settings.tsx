@@ -1,123 +1,135 @@
-import { useEffect, useState } from "react";
-import { trpc } from "@/lib/trpc";
-import { useAccess } from "@/contexts/AccessContext";
-import { toast } from "sonner";
+import { useState } from 'react';
+import { getData, updateData } from '../lib/dataStore';
+import { useLayout } from '../components/MainLayout';
+
+const DEFAULTS = {
+  dailyRevenueTarget: 5000,
+  monthlyRevenueTarget: 120000,
+  lowStockThreshold: 5,
+  overdueJobHours: 48,
+  businessName: 'Automobiles Ghana Ltd',
+  currency: 'GHS',
+};
 
 export default function Settings() {
-  const { canEdit } = useAccess();
-  const cfgQuery = trpc.config.get.useQuery();
-  const update = trpc.config.update.useMutation();
-  const reset = trpc.config.reset.useMutation();
+  const { showToast } = useLayout();
+  const data = getData();
+  const saved = (data.settings as any)?.config || DEFAULTS;
 
-  const [form, setForm] = useState<any>({});
-  useEffect(() => {
-    if (cfgQuery.data) setForm(cfgQuery.data);
-  }, [cfgQuery.data]);
+  const [form, setForm] = useState({
+    dailyRevenueTarget: saved.dailyRevenueTarget ?? DEFAULTS.dailyRevenueTarget,
+    monthlyRevenueTarget: saved.monthlyRevenueTarget ?? DEFAULTS.monthlyRevenueTarget,
+    lowStockThreshold: saved.lowStockThreshold ?? DEFAULTS.lowStockThreshold,
+    overdueJobHours: saved.overdueJobHours ?? DEFAULTS.overdueJobHours,
+    businessName: saved.businessName ?? DEFAULTS.businessName,
+    currency: saved.currency ?? DEFAULTS.currency,
+  });
 
-  const setField = (k: string, v: string) =>
-    setForm((f: any) => ({ ...f, [k]: parseFloat(v) || 0 }));
+  const setField = (k: string, v: string | number) =>
+    setForm(f => ({ ...f, [k]: v }));
 
-  const save = async () => {
-    try {
-      await update.mutateAsync(form);
-      toast.success("Settings saved");
-      cfgQuery.refetch();
-    } catch (e: any) {
-      toast.error(e?.message || "Save failed");
-    }
+  const save = () => {
+    updateData(d => {
+      if (!d.settings) d.settings = { receiptCounter: 1, poCounter: 1 } as any;
+      (d.settings as any).config = { ...form };
+    });
+    showToast('Settings saved', 'success');
   };
 
-  const doReset = async () => {
-    await reset.mutateAsync();
-    cfgQuery.refetch();
-    toast.success("Reset to defaults");
+  const doReset = () => {
+    setForm({ ...DEFAULTS });
+    updateData(d => {
+      if (!d.settings) d.settings = { receiptCounter: 1, poCounter: 1 } as any;
+      (d.settings as any).config = { ...DEFAULTS };
+    });
+    showToast('Reset to defaults', 'success');
   };
 
   return (
-    <div className="flex flex-col gap-lg">
-      <h2 className="text-2xl font-bold">Settings</h2>
+    <div>
+      <h2 style={{ fontFamily: 'Rajdhani', fontSize: '18px', fontWeight: 700, color: '#fff', marginBottom: '12px' }}>Settings</h2>
 
-      <div className="card" style={{ padding: 16 }}>
-        <h3 className="text-lg font-bold mb-md">Insight Thresholds</h3>
-        <div className="grid grid-2 gap-md">
-          <Field label="Daily Revenue Target (GHS)" value={form.dailyRevenueTarget} onChange={(v) => setField("dailyRevenueTarget", v)} disabled={!canEdit} />
-          <Field label="Monthly Revenue Target (GHS)" value={form.monthlyRevenueTarget} onChange={(v) => setField("monthlyRevenueTarget", v)} disabled={!canEdit} />
-          <Field label="Low Stock Threshold (units)" value={form.lowStockThreshold} onChange={(v) => setField("lowStockThreshold", v)} disabled={!canEdit} />
-          <Field label="Overdue Job Hours" value={form.overdueJobHours} onChange={(v) => setField("overdueJobHours", v)} disabled={!canEdit} />
+      <div className="card" style={{ padding: 16, marginBottom: '8px' }}>
+        <h3 style={{ color: '#fff', marginBottom: '12px', fontSize: '13px', fontFamily: 'Rajdhani', fontWeight: 600 }}>Business Information</h3>
+        <div className="grid grid-2" style={{ gap: '12px' }}>
+          <div className="form-group">
+            <label className="form-label">Business Name</label>
+            <input className="form-control" value={form.businessName} onChange={e => setField('businessName', e.target.value)} />
+          </div>
+          <div className="form-group">
+            <label className="form-label">Currency</label>
+            <select className="form-control" value={form.currency} onChange={e => setField('currency', e.target.value)}>
+              <option value="GHS">GHS (Ghana Cedi)</option>
+              <option value="USD">USD (US Dollar)</option>
+              <option value="EUR">EUR (Euro)</option>
+              <option value="GBP">GBP (British Pound)</option>
+            </select>
+          </div>
         </div>
+      </div>
 
-        {canEdit && (
-          <div style={{ display: "flex", gap: 8, marginTop: 16 }}>
-            <button
-              onClick={save}
-              disabled={update.isPending}
-              style={{
-                padding: "8px 14px",
-                background: "#10b981",
-                color: "#fff",
-                border: "none",
-                borderRadius: 4,
-                cursor: "pointer",
-                fontSize: 12,
-                fontWeight: 600,
-              }}
-            >
-              {update.isPending ? "Saving…" : "Save"}
-            </button>
-            <button
-              onClick={doReset}
-              style={{
-                padding: "8px 14px",
-                background: "transparent",
-                color: "var(--text)",
-                border: "1px solid var(--card-border)",
-                borderRadius: 4,
-                cursor: "pointer",
-                fontSize: 12,
-              }}
-            >
-              Reset to defaults
-            </button>
+      <div className="card" style={{ padding: 16, marginBottom: '8px' }}>
+        <h3 style={{ color: '#fff', marginBottom: '12px', fontSize: '13px', fontFamily: 'Rajdhani', fontWeight: 600 }}>Revenue Targets</h3>
+        <div className="grid grid-2" style={{ gap: '12px' }}>
+          <div className="form-group">
+            <label className="form-label">Daily Revenue Target (GHS)</label>
+            <input type="number" className="form-control" value={form.dailyRevenueTarget} onChange={e => setField('dailyRevenueTarget', parseFloat(e.target.value) || 0)} />
           </div>
-        )}
-        {!canEdit && (
-          <div style={{ marginTop: 12, fontSize: 11, opacity: 0.6 }}>
-            Read-only — sign in as admin to edit.
+          <div className="form-group">
+            <label className="form-label">Monthly Revenue Target (GHS)</label>
+            <input type="number" className="form-control" value={form.monthlyRevenueTarget} onChange={e => setField('monthlyRevenueTarget', parseFloat(e.target.value) || 0)} />
           </div>
-        )}
+        </div>
+      </div>
+
+      <div className="card" style={{ padding: 16, marginBottom: '8px' }}>
+        <h3 style={{ color: '#fff', marginBottom: '12px', fontSize: '13px', fontFamily: 'Rajdhani', fontWeight: 600 }}>Alert Thresholds</h3>
+        <div className="grid grid-2" style={{ gap: '12px' }}>
+          <div className="form-group">
+            <label className="form-label">Low Stock Threshold (units)</label>
+            <input type="number" className="form-control" value={form.lowStockThreshold} onChange={e => setField('lowStockThreshold', parseFloat(e.target.value) || 0)} />
+          </div>
+          <div className="form-group">
+            <label className="form-label">Overdue Job Hours</label>
+            <input type="number" className="form-control" value={form.overdueJobHours} onChange={e => setField('overdueJobHours', parseFloat(e.target.value) || 0)} />
+          </div>
+        </div>
+      </div>
+
+      <div className="card" style={{ padding: 16, marginBottom: '8px' }}>
+        <h3 style={{ color: '#fff', marginBottom: '12px', fontSize: '13px', fontFamily: 'Rajdhani', fontWeight: 600 }}>Data Management</h3>
+        <p style={{ fontSize: '11px', color: 'var(--text-dim)', marginBottom: '12px' }}>
+          All data is stored locally in your browser. Export regularly to avoid data loss.
+        </p>
+        <div style={{ display: 'flex', gap: '8px', flexWrap: 'wrap' }}>
+          <button className="btn btn-secondary" onClick={() => {
+            const d = getData();
+            const blob = new Blob([JSON.stringify(d, null, 2)], { type: 'application/json' });
+            const url = URL.createObjectURL(blob);
+            const a = document.createElement('a');
+            a.href = url;
+            a.download = `agl-backup-${new Date().toISOString().slice(0, 10)}.json`;
+            a.click();
+            URL.revokeObjectURL(url);
+            showToast('Data exported successfully', 'success');
+          }}>
+            📥 Export Data (JSON)
+          </button>
+          <button className="btn btn-secondary" style={{ color: 'var(--red)' }} onClick={() => {
+            if (confirm('Clear ALL data? This cannot be undone.')) {
+              localStorage.removeItem('agl_data');
+              showToast('All data cleared. Reload to see changes.', 'info');
+            }
+          }}>
+            🗑️ Clear All Data
+          </button>
+        </div>
+      </div>
+
+      <div style={{ display: 'flex', gap: '8px', marginTop: '8px' }}>
+        <button className="btn btn-primary" onClick={save}>💾 Save Settings</button>
+        <button className="btn btn-secondary" onClick={doReset}>Reset to Defaults</button>
       </div>
     </div>
-  );
-}
-
-function Field({
-  label,
-  value,
-  onChange,
-  disabled,
-}: {
-  label: string;
-  value: number | undefined;
-  onChange: (v: string) => void;
-  disabled?: boolean;
-}) {
-  return (
-    <label style={{ display: "flex", flexDirection: "column", gap: 4, fontSize: 11 }}>
-      <span style={{ opacity: 0.8 }}>{label}</span>
-      <input
-        type="number"
-        value={value ?? ""}
-        disabled={disabled}
-        onChange={(e) => onChange(e.target.value)}
-        style={{
-          padding: "6px 8px",
-          background: "var(--bg, #111827)",
-          color: "var(--text, #fff)",
-          border: "1px solid var(--card-border, #374151)",
-          borderRadius: 4,
-          fontSize: 12,
-        }}
-      />
-    </label>
   );
 }

@@ -47,6 +47,8 @@ export const useLayout = () => {
 const pages = [
   { id: 'dashboard', label: 'Live Dashboard', icon: '\u25A0', path: '/' },
   { id: 'entry', label: 'Daily Entry', icon: '\u270E', path: '/entry' },
+  { id: 'sales', label: 'Sales', icon: '\uD83D\uDCB0', path: '/sales' },
+  { id: 'staff', label: 'Staff', icon: '\uD83D\uDC65', path: '/staff' },
   { id: 'workshop', label: 'Workshop Log', icon: '\u2699', path: '/workshop' },
   { id: 'monthly', label: 'Monthly Report', icon: '\u2617', path: '/monthly' },
   { id: 'mechanics', label: 'Mechanic Tracker', icon: '\u2605', path: '/mechanics' },
@@ -68,6 +70,8 @@ const pages = [
 const pageTitles: Record<string, string> = {
   dashboard: 'Live Dashboard',
   entry: 'Daily Entry',
+  sales: 'Sales',
+  staff: 'Staff',
   workshop: 'Workshop Log',
   monthly: 'Monthly Report',
   mechanics: 'Mechanic Tracker',
