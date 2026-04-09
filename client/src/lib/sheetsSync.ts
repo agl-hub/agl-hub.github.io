@@ -17,8 +17,8 @@
 import { updateData, getData, saveData } from './dataStore';
 import type { Sale, Expense, WorkshopJob, PurchaseOrder, ClockInRecord, StockItem } from './dataStore';
 
-export const SHEET1_ID = '1pFBk2xCbILKxVSgwACQIrIscEimonnnyJNBKoiAVZ7U';
-export const SHEET2_ID = '1r8cZtmyjqLmUJSUZPOZopOk8PEGCJyhKnaS0NvqUniw';
+export const SHEET1_ID = '1WVSb5klz93ZyQFCKAnZ4hd3S8ay5qEIbdIhozSoZ1uw';
+export const SHEET2_ID = '1WVSb5klz93ZyQFCKAnZ4hd3S8ay5qEIbdIhozSoZ1uw'; // Same sheet — Inventory tab
 export const SHEET1_URL = `https://docs.google.com/spreadsheets/d/${SHEET1_ID}/edit`;
 export const SHEET2_URL = `https://docs.google.com/spreadsheets/d/${SHEET2_ID}/edit`;
 
@@ -273,50 +273,98 @@ export function exportToCSV(type: 'sales' | 'expenses' | 'workshop' | 'purchaseO
 // ============================================================
 // APPS SCRIPT TEMPLATE — the GAS code users deploy
 // ============================================================
-export const GAS_TEMPLATE = `// AGL Command Center — Google Apps Script Bridge
+export const GAS_TEMPLATE = `// ============================================================
+// AGL COMMAND CENTER — Google Apps Script
+// Sheet ID: 1WVSb5klz93ZyQFCKAnZ4hd3S8ay5qEIbdIhozSoZ1uw
 // Deploy as: Web App → Execute as Me → Anyone can access
-// Paste this in script.google.com and deploy
+// ============================================================
+// INSTRUCTIONS:
+//   1. Go to https://script.google.com
+//   2. Create a new project named "AGL Command Center Sync"
+//   3. Paste this entire file into Code.gs
+//   4. Click Deploy → New Deployment → Web App
+//      - Execute as: Me
+//      - Who has access: Anyone
+//   5. Copy the Web App URL
+//   6. On the AGL website → Google Sheets → Import tab → paste URL → Save
+// ============================================================
 
-const SHEET1_ID = '${SHEET1_ID}';
-const SHEET2_ID = '${SHEET2_ID}';
+const SHEET_ID = '1WVSb5klz93ZyQFCKAnZ4hd3S8ay5qEIbdIhozSoZ1uw';
 
+// ── Sales reps and mechanics (update here if staff changes) ──
+const SALES_REPS  = ['Yvonne', 'Abigail', 'Bright'];
+const MECHANICS   = ['Appiah', 'Kojo', 'Fatawu', 'Chris'];
+const ALL_STAFF   = ['Yvonne', 'Abigail', 'Bright', 'Ben', 'Appiah', 'Kojo', 'Fatawu', 'Chris'];
+const CHANNELS    = ['Walk-In', 'WhatsApp', 'Phone', 'Facebook', 'Instagram', 'Wholesale', 'Workshop'];
+const PAYMENTS    = ['Cash', 'MoMo', 'Bank Transfer', 'Credit', 'Cheque'];
+const WS_STATUSES = ['Queued', 'In Progress', 'Awaiting Parts', 'Completed'];
+const WORK_START  = '08:00';
+
+// ── Trigger: show menu when sheet opens ──────────────────────
+function onOpen() {
+  const ui = SpreadsheetApp.getUi();
+  ui.createMenu('📋 AGL Data Entry')
+    .addItem('➕ Record Sale', 'showSaleForm')
+    .addItem('💸 Record Expense', 'showExpenseForm')
+    .addItem('🔧 Log Workshop Job', 'showWorkshopForm')
+    .addItem('⏱ Clock In / Out', 'showClockInForm')
+    .addItem('📦 Add Purchase Order', 'showPOForm')
+    .addSeparator()
+    .addItem('📊 View Summary', 'showSummary')
+    .addItem('🔄 Refresh Formulas', 'refreshFormulas')
+    .addToUi();
+}
+
+// ─────────────────────────────────────────────────────────────
+// WEB APP ENDPOINTS (for website two-way sync)
+// ─────────────────────────────────────────────────────────────
 function doGet(e) {
-  const action = e.parameter.action || 'pull';
-  if (action === 'pull') {
-    return ContentService.createTextOutput(JSON.stringify(pullAll()))
-      .setMimeType(ContentService.MimeType.JSON);
+  try {
+    const action = (e && e.parameter && e.parameter.action) || 'pull';
+    if (action === 'pull') {
+      return jsonResponse(pullAll());
+    }
+    if (action === 'summary') {
+      return jsonResponse(getSummary());
+    }
+    return jsonResponse({ ok: false, error: 'Unknown action: ' + action });
+  } catch(err) {
+    return jsonResponse({ ok: false, error: err.message });
   }
-  return ContentService.createTextOutput(JSON.stringify({ ok: false, error: 'Unknown action' }))
-    .setMimeType(ContentService.MimeType.JSON);
 }
 
 function doPost(e) {
   try {
     const payload = JSON.parse(e.postData.contents);
-    const result = pushRow(payload.type, payload.row);
-    return ContentService.createTextOutput(JSON.stringify(result))
-      .setMimeType(ContentService.MimeType.JSON);
+    const { type, row } = payload;
+    if (!type || !row) return jsonResponse({ ok: false, error: 'Missing type or row' });
+    const result = appendRow(type, row);
+    return jsonResponse(result);
   } catch(err) {
-    return ContentService.createTextOutput(JSON.stringify({ ok: false, error: err.message }))
-      .setMimeType(ContentService.MimeType.JSON);
+    return jsonResponse({ ok: false, error: err.message });
   }
 }
 
+function jsonResponse(data) {
+  return ContentService
+    .createTextOutput(JSON.stringify(data))
+    .setMimeType(ContentService.MimeType.JSON);
+}
+
+// ─────────────────────────────────────────────────────────────
+// PULL — read all data for website sync
+// ─────────────────────────────────────────────────────────────
 function pullAll() {
-  // Returns all data as structured JSON
-  const ss1 = SpreadsheetApp.openById(SHEET1_ID);
-  const ss2 = SpreadsheetApp.openById(SHEET2_ID);
+  const ss = SpreadsheetApp.openById(SHEET_ID);
   return {
-    sales: readSheet(ss1, 'Sales & Customer Log', mapSale),
-    expenses: readSheet(ss1, 'Expense Log', mapExpense),
-    workshop: readSheet(ss1, 'Workshop Daily Log', mapWorkshop),
-    purchaseOrders: readSheet(ss1, 'Purchase Orders', mapPO),
-    clockin: readClockIn(ss1),
-    inventory: [
-      ...readSheet(ss2, '_FilterData', mapFilter),
-      ...readSheet(ss2, '_PlugData', mapPlug),
-      ...readSheet(ss2, '_ServiceData', mapService),
-    ]
+    ok: true,
+    timestamp: new Date().toISOString(),
+    sales:     readSheet(ss, 'Sales & Customer Log',  mapSaleRow),
+    expenses:  readSheet(ss, 'Expense Log',            mapExpenseRow),
+    workshop:  readSheet(ss, 'Workshop Daily Log',     mapWorkshopRow),
+    clockin:   readSheet(ss, 'Staff Clock-In',         mapClockInRow),
+    purchaseOrders: readSheet(ss, 'Purchase Orders',   mapPORow),
+    inventory: readSheet(ss, 'Inventory',              mapInventoryRow),
   };
 }
 
@@ -325,6 +373,7 @@ function readSheet(ss, name, mapper) {
     const sheet = ss.getSheetByName(name);
     if (!sheet) return [];
     const rows = sheet.getDataRange().getValues();
+    if (rows.length < 2) return [];
     const result = [];
     for (let i = 1; i < rows.length; i++) {
       const mapped = mapper(rows[i], i);
@@ -334,132 +383,798 @@ function readSheet(ss, name, mapper) {
   } catch(e) { return []; }
 }
 
-function parseDate(d) {
-  if (!d || d === '-') return '';
-  if (d instanceof Date) {
-    const y = d.getFullYear(), m = String(d.getMonth()+1).padStart(2,'0'), day = String(d.getDate()).padStart(2,'0');
-    return y + '-' + m + '-' + day;
-  }
-  const s = String(d);
-  const parts = s.split('/');
-  if (parts.length === 3) return parts[2] + '-' + parts[1].padStart(2,'0') + '-' + parts[0].padStart(2,'0');
-  return s;
-}
-
-function clean(v) { return v === '-' || v === undefined ? '' : String(v).trim(); }
-function num(v) { return parseFloat(String(v).replace(/[^0-9.]/g,'')) || 0; }
-
-function mapSale(r, i) {
-  const date = parseDate(r[1]);
+// Row mappers — column indices match the headers written by populate_sheet.py
+function mapSaleRow(r, i) {
+  const date = fmtDate(r[1]);
   if (!date) return null;
-  return { id: 'sh1_s_' + (i), date, time: '09:00', channel: clean(r[4]) || 'Walk-In',
-    item: clean(r[6]) || 'Unknown', customer: clean(r[2]) || 'Walk-in', contact: clean(r[3]),
-    vehicle: clean(r[5]), rep: clean(r[12]) || 'Staff', qty: parseInt(r[7]) || 1,
-    price: num(r[8]), total: num(r[9]), payment: clean(r[10]) || 'Cash',
-    receipt: clean(r[11]) || 'RCP-SH-' + i, status: clean(r[14]) || 'Completed', notes: clean(r[16]) };
+  return {
+    id: r[0] || ('sh_s_' + i), date,
+    customer: clean(r[2]), contact: clean(r[3]), channel: clean(r[4]),
+    vehicle: clean(r[5]), item: clean(r[6]),
+    qty: num(r[7]), unitPrice: num(r[8]), total: num(r[9]),
+    payment: clean(r[10]), receipt: clean(r[11]),
+    rep: clean(r[12]), mechanic: clean(r[13]),
+    status: clean(r[14]) || 'Completed',
+    workmanshipFee: num(r[15]), notes: clean(r[16])
+  };
 }
 
-function mapExpense(r, i) {
-  const date = parseDate(r[1]);
+function mapExpenseRow(r, i) {
+  const date = fmtDate(r[1]);
   if (!date) return null;
-  return { id: 'sh1_e_' + i, date, item: clean(r[3]) || 'General',
-    supplier: clean(r[2]) || 'Unknown', amount: num(r[7]), purpose: clean(r[2]) };
+  return {
+    id: r[0] || ('sh_e_' + i), date,
+    description: clean(r[2]), category: clean(r[3]),
+    requestedBy: clean(r[4]), approvedBy: clean(r[5]),
+    receipt: clean(r[6]), amount: num(r[7]),
+    paymentMethod: clean(r[8]), budgetCode: clean(r[9]),
+    status: clean(r[10]), notes: clean(r[11])
+  };
 }
 
-function mapWorkshop(r, i) {
-  const date = parseDate(r[1]);
+function mapWorkshopRow(r, i) {
+  const date = fmtDate(r[1]);
   if (!date) return null;
-  return { id: 'sh1_w_' + i, date, car: clean(r[2]) || 'Unknown', reg: clean(r[3]),
-    mechanic: clean(r[4]), job: clean(r[5]), status: clean(r[6]) || 'In Progress', notes: clean(r[7]) };
+  return {
+    id: r[0] || ('sh_w_' + i), date,
+    car: clean(r[2]), regNo: clean(r[3]), mechanic: clean(r[4]),
+    jobDescription: clean(r[5]), status: clean(r[6]) || 'In Progress',
+    estCost: num(r[7]), actualCost: num(r[8]),
+    owner: clean(r[9]), recall: clean(r[10]) === 'Yes',
+    recallNotes: clean(r[11]), notes: clean(r[12])
+  };
 }
 
-function mapPO(r, i) {
-  const poNum = clean(r[0]) || 'PO-' + i;
-  const date = parseDate(r[1]) || '2026-03-01';
-  return { id: 'sh1_po_' + i, poNumber: poNum, date, supplier: clean(r[2]) || 'Unknown',
-    items: clean(r[3]), amount: num(r[6]), notes: clean(r[14]) };
+function mapClockInRow(r, i) {
+  const date = fmtDate(r[1]);
+  if (!date) return null;
+  return {
+    id: r[0] || ('sh_c_' + i), date,
+    staff: clean(r[2]), timeIn: clean(r[3]), timeOut: clean(r[4]),
+    late: clean(r[5]) === 'Y',
+    hours: num(r[6]),
+    latePenalty: num(r[7]), noOutPenalty: num(r[8]),
+    notes: clean(r[9])
+  };
 }
 
-function readClockIn(ss) {
-  try {
-    const sheet = ss.getSheetByName('Staff Clock-In');
-    if (!sheet) return [];
-    const rows = sheet.getDataRange().getValues();
-    if (rows.length < 2) return [];
-    const headerRow = rows[0];
-    const staffCols = [];
-    for (let c = 2; c < headerRow.length; c += 4) {
-      const name = String(headerRow[c] || '').split('(')[0].trim();
-      if (name) staffCols.push([c, name.charAt(0).toUpperCase() + name.slice(1).toLowerCase()]);
-    }
-    const result = [];
-    for (let i = 2; i < rows.length; i++) {
-      const date = parseDate(rows[i][1]);
-      if (!date) continue;
-      for (const [col, staff] of staffCols) {
-        const timeIn = clean(rows[i][col]);
-        if (!timeIn || timeIn === '-' || timeIn === 'N/A') continue;
-        result.push({ id: 'sh1_c_' + result.length, date, staff,
-          timeIn, timeOut: clean(rows[i][col+1]), late: clean(rows[i][col+2]) === 'LATE',
-          hours: num(rows[i][col+3]) });
-      }
-    }
-    return result;
-  } catch(e) { return []; }
+function mapPORow(r, i) {
+  const date = fmtDate(r[2]);
+  if (!date) return null;
+  return {
+    id: r[0] || ('sh_po_' + i), poNo: clean(r[1]), date,
+    supplier: clean(r[3]), item: clean(r[4]),
+    qty: num(r[5]), unitCost: num(r[6]), total: num(r[7]),
+    requestedBy: clean(r[8]), approvedBy: clean(r[9]),
+    dateApproved: clean(r[10]), expectedDelivery: clean(r[11]),
+    dateReceived: clean(r[12]), status: clean(r[13]), notes: clean(r[14])
+  };
 }
 
-function mapFilter(r, i) {
-  const partNum = clean(r[2]);
-  const name = (clean(r[1]) + ' ' + partNum).trim();
+function mapInventoryRow(r, i) {
+  const name = clean(r[2]);
   if (!name) return null;
-  return { id: 'sh2_f_' + i, sku: partNum || 'FILTER-' + i, name, category: 'Filters & Oil',
-    brand: clean(r[1]), partNumber: partNum, vehicleModels: clean(r[4]), yearRange: clean(r[6]),
-    price: num(r[7]), qty: parseInt(r[8]) || 0, reorder: 5,
-    status: String(r[9]).includes('IN STOCK') ? 'In Stock' : 'Out of Stock', notes: '' };
+  return {
+    id: r[0] || ('sh_inv_' + i), sku: clean(r[1]), name,
+    category: clean(r[3]), brand: clean(r[4]),
+    qty: num(r[5]), reorderLevel: num(r[6]),
+    costPrice: num(r[7]), sellPrice: num(r[8]),
+    supplier: clean(r[9]), vehicleModels: clean(r[10]),
+    yearRange: clean(r[11]), status: clean(r[12]), notes: clean(r[13])
+  };
 }
 
-function mapPlug(r, i) {
-  const partName = clean(r[3]) || clean(r[2]) || 'Spark Plug ' + i;
-  if (!partName) return null;
-  return { id: 'sh2_p_' + i, sku: clean(r[2]) || 'PLUG-' + i, name: partName, category: 'Spark Plugs',
-    brand: clean(r[1]), partNumber: clean(r[2]), vehicleModels: clean(r[7]), yearRange: clean(r[9]),
-    price: num(r[4]), qty: parseInt(r[12]) || 0, reorder: 3,
-    status: String(r[13]).includes('IN STOCK') ? 'In Stock' : 'Out of Stock',
-    notes: 'Material: ' + clean(r[10]) + ', Size: ' + clean(r[11]) };
-}
-
-function mapService(r, i) {
-  const name = clean(r[1]);
-  if (!name) return null;
-  return { id: 'sh2_sv_' + i, sku: 'SVC-' + String(i).padStart(3,'0'), name,
-    category: 'Services - ' + (clean(r[3]) || 'General'), brand: 'AGL',
-    partNumber: '', vehicleModels: '', yearRange: '',
-    price: num(r[2]), qty: 999, reorder: 0, status: 'In Stock', notes: '' };
-}
-
-function pushRow(type, row) {
-  const ss1 = SpreadsheetApp.openById(SHEET1_ID);
+// ─────────────────────────────────────────────────────────────
+// PUSH — append a new row from website
+// ─────────────────────────────────────────────────────────────
+function appendRow(type, row) {
+  const ss = SpreadsheetApp.openById(SHEET_ID);
   const sheetMap = {
-    sale: 'Sales & Customer Log',
-    expense: 'Expense Log',
-    workshop: 'Workshop Daily Log',
+    sale:          'Sales & Customer Log',
+    expense:       'Expense Log',
+    workshop:      'Workshop Daily Log',
+    clockin:       'Staff Clock-In',
     purchaseOrder: 'Purchase Orders',
   };
   const sheetName = sheetMap[type];
   if (!sheetName) return { ok: false, error: 'Unknown type: ' + type };
-  const sheet = ss1.getSheetByName(sheetName);
+
+  const sheet = ss.getSheetByName(sheetName);
   if (!sheet) return { ok: false, error: 'Sheet not found: ' + sheetName };
-  const lastRow = sheet.getLastRow();
-  const newNum = lastRow; // row number
+
+  // Validate before appending
+  const validation = validateRow(type, row);
+  if (!validation.ok) return validation;
+
+  const rowData = buildRowArray(type, row);
+  sheet.appendRow(rowData);
+  return { ok: true, message: type + ' recorded successfully', rowData };
+}
+
+function validateRow(type, row) {
+  const errors = [];
   if (type === 'sale') {
-    sheet.appendRow([newNum, row.date, row.customer, row.contact, row.channel, row.vehicle,
-      row.item, row.qty, row.price, row.total, row.payment, row.receipt, row.rep, '', row.status, '', row.notes]);
-  } else if (type === 'expense') {
-    sheet.appendRow([newNum, row.date, row.supplier, row.item, '', '', '', row.amount, '', '', 'Paid', row.purpose]);
-  } else if (type === 'workshop') {
-    sheet.appendRow([newNum, row.date, row.car, row.reg, row.mechanic, row.job, row.status, row.notes]);
-  } else if (type === 'purchaseOrder') {
-    sheet.appendRow([row.poNumber, row.date, row.supplier, row.items, '', '', row.amount, '', '', '', '', '', 'Pending', '', row.notes]);
+    if (!row.date) errors.push('Date is required');
+    if (!row.item) errors.push('Item is required');
+    if (!row.rep || !SALES_REPS.includes(row.rep)) errors.push('Valid sales rep required: ' + SALES_REPS.join(', '));
+    if (isNaN(row.total) || row.total <= 0) errors.push('Total must be > 0');
+    if (!row.payment || !PAYMENTS.includes(row.payment)) errors.push('Valid payment method required');
   }
+  if (type === 'expense') {
+    if (!row.date) errors.push('Date is required');
+    if (!row.description) errors.push('Description is required');
+    if (isNaN(row.amount) || row.amount <= 0) errors.push('Amount must be > 0');
+  }
+  if (type === 'workshop') {
+    if (!row.date) errors.push('Date is required');
+    if (!row.regNo) errors.push('Registration number is required');
+    if (!row.jobDescription) errors.push('Job description is required');
+    if (!row.mechanic) errors.push('Mechanic is required');
+  }
+  if (type === 'clockin') {
+    if (!row.date) errors.push('Date is required');
+    if (!row.staff || !ALL_STAFF.includes(row.staff)) errors.push('Valid staff name required');
+    if (!row.timeIn) errors.push('Clock-in time is required');
+  }
+  if (errors.length > 0) return { ok: false, errors };
   return { ok: true };
-}`;
+}
+
+function buildRowArray(type, row) {
+  const id = type.charAt(0) + '_' + Date.now();
+  const today = new Date().toISOString().slice(0, 10);
+  if (type === 'sale') {
+    return [id, row.date || today, row.customer || '', row.contact || '',
+      row.channel || 'Walk-In', row.vehicle || '', row.item,
+      row.qty || 1, row.unitPrice || row.total, row.total,
+      row.payment, row.receipt || 'RCP-' + Date.now(),
+      row.rep, row.mechanic || '', row.status || 'Completed',
+      row.workmanshipFee || 0, row.notes || ''];
+  }
+  if (type === 'expense') {
+    return [id, row.date || today, row.description, row.category || 'General',
+      row.requestedBy || '', row.approvedBy || '', row.receipt || '',
+      row.amount, row.paymentMethod || 'Cash', row.budgetCode || '',
+      row.status || 'Approved', row.notes || ''];
+  }
+  if (type === 'workshop') {
+    return [id, row.date || today, row.car || '', row.regNo,
+      row.mechanic, row.jobDescription, row.status || 'Queued',
+      row.estCost || '', '', row.owner || '', 'No', '', row.notes || ''];
+  }
+  if (type === 'clockin') {
+    const isLate = row.timeIn > WORK_START;
+    const noOut = !row.timeOut;
+    return [id, row.date || today, row.staff, row.timeIn, row.timeOut || '',
+      isLate ? 'Y' : 'N', row.hours || '', isLate ? 20 : 0, noOut ? 5 : 0, row.notes || ''];
+  }
+  if (type === 'purchaseOrder') {
+    const poNo = 'AGL-PO-' + String(Date.now()).slice(-5);
+    return [id, poNo, row.date || today, row.supplier, row.item,
+      row.qty || 1, row.unitCost || 0, row.total || 0,
+      row.requestedBy || '', row.approvedBy || '', '', row.expectedDelivery || '',
+      '', row.status || 'Pending', row.notes || ''];
+  }
+  return [];
+}
+
+// ─────────────────────────────────────────────────────────────
+// GOOGLE FORM POPUPS — triggered from menu
+// ─────────────────────────────────────────────────────────────
+function showSaleForm() {
+  const today = new Date().toISOString().slice(0, 10);
+  const html = HtmlService.createHtmlOutput(\`
+<!DOCTYPE html>
+<html>
+<head>
+<style>
+  body { font-family: Arial, sans-serif; font-size: 12px; padding: 12px; background: #f8f8f8; }
+  h2 { color: #7F1D1D; margin: 0 0 12px; font-size: 14px; }
+  label { display: block; font-weight: bold; margin: 8px 0 2px; color: #333; font-size: 11px; }
+  input, select, textarea { width: 100%; padding: 5px 7px; border: 1px solid #ccc; border-radius: 4px; font-size: 11px; box-sizing: border-box; }
+  .row { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; }
+  .total-display { background: #D97706; color: white; padding: 6px 10px; border-radius: 4px; font-weight: bold; font-size: 13px; margin: 8px 0; }
+  button { background: #7F1D1D; color: white; border: none; padding: 8px 16px; border-radius: 4px; cursor: pointer; font-size: 12px; width: 100%; margin-top: 8px; }
+  button:hover { background: #991B1B; }
+  .error { color: red; font-size: 10px; margin-top: 4px; }
+  .required { color: red; }
+</style>
+</head>
+<body>
+<h2>➕ Record Sale</h2>
+<div class="row">
+  <div>
+    <label>Date <span class="required">*</span></label>
+    <input type="date" id="date" value="\${today}" />
+  </div>
+  <div>
+    <label>Sales Rep <span class="required">*</span></label>
+    <select id="rep">
+      <option value="">Select rep...</option>
+      <option>Yvonne</option><option>Abigail</option><option>Bright</option>
+    </select>
+  </div>
+</div>
+<label>Item / Service <span class="required">*</span></label>
+<input type="text" id="item" placeholder="e.g. NGK Spark Plug 93175" />
+<div class="row">
+  <div>
+    <label>Qty <span class="required">*</span></label>
+    <input type="number" id="qty" value="1" min="1" onchange="calcTotal()" />
+  </div>
+  <div>
+    <label>Unit Price (GHS) <span class="required">*</span></label>
+    <input type="number" id="price" placeholder="0.00" step="0.01" onchange="calcTotal()" />
+  </div>
+</div>
+<div class="total-display" id="totalDisplay">Total: GHS 0.00</div>
+<div class="row">
+  <div>
+    <label>Payment Method <span class="required">*</span></label>
+    <select id="payment">
+      <option value="">Select...</option>
+      <option>Cash</option><option>MoMo</option><option>Bank Transfer</option><option>Credit</option><option>Cheque</option>
+    </select>
+  </div>
+  <div>
+    <label>Channel</label>
+    <select id="channel">
+      <option>Walk-In</option><option>WhatsApp</option><option>Phone</option>
+      <option>Facebook</option><option>Instagram</option><option>Wholesale</option><option>Workshop</option>
+    </select>
+  </div>
+</div>
+<div class="row">
+  <div>
+    <label>Customer Name</label>
+    <input type="text" id="customer" placeholder="Walk-in customer" />
+  </div>
+  <div>
+    <label>Contact / Phone</label>
+    <input type="text" id="contact" placeholder="0244..." />
+  </div>
+</div>
+<div class="row">
+  <div>
+    <label>Vehicle Reg</label>
+    <input type="text" id="vehicle" placeholder="GR-1234-23" />
+  </div>
+  <div>
+    <label>Mechanic (if workshop)</label>
+    <select id="mechanic">
+      <option value="">None</option>
+      <option>Appiah</option><option>Kojo</option><option>Fatawu</option><option>Chris</option>
+    </select>
+  </div>
+</div>
+<label>Notes</label>
+<input type="text" id="notes" placeholder="Optional notes" />
+<div id="errMsg" class="error"></div>
+<button onclick="submitSale()">✓ Record Sale</button>
+<script>
+function calcTotal() {
+  const qty = parseFloat(document.getElementById('qty').value) || 0;
+  const price = parseFloat(document.getElementById('price').value) || 0;
+  const total = qty * price;
+  document.getElementById('totalDisplay').textContent = 'Total: GHS ' + total.toFixed(2);
+}
+function submitSale() {
+  const date = document.getElementById('date').value;
+  const rep = document.getElementById('rep').value;
+  const item = document.getElementById('item').value.trim();
+  const qty = parseInt(document.getElementById('qty').value) || 1;
+  const price = parseFloat(document.getElementById('price').value) || 0;
+  const payment = document.getElementById('payment').value;
+  const total = qty * price;
+  const errors = [];
+  if (!date) errors.push('Date required');
+  if (!rep) errors.push('Sales rep required');
+  if (!item) errors.push('Item required');
+  if (price <= 0) errors.push('Unit price must be > 0');
+  if (!payment) errors.push('Payment method required');
+  if (errors.length) { document.getElementById('errMsg').textContent = errors.join(' | '); return; }
+  document.getElementById('errMsg').textContent = '';
+  const row = {
+    date, rep, item, qty, unitPrice: price, total, payment,
+    channel: document.getElementById('channel').value,
+    customer: document.getElementById('customer').value,
+    contact: document.getElementById('contact').value,
+    vehicle: document.getElementById('vehicle').value,
+    mechanic: document.getElementById('mechanic').value,
+    notes: document.getElementById('notes').value,
+    status: 'Completed'
+  };
+  google.script.run.withSuccessHandler(function(result) {
+    if (result && result.ok) {
+      alert('✓ Sale recorded: ' + item + ' — GHS ' + total.toFixed(2));
+      google.script.host.close();
+    } else {
+      document.getElementById('errMsg').textContent = 'Error: ' + (result ? result.errors : 'Unknown');
+    }
+  }).submitSaleFromForm(row);
+}
+</script>
+</body>
+</html>
+\`).setWidth(480).setHeight(560).setTitle('Record Sale');
+  SpreadsheetApp.getUi().showModalDialog(html, 'Record Sale');
+}
+
+function showExpenseForm() {
+  const today = new Date().toISOString().slice(0, 10);
+  const html = HtmlService.createHtmlOutput(\`
+<!DOCTYPE html>
+<html>
+<head>
+<style>
+  body { font-family: Arial, sans-serif; font-size: 12px; padding: 12px; }
+  h2 { color: #7F1D1D; margin: 0 0 12px; font-size: 14px; }
+  label { display: block; font-weight: bold; margin: 8px 0 2px; font-size: 11px; }
+  input, select { width: 100%; padding: 5px 7px; border: 1px solid #ccc; border-radius: 4px; font-size: 11px; box-sizing: border-box; }
+  .row { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; }
+  button { background: #7F1D1D; color: white; border: none; padding: 8px 16px; border-radius: 4px; cursor: pointer; font-size: 12px; width: 100%; margin-top: 8px; }
+  .error { color: red; font-size: 10px; margin-top: 4px; }
+  .required { color: red; }
+</style>
+</head>
+<body>
+<h2>💸 Record Expense</h2>
+<div class="row">
+  <div>
+    <label>Date <span class="required">*</span></label>
+    <input type="date" id="date" value="\${today}" />
+  </div>
+  <div>
+    <label>Amount (GHS) <span class="required">*</span></label>
+    <input type="number" id="amount" placeholder="0.00" step="0.01" />
+  </div>
+</div>
+<label>Description / Item <span class="required">*</span></label>
+<input type="text" id="description" placeholder="e.g. Workshop supplies" />
+<div class="row">
+  <div>
+    <label>Category</label>
+    <select id="category">
+      <option>Workshop Supplies</option><option>Office Stationery</option>
+      <option>Fuel</option><option>Staff Welfare</option><option>Utilities</option>
+      <option>Repairs & Maintenance</option><option>Marketing</option><option>Other</option>
+    </select>
+  </div>
+  <div>
+    <label>Payment Method</label>
+    <select id="payment">
+      <option>Cash</option><option>MoMo</option><option>Bank Transfer</option>
+    </select>
+  </div>
+</div>
+<div class="row">
+  <div>
+    <label>Requested By</label>
+    <select id="requestedBy">
+      <option value="">Select...</option>
+      <option>Yvonne</option><option>Abigail</option><option>Bright</option>
+      <option>Ben</option><option>Appiah</option><option>Kojo</option><option>Fatawu</option><option>Chris</option>
+    </select>
+  </div>
+  <div>
+    <label>Receipt Ref</label>
+    <input type="text" id="receipt" placeholder="Optional receipt #" />
+  </div>
+</div>
+<label>Notes</label>
+<input type="text" id="notes" placeholder="Optional" />
+<div id="errMsg" class="error"></div>
+<button onclick="submitExpense()">✓ Record Expense</button>
+<script>
+function submitExpense() {
+  const date = document.getElementById('date').value;
+  const amount = parseFloat(document.getElementById('amount').value) || 0;
+  const description = document.getElementById('description').value.trim();
+  const errors = [];
+  if (!date) errors.push('Date required');
+  if (!description) errors.push('Description required');
+  if (amount <= 0) errors.push('Amount must be > 0');
+  if (errors.length) { document.getElementById('errMsg').textContent = errors.join(' | '); return; }
+  const row = {
+    date, amount, description,
+    category: document.getElementById('category').value,
+    paymentMethod: document.getElementById('payment').value,
+    requestedBy: document.getElementById('requestedBy').value,
+    receipt: document.getElementById('receipt').value,
+    notes: document.getElementById('notes').value
+  };
+  google.script.run.withSuccessHandler(function(result) {
+    if (result && result.ok) {
+      alert('✓ Expense recorded: ' + description + ' — GHS ' + amount.toFixed(2));
+      google.script.host.close();
+    } else {
+      document.getElementById('errMsg').textContent = 'Error: ' + (result ? JSON.stringify(result.errors) : 'Unknown');
+    }
+  }).submitExpenseFromForm(row);
+}
+</script>
+</body>
+</html>
+\`).setWidth(440).setHeight(460).setTitle('Record Expense');
+  SpreadsheetApp.getUi().showModalDialog(html, 'Record Expense');
+}
+
+function showWorkshopForm() {
+  const today = new Date().toISOString().slice(0, 10);
+  const html = HtmlService.createHtmlOutput(\`
+<!DOCTYPE html>
+<html>
+<head>
+<style>
+  body { font-family: Arial, sans-serif; font-size: 12px; padding: 12px; }
+  h2 { color: #7F1D1D; margin: 0 0 12px; font-size: 14px; }
+  label { display: block; font-weight: bold; margin: 8px 0 2px; font-size: 11px; }
+  input, select, textarea { width: 100%; padding: 5px 7px; border: 1px solid #ccc; border-radius: 4px; font-size: 11px; box-sizing: border-box; }
+  .row { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; }
+  button { background: #7F1D1D; color: white; border: none; padding: 8px 16px; border-radius: 4px; cursor: pointer; font-size: 12px; width: 100%; margin-top: 8px; }
+  .error { color: red; font-size: 10px; margin-top: 4px; }
+  .required { color: red; }
+</style>
+</head>
+<body>
+<h2>🔧 Log Workshop Job</h2>
+<div class="row">
+  <div>
+    <label>Date <span class="required">*</span></label>
+    <input type="date" id="date" value="\${today}" />
+  </div>
+  <div>
+    <label>Mechanic <span class="required">*</span></label>
+    <select id="mechanic">
+      <option value="">Select...</option>
+      <option>Appiah</option><option>Kojo</option><option>Fatawu</option><option>Chris</option>
+    </select>
+  </div>
+</div>
+<div class="row">
+  <div>
+    <label>Vehicle Make/Model <span class="required">*</span></label>
+    <input type="text" id="car" placeholder="e.g. Toyota Corolla" />
+  </div>
+  <div>
+    <label>Registration No. <span class="required">*</span></label>
+    <input type="text" id="regNo" placeholder="GR-1234-23" />
+  </div>
+</div>
+<label>Job Description <span class="required">*</span></label>
+<textarea id="jobDesc" rows="2" placeholder="Full service, brake pad replacement..."></textarea>
+<div class="row">
+  <div>
+    <label>Owner / Customer</label>
+    <input type="text" id="owner" placeholder="Customer name" />
+  </div>
+  <div>
+    <label>Status</label>
+    <select id="status">
+      <option>Queued</option><option>In Progress</option>
+      <option>Awaiting Parts</option><option>Completed</option>
+    </select>
+  </div>
+</div>
+<div class="row">
+  <div>
+    <label>Est. Cost (GHS)</label>
+    <input type="number" id="estCost" placeholder="0" />
+  </div>
+  <div>
+    <label>Notes</label>
+    <input type="text" id="notes" placeholder="Optional" />
+  </div>
+</div>
+<div id="errMsg" class="error"></div>
+<button onclick="submitWorkshop()">✓ Log Job</button>
+<script>
+function submitWorkshop() {
+  const date = document.getElementById('date').value;
+  const mechanic = document.getElementById('mechanic').value;
+  const car = document.getElementById('car').value.trim();
+  const regNo = document.getElementById('regNo').value.trim().toUpperCase();
+  const jobDescription = document.getElementById('jobDesc').value.trim();
+  const errors = [];
+  if (!date) errors.push('Date required');
+  if (!mechanic) errors.push('Mechanic required');
+  if (!car) errors.push('Vehicle required');
+  if (!regNo) errors.push('Registration required');
+  if (!jobDescription) errors.push('Job description required');
+  if (errors.length) { document.getElementById('errMsg').textContent = errors.join(' | '); return; }
+  const row = {
+    date, mechanic, car, regNo, jobDescription,
+    owner: document.getElementById('owner').value,
+    status: document.getElementById('status').value,
+    estCost: parseFloat(document.getElementById('estCost').value) || 0,
+    notes: document.getElementById('notes').value
+  };
+  google.script.run.withSuccessHandler(function(result) {
+    if (result && result.ok) {
+      alert('✓ Workshop job logged: ' + regNo + ' — ' + jobDescription);
+      google.script.host.close();
+    } else {
+      document.getElementById('errMsg').textContent = 'Error: ' + (result ? JSON.stringify(result.errors) : 'Unknown');
+    }
+  }).submitWorkshopFromForm(row);
+}
+</script>
+</body>
+</html>
+\`).setWidth(440).setHeight(500).setTitle('Log Workshop Job');
+  SpreadsheetApp.getUi().showModalDialog(html, 'Log Workshop Job');
+}
+
+function showClockInForm() {
+  const today = new Date().toISOString().slice(0, 10);
+  const nowTime = Utilities.formatDate(new Date(), 'Africa/Accra', 'HH:mm');
+  const html = HtmlService.createHtmlOutput(\`
+<!DOCTYPE html>
+<html>
+<head>
+<style>
+  body { font-family: Arial, sans-serif; font-size: 12px; padding: 12px; }
+  h2 { color: #7F1D1D; margin: 0 0 12px; font-size: 14px; }
+  label { display: block; font-weight: bold; margin: 8px 0 2px; font-size: 11px; }
+  input, select { width: 100%; padding: 5px 7px; border: 1px solid #ccc; border-radius: 4px; font-size: 11px; box-sizing: border-box; }
+  .row { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; }
+  button { background: #7F1D1D; color: white; border: none; padding: 8px 16px; border-radius: 4px; cursor: pointer; font-size: 12px; width: 100%; margin-top: 8px; }
+  .warning { background: #FEF3C7; border: 1px solid #D97706; padding: 6px 10px; border-radius: 4px; font-size: 10px; color: #92400E; margin: 6px 0; display: none; }
+  .error { color: red; font-size: 10px; margin-top: 4px; }
+  .required { color: red; }
+</style>
+</head>
+<body>
+<h2>⏱ Staff Clock-In / Out</h2>
+<div class="row">
+  <div>
+    <label>Date <span class="required">*</span></label>
+    <input type="date" id="date" value="\${today}" />
+  </div>
+  <div>
+    <label>Staff Name <span class="required">*</span></label>
+    <select id="staff">
+      <option value="">Select staff...</option>
+      <option>Yvonne</option><option>Abigail</option><option>Bright</option><option>Ben</option>
+      <option>Appiah</option><option>Kojo</option><option>Fatawu</option><option>Chris</option>
+    </select>
+  </div>
+</div>
+<div class="row">
+  <div>
+    <label>Clock-In Time <span class="required">*</span></label>
+    <input type="time" id="timeIn" value="\${nowTime}" onchange="checkLate()" />
+  </div>
+  <div>
+    <label>Clock-Out Time</label>
+    <input type="time" id="timeOut" />
+  </div>
+</div>
+<div class="warning" id="lateWarning">⚠ Late arrival — GHS 20 penalty will be applied (work starts at 08:00)</div>
+<label>Notes</label>
+<input type="text" id="notes" placeholder="Optional" />
+<div id="errMsg" class="error"></div>
+<button onclick="submitClockIn()">✓ Record Clock-In</button>
+<script>
+function checkLate() {
+  const timeIn = document.getElementById('timeIn').value;
+  const warn = document.getElementById('lateWarning');
+  warn.style.display = timeIn > '08:00' ? 'block' : 'none';
+}
+function submitClockIn() {
+  const date = document.getElementById('date').value;
+  const staff = document.getElementById('staff').value;
+  const timeIn = document.getElementById('timeIn').value;
+  const errors = [];
+  if (!date) errors.push('Date required');
+  if (!staff) errors.push('Staff required');
+  if (!timeIn) errors.push('Clock-in time required');
+  if (errors.length) { document.getElementById('errMsg').textContent = errors.join(' | '); return; }
+  const timeOut = document.getElementById('timeOut').value;
+  let hours = 0;
+  if (timeOut) {
+    const [ih, im] = timeIn.split(':').map(Number);
+    const [oh, om] = timeOut.split(':').map(Number);
+    hours = Math.round(((oh * 60 + om) - (ih * 60 + im)) / 60 * 100) / 100;
+  }
+  const row = { date, staff, timeIn, timeOut, hours, notes: document.getElementById('notes').value };
+  google.script.run.withSuccessHandler(function(result) {
+    if (result && result.ok) {
+      alert('✓ Clock-in recorded for ' + staff + ' at ' + timeIn + (timeIn > '08:00' ? ' (LATE — GHS 20 penalty)' : ''));
+      google.script.host.close();
+    } else {
+      document.getElementById('errMsg').textContent = 'Error: ' + (result ? JSON.stringify(result.errors) : 'Unknown');
+    }
+  }).submitClockInFromForm(row);
+}
+</script>
+</body>
+</html>
+\`).setWidth(400).setHeight(400).setTitle('Staff Clock-In');
+  SpreadsheetApp.getUi().showModalDialog(html, 'Staff Clock-In');
+}
+
+function showPOForm() {
+  const today = new Date().toISOString().slice(0, 10);
+  const html = HtmlService.createHtmlOutput(\`
+<!DOCTYPE html>
+<html>
+<head>
+<style>
+  body { font-family: Arial, sans-serif; font-size: 12px; padding: 12px; }
+  h2 { color: #7F1D1D; margin: 0 0 12px; font-size: 14px; }
+  label { display: block; font-weight: bold; margin: 8px 0 2px; font-size: 11px; }
+  input, select { width: 100%; padding: 5px 7px; border: 1px solid #ccc; border-radius: 4px; font-size: 11px; box-sizing: border-box; }
+  .row { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; }
+  button { background: #7F1D1D; color: white; border: none; padding: 8px 16px; border-radius: 4px; cursor: pointer; font-size: 12px; width: 100%; margin-top: 8px; }
+  .error { color: red; font-size: 10px; margin-top: 4px; }
+  .required { color: red; }
+</style>
+</head>
+<body>
+<h2>📦 Add Purchase Order</h2>
+<div class="row">
+  <div>
+    <label>Date <span class="required">*</span></label>
+    <input type="date" id="date" value="\${today}" />
+  </div>
+  <div>
+    <label>Supplier <span class="required">*</span></label>
+    <input type="text" id="supplier" placeholder="AutoParts Ghana" />
+  </div>
+</div>
+<label>Items Description <span class="required">*</span></label>
+<input type="text" id="item" placeholder="Brake pads x10, Oil filters x5" />
+<div class="row">
+  <div>
+    <label>Qty</label>
+    <input type="number" id="qty" value="1" min="1" />
+  </div>
+  <div>
+    <label>Total Amount (GHS) <span class="required">*</span></label>
+    <input type="number" id="total" placeholder="0.00" step="0.01" />
+  </div>
+</div>
+<div class="row">
+  <div>
+    <label>Requested By</label>
+    <select id="requestedBy">
+      <option value="">Select...</option>
+      <option>Ben</option><option>Yvonne</option><option>Appiah</option>
+    </select>
+  </div>
+  <div>
+    <label>Expected Delivery</label>
+    <input type="date" id="delivery" />
+  </div>
+</div>
+<label>Notes</label>
+<input type="text" id="notes" placeholder="Optional" />
+<div id="errMsg" class="error"></div>
+<button onclick="submitPO()">✓ Create PO</button>
+<script>
+function submitPO() {
+  const date = document.getElementById('date').value;
+  const supplier = document.getElementById('supplier').value.trim();
+  const item = document.getElementById('item').value.trim();
+  const total = parseFloat(document.getElementById('total').value) || 0;
+  const errors = [];
+  if (!date) errors.push('Date required');
+  if (!supplier) errors.push('Supplier required');
+  if (!item) errors.push('Items description required');
+  if (total <= 0) errors.push('Total must be > 0');
+  if (errors.length) { document.getElementById('errMsg').textContent = errors.join(' | '); return; }
+  const row = {
+    date, supplier, item, total,
+    qty: parseInt(document.getElementById('qty').value) || 1,
+    requestedBy: document.getElementById('requestedBy').value,
+    expectedDelivery: document.getElementById('delivery').value,
+    notes: document.getElementById('notes').value,
+    status: 'Pending'
+  };
+  google.script.run.withSuccessHandler(function(result) {
+    if (result && result.ok) {
+      alert('✓ Purchase Order created: ' + supplier + ' — GHS ' + total.toFixed(2));
+      google.script.host.close();
+    } else {
+      document.getElementById('errMsg').textContent = 'Error: ' + (result ? JSON.stringify(result.errors) : 'Unknown');
+    }
+  }).submitPOFromForm(row);
+}
+</script>
+</body>
+</html>
+\`).setWidth(440).setHeight(460).setTitle('Add Purchase Order');
+  SpreadsheetApp.getUi().showModalDialog(html, 'Add Purchase Order');
+}
+
+// ─────────────────────────────────────────────────────────────
+// FORM SUBMIT HANDLERS (called from HTML via google.script.run)
+// ─────────────────────────────────────────────────────────────
+function submitSaleFromForm(row) {
+  return appendRow('sale', row);
+}
+function submitExpenseFromForm(row) {
+  return appendRow('expense', row);
+}
+function submitWorkshopFromForm(row) {
+  return appendRow('workshop', row);
+}
+function submitClockInFromForm(row) {
+  return appendRow('clockin', row);
+}
+function submitPOFromForm(row) {
+  return appendRow('purchaseOrder', row);
+}
+
+// ─────────────────────────────────────────────────────────────
+// SUMMARY
+// ─────────────────────────────────────────────────────────────
+function getSummary() {
+  const ss = SpreadsheetApp.openById(SHEET_ID);
+  const sales = readSheet(ss, 'Sales & Customer Log', mapSaleRow);
+  const expenses = readSheet(ss, 'Expense Log', mapExpenseRow);
+  const workshop = readSheet(ss, 'Workshop Daily Log', mapWorkshopRow);
+  const totalRevenue = sales.reduce((s, r) => s + (r.total || 0), 0);
+  const totalExpenses = expenses.reduce((s, r) => s + (r.amount || 0), 0);
+  return {
+    ok: true,
+    totalSales: sales.length,
+    totalRevenue,
+    totalExpenses,
+    netPosition: totalRevenue - totalExpenses,
+    workshopJobs: workshop.length,
+    completedJobs: workshop.filter(w => w.status === 'Completed').length,
+  };
+}
+
+function showSummary() {
+  const summary = getSummary();
+  const ui = SpreadsheetApp.getUi();
+  ui.alert('AGL Summary',
+    'Total Sales: ' + summary.totalSales + '\n' +
+    'Total Revenue: GHS ' + summary.totalRevenue.toFixed(2) + '\n' +
+    'Total Expenses: GHS ' + summary.totalExpenses.toFixed(2) + '\n' +
+    'Net Position: GHS ' + summary.netPosition.toFixed(2) + '\n' +
+    'Workshop Jobs: ' + summary.workshopJobs + ' (' + summary.completedJobs + ' completed)',
+    ui.ButtonSet.OK);
+}
+
+function refreshFormulas() {
+  SpreadsheetApp.getActiveSpreadsheet().getActiveSheet().getRange('A1').setValue(
+    SpreadsheetApp.getActiveSpreadsheet().getActiveSheet().getRange('A1').getValue()
+  );
+  SpreadsheetApp.getUi().alert('Formulas refreshed.');
+}
+
+// ─────────────────────────────────────────────────────────────
+// UTILITIES
+// ─────────────────────────────────────────────────────────────
+function fmtDate(d) {
+  if (!d || d === '-') return '';
+  if (d instanceof Date) {
+    const y = d.getFullYear();
+    const m = String(d.getMonth() + 1).padStart(2, '0');
+    const day = String(d.getDate()).padStart(2, '0');
+    return y + '-' + m + '-' + day;
+  }
+  const s = String(d).trim();
+  if (/^\d{4}-\d{2}-\d{2}$/.test(s)) return s;
+  const parts = s.split('/');
+  if (parts.length === 3) {
+    // DD/MM/YYYY
+    return parts[2] + '-' + parts[1].padStart(2, '0') + '-' + parts[0].padStart(2, '0');
+  }
+  return s;
+}
+
+function clean(v) {
+  if (v === null || v === undefined || v === '-') return '';
+  return String(v).trim();
+}
+
+function num(v) {
+  if (v === null || v === undefined || v === '') return 0;
+  return parseFloat(String(v).replace(/[^0-9.\-]/g, '')) || 0;
+}
+`;
