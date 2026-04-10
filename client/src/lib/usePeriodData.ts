@@ -81,7 +81,7 @@ export function usePeriodData(filterState: {
   );
 
   // Revenue uses sale.total
-  const revenue = useMemo(() => sales.reduce((s, x) => s + x.total, 0), [sales]);
+  const revenue = useMemo(() => sales.reduce((s, x) => s + (Number(x.total) || 0), 0), [sales]);
   const expenseTotal = useMemo(() => expenses.reduce((s, x) => s + (x.amount ?? 0), 0), [expenses]);
   const poTotal = useMemo(() => purchaseOrders.reduce((s, x) => s + (x.amount ?? 0), 0), [purchaseOrders]);
   const netProfit = revenue - expenseTotal - poTotal;

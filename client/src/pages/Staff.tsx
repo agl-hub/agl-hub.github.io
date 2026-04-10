@@ -24,7 +24,7 @@ export default function Staff() {
 
   // HR Metrics
   const totalStaff = staff.length;
-  const activeStaff = staff.filter(s => s.status === 'Active').length;
+  const activeStaff = staff.filter(s => s.status === 'Active' || !s.status).length;
   const totalPayroll = staff.reduce((a, b) => a + (b.salary || 0), 0);
   const deptBreakdown = DEPARTMENTS.map(d => ({ dept: d, count: staff.filter(s => s.department === d).length }));
 

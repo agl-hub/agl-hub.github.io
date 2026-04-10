@@ -14,15 +14,15 @@ export default function Finances() {
   const chartInst = useRef<any>(null);
   const [tab, setTab] = useState<'expenses' | 'po'>('expenses');
 
-  const totalRevenue = data.sales.reduce((s, x) => s + x.total, 0);
-  const totalExpenses = data.expenses.reduce((s, x) => s + x.amount, 0);
-  const totalPOs = data.purchaseOrders.reduce((s, x) => s + x.amount, 0);
+  const totalRevenue = data.sales.reduce((s, x) => s + (Number(x.total) || 0), 0);
+  const totalExpenses = data.expenses.reduce((s, x) => s + (Number(x.amount) || 0), 0);
+  const totalPOs = data.purchaseOrders.reduce((s, x) => s + (Number(x.amount) || 0), 0);
   const totalOutflow = totalExpenses + totalPOs;
   const netPosition = totalRevenue - totalOutflow;
   const profitMargin = totalRevenue > 0 ? ((netPosition / totalRevenue) * 100) : 0;
 
   const expByCat: Record<string, number> = {};
-  data.expenses.forEach(e => { expByCat[e.item] = (expByCat[e.item] || 0) + e.amount; });
+  data.expenses.forEach(e => { expByCat[e.item || 'Other'] = (expByCat[e.item || 'Other'] || 0) + (Number(e.amount) || 0); });
 
   useEffect(() => {
     if (typeof Chart === 'undefined' || !chartRef.current) return;

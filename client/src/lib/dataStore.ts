@@ -230,14 +230,14 @@ function seedDemoData(data: AGLData): AGLData {
 
   // Staff
   data.staff = [
-    { id: 'st_1', name: 'Yvonne', role: 'Sales Rep', department: 'Sales', phone: '0244-111-222', clockIn: '08:02', clockOut: '', rating: 4, salary: 2500 },
-    { id: 'st_8', name: 'Bright', role: 'Sales Rep', department: 'Sales', phone: '0244-888-999', clockIn: '08:00', clockOut: '', rating: 4, salary: 2500 },
-    { id: 'st_2', name: 'Abigail', role: 'Sales Rep', department: 'Sales', phone: '0244-333-444', clockIn: '08:15', clockOut: '', rating: 3, salary: 2200 },
-    { id: 'st_3', name: 'Ben', role: 'Supervisor', department: 'Operations', phone: '0244-555-666', clockIn: '07:55', clockOut: '', rating: 5, salary: 3500 },
-    { id: 'st_4', name: 'Appiah', role: 'Mechanic', department: 'Workshop', phone: '0244-777-888', clockIn: '08:00', clockOut: '', rating: 5, salary: 2800 },
-    { id: 'st_5', name: 'Kojo', role: 'Mechanic', department: 'Workshop', phone: '0244-999-000', clockIn: '08:30', clockOut: '', rating: 4, salary: 2600 },
-    { id: 'st_6', name: 'Fatawu', role: 'Mechanic', department: 'Workshop', phone: '0244-111-333', clockIn: '', clockOut: '', rating: 3, salary: 2400 },
-    { id: 'st_7', name: 'Chris', role: 'Mechanic', department: 'Workshop', phone: '0244-444-555', clockIn: '08:10', clockOut: '', rating: 4, salary: 2500 },
+    { id: 'st_1', name: 'Yvonne', role: 'Sales Rep', department: 'Sales', phone: '0244-111-222', clockIn: '08:02', clockOut: '', rating: 4, salary: 2500, status: 'Active' },
+    { id: 'st_8', name: 'Bright', role: 'Sales Rep', department: 'Sales', phone: '0244-888-999', clockIn: '08:00', clockOut: '', rating: 4, salary: 2500, status: 'Active' },
+    { id: 'st_2', name: 'Abigail', role: 'Sales Rep', department: 'Sales', phone: '0244-333-444', clockIn: '08:15', clockOut: '', rating: 3, salary: 2200, status: 'Active' },
+    { id: 'st_3', name: 'Ben', role: 'Supervisor', department: 'Operations', phone: '0244-555-666', clockIn: '07:55', clockOut: '', rating: 5, salary: 3500, status: 'Active' },
+    { id: 'st_4', name: 'Appiah', role: 'Mechanic', department: 'Workshop', phone: '0244-777-888', clockIn: '08:00', clockOut: '', rating: 5, salary: 3200, status: 'Active' },
+    { id: 'st_5', name: 'Kojo', role: 'Mechanic', department: 'Workshop', phone: '0244-999-000', clockIn: '08:30', clockOut: '', rating: 4, salary: 2800, status: 'Active' },
+    { id: 'st_6', name: 'Fatawu', role: 'Mechanic', department: 'Workshop', phone: '0244-111-333', clockIn: '', clockOut: '', rating: 3, salary: 2800, status: 'Active' },
+    { id: 'st_7', name: 'Chris', role: 'Mechanic', department: 'Workshop', phone: '0244-444-555', clockIn: '08:10', clockOut: '', rating: 4, salary: 3500, status: 'Active' },
   ];
 
   return data;
@@ -260,6 +260,8 @@ export function loadData(): AGLData {
   if (!DATA.inventory) DATA.inventory = [];
   if (!DATA.kanban) DATA.kanban = [];
   if (!DATA.staff) DATA.staff = [];
+  // Ensure all staff have a status (fix for B-03 bug)
+  DATA.staff.forEach(s => { if (!s.status) s.status = 'Active'; });
   saveData();
   return DATA;
 }

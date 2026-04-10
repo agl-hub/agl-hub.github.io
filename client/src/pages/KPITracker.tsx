@@ -27,9 +27,9 @@ export default function KPITracker() {
   }, [data.settings, refresh]);
 
   const kpis = useMemo(() => {
-    const totalRev = data.sales.reduce((s, x) => s + x.total, 0);
-    const totalExp = data.expenses.reduce((s, x) => s + x.amount, 0);
-    const totalPO = data.purchaseOrders.reduce((s, x) => s + x.amount, 0);
+    const totalRev = data.sales.reduce((s, x) => s + (Number(x.total) || 0), 0);
+    const totalExp = data.expenses.reduce((s, x) => s + (Number(x.amount) || 0), 0);
+    const totalPO = data.purchaseOrders.reduce((s, x) => s + (Number(x.amount) || 0), 0);
     const netProfit = totalRev - totalExp - totalPO;
     const txns = data.sales.length;
     const avgTicket = txns > 0 ? totalRev / txns : 0;
@@ -37,9 +37,9 @@ export default function KPITracker() {
     const wsCompleted = data.workshop.filter(j => j.status === 'Completed').length;
     const wsEfficiency = wsJobs > 0 ? Math.round((wsCompleted / wsJobs) * 100) : 0;
     const uniqueCustomers = new Set(data.sales.map(s => s.customer).filter(Boolean)).size;
-    const cashSales = data.sales.filter(s => s.payment === 'Cash').reduce((a, b) => a + b.total, 0);
-    const momoSales = data.sales.filter(s => ['MoMo', 'Mobile Money', 'MOMO'].includes(s.payment)).reduce((a, b) => a + b.total, 0);
-    const creditSales = data.sales.filter(s => s.payment === 'Credit').reduce((a, b) => a + b.total, 0);
+    const cashSales = data.sales.filter(s => s.payment === 'Cash').reduce((a, b) => a + (Number(b.total) || 0), 0);
+    const momoSales = data.sales.filter(s => ['MoMo', 'Mobile Money', 'MOMO'].includes(s.payment)).reduce((a, b) => a + (Number(b.total) || 0), 0);
+    const creditSales = data.sales.filter(s => s.payment === 'Credit').reduce((a, b) => a + (Number(b.total) || 0), 0);
     const profitMargin = totalRev > 0 ? ((netProfit / totalRev) * 100) : 0;
     const kanbanDone = data.kanban.filter(t => t.column === 'Done').length;
     const kanbanTotal = data.kanban.length;
