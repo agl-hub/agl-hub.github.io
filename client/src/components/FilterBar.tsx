@@ -54,7 +54,7 @@ export default function FilterBar({
   return (
     <div className="sticky top-0 z-40 bg-slate-900/90 backdrop-blur-lg border-b border-slate-700/50 px-6 py-3 space-y-3">
       {/* Main Filter Row */}
-      <div className="flex items-center gap-3 flex-wrap">
+      <div className="flex items-center gap-3 flex-wrap overflow-x-auto">
         {/* Search */}
         <div className="relative flex-1 min-w-48">
           <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 w-4 h-4 text-slate-500" />
@@ -95,7 +95,7 @@ export default function FilterBar({
 
       {/* Expanded Filters */}
       {isExpanded && (
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-3 pt-3 border-t border-slate-700/50">
+        <div className="grid grid-cols-2 md:grid-cols-2 lg:grid-cols-4 gap-3 pt-3 border-t border-slate-700/50">
           {/* Date Range */}
           {showDateRange && (
             <>

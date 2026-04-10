@@ -30,6 +30,9 @@ export default function StaffModule() {
     return "#e30613";
   };
 
+  const activeStaff = staffData.filter(s => s.status === "Present").length;
+  const onLeaveStaff = staffData.filter(s => s.status === "On Leave").length;
+  const avgAttendance = staffData.length > 0 ? Math.round(staffData.reduce((sum, s) => sum + s.attendance, 0) / staffData.length) : 0;
   const filteredData = selectedStatus === "All" ? staffData : staffData.filter(s => s.status === selectedStatus);
 
   return (
@@ -192,7 +195,7 @@ export default function StaffModule() {
               <div style={{ fontSize: "0.5rem", color: "#7a8294", marginBottom: "0.5rem", textTransform: "uppercase", letterSpacing: "0.5px" }}>
                 Total Staff
               </div>
-              <div style={{ fontSize: "2rem", fontWeight: "700", color: "#ffffff" }}>6</div>
+              <div style={{ fontSize: "2rem", fontWeight: "700", color: "#ffffff" }}>{staffData.length}</div>
             </div>
             <div style={{
               backgroundColor: "#1a1f2e",
@@ -202,9 +205,9 @@ export default function StaffModule() {
               textAlign: "center",
             }}>
               <div style={{ fontSize: "0.5rem", color: "#7a8294", marginBottom: "0.5rem", textTransform: "uppercase", letterSpacing: "0.5px" }}>
-                Present Today
+                Active Today
               </div>
-              <div style={{ fontSize: "2rem", fontWeight: "700", color: "#14b8a6" }}>5</div>
+              <div style={{ fontSize: "2rem", fontWeight: "700", color: "#14b8a6" }}>{activeStaff}</div>
             </div>
             <div style={{
               backgroundColor: "#1a1f2e",
@@ -216,7 +219,7 @@ export default function StaffModule() {
               <div style={{ fontSize: "0.5rem", color: "#7a8294", marginBottom: "0.5rem", textTransform: "uppercase", letterSpacing: "0.5px" }}>
                 Avg Attendance
               </div>
-              <div style={{ fontSize: "2rem", fontWeight: "700", color: "#14b8a6" }}>90%</div>
+              <div style={{ fontSize: "2rem", fontWeight: "700", color: "#14b8a6" }}>{avgAttendance}%</div>
             </div>
           </div>
         </div>

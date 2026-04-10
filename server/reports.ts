@@ -164,7 +164,7 @@ export function generateWeeklyManagementReport(data: any): WeeklyManagementRepor
     return sum + (end - start) / (1000 * 60 * 60);
   }, 0);
 
-  const weekRevenue = data.sales?.reduce((sum: number, s: any) => sum + (parseFloat(s.amount) || 0), 0) || 0;
+  const weekRevenue = data.sales?.reduce((sum: number, s: any) => sum + (parseFloat(s.totalAmount ?? s.amount) || 0), 0) || 0;
   const staffHours = data.staff?.reduce((sum: number, s: any) => sum + (parseFloat(s.hoursWorked) || 0), 0) || 0;
 
   return {
@@ -214,7 +214,7 @@ export function generateMonthlyFinancialReport(data: any): MonthlyFinancialRepor
   const month = today.getMonth() + 1;
   const year = today.getFullYear();
 
-  const totalRevenue = data.sales?.reduce((sum: number, s: any) => sum + (parseFloat(s.amount) || 0), 0) || 0;
+  const totalRevenue = data.sales?.reduce((sum: number, s: any) => sum + (parseFloat(s.totalAmount ?? s.amount) || 0), 0) || 0;
   const totalExpenses = data.expenses?.reduce((sum: number, e: any) => sum + (parseFloat(e.amount) || 0), 0) || 0;
   const netIncome = totalRevenue - totalExpenses;
   const profitMargin = totalRevenue > 0 ? (netIncome / totalRevenue) * 100 : 0;
@@ -223,14 +223,14 @@ export function generateMonthlyFinancialReport(data: any): MonthlyFinancialRepor
   const revenueByChannel: { [key: string]: number } = {};
   data.sales?.forEach((sale: any) => {
     const channel = sale.channel || "Unknown";
-    revenueByChannel[channel] = (revenueByChannel[channel] || 0) + (parseFloat(sale.amount) || 0);
+    revenueByChannel[channel] = (revenueByChannel[channel] || 0) + (parseFloat(sale.totalAmount ?? sale.amount) || 0);
   });
 
   // Revenue breakdown by payment method
   const revenueByPayment: { [key: string]: number } = {};
   data.sales?.forEach((sale: any) => {
     const method = sale.paymentMethod || "Unknown";
-    revenueByPayment[method] = (revenueByPayment[method] || 0) + (parseFloat(sale.amount) || 0);
+    revenueByPayment[method] = (revenueByPayment[method] || 0) + (parseFloat(sale.totalAmount ?? sale.amount) || 0);
   });
 
   // Expense breakdown by category
@@ -305,7 +305,7 @@ export function generateFullOperationsReport(data: any): FullOperationsReport {
         avgTurnaroundTime: metrics.vehicleTurnaroundTime.average,
       },
       sales: {
-        totalRevenue: data.sales?.reduce((sum: number, s: any) => sum + (parseFloat(s.amount) || 0), 0) || 0,
+        totalRevenue: data.sales?.reduce((sum: number, s: any) => sum + (parseFloat(s.totalAmount ?? s.amount) || 0), 0) || 0,
         transactionCount: data.sales?.length || 0,
         topProduct: metrics.bestSellers[0]?.productName || "N/A",
       },

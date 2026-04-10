@@ -134,7 +134,7 @@ export default function FinanceModule() {
               </div>
               <div style={{ display: "flex", alignItems: "center", gap: "0.5rem", fontSize: "0.4375rem", color: netProfit > 0 ? "#14b8a6" : "#e30613" }}>
                 {netProfit > 0 ? <TrendingUp size={16} /> : <TrendingDown size={16} />}
-                {netProfit > 0 ? "+" : ""}{((netProfit / totalRevenue) * 100).toFixed(1)}% margin
+                {netProfit > 0 ? "+" : ""}{totalRevenue > 0 ? ((netProfit / totalRevenue) * 100).toFixed(1) : "0.0"}% margin
               </div>
             </div>
           </div>

@@ -53,6 +53,23 @@ export default function NewAppLayout({ children, currentPage }: NewAppLayoutProp
   const { user, logout, isAuthenticated } = useAuth();
   const [sidebarOpen, setSidebarOpen] = useState(true);
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
+  const [searchQuery, setSearchQuery] = useState("");
+  const [searchResults, setSearchResults] = useState<typeof NAVIGATION_ITEMS>([]);
+  const [showSearchResults, setShowSearchResults] = useState(false);
+
+  const handleSearch = (query: string) => {
+    setSearchQuery(query);
+    if (query.trim()) {
+      const results = NAVIGATION_ITEMS.filter((item) =>
+        item.label.toLowerCase().includes(query.toLowerCase())
+      );
+      setSearchResults(results);
+      setShowSearchResults(true);
+    } else {
+      setSearchResults([]);
+      setShowSearchResults(false);
+    }
+  };
 
   if (!isAuthenticated) {
     return (
@@ -81,7 +98,7 @@ export default function NewAppLayout({ children, currentPage }: NewAppLayoutProp
   }
 
   return (
-    <div style={{ display: "flex", minHeight: "100vh", backgroundColor: "#0f1419", color: "#ffffff" }}>
+    <div style={{ display: "flex", minHeight: "100dvh", backgroundColor: "#0f172a", color: "#ffffff" }}>
       {/* Sidebar */}
       <aside style={{
         width: "260px",
@@ -316,11 +333,16 @@ export default function NewAppLayout({ children, currentPage }: NewAppLayoutProp
               padding: "0.5rem 1rem",
               borderRadius: "6px",
               flex: "0 0 200px",
+              position: "relative",
             }}>
               <Search size={18} color="#7a8294" />
               <input
                 type="text"
-                placeholder="Search..."
+                placeholder="Search modules..."
+                value={searchQuery}
+                onChange={(e) => handleSearch(e.target.value)}
+                onFocus={() => { if (searchQuery.trim()) setShowSearchResults(true); }}
+                onBlur={() => setTimeout(() => setShowSearchResults(false), 200)}
                 style={{
                   background: "none",
                   border: "none",
@@ -330,6 +352,63 @@ export default function NewAppLayout({ children, currentPage }: NewAppLayoutProp
                   fontSize: "0.95rem",
                 }}
               />
+              {showSearchResults && searchResults.length > 0 && (
+                <div style={{
+                  position: "absolute",
+                  top: "100%",
+                  left: 0,
+                  right: 0,
+                  backgroundColor: "#1a1f2e",
+                  border: "1px solid #2a3447",
+                  borderRadius: "0 0 6px 6px",
+                  zIndex: 200,
+                  maxHeight: "240px",
+                  overflowY: "auto",
+                }}>
+                  {searchResults.map((item) => {
+                    const IconComponent = item.icon;
+                    return (
+                      <a
+                        key={item.id}
+                        href={`/${item.id}`}
+                        style={{
+                          display: "flex",
+                          alignItems: "center",
+                          gap: "0.75rem",
+                          padding: "0.75rem 1rem",
+                          color: "#b0b8c8",
+                          textDecoration: "none",
+                          cursor: "pointer",
+                          borderBottom: "1px solid #2a3447",
+                          transition: "background 0.15s",
+                        }}
+                        onMouseEnter={(e) => { e.currentTarget.style.backgroundColor = "rgba(227,6,19,0.1)"; e.currentTarget.style.color = "#ffffff"; }}
+                        onMouseLeave={(e) => { e.currentTarget.style.backgroundColor = "transparent"; e.currentTarget.style.color = "#b0b8c8"; }}
+                      >
+                        <IconComponent size={16} />
+                        <span style={{ fontSize: "0.875rem" }}>{item.label}</span>
+                      </a>
+                    );
+                  })}
+                </div>
+              )}
+              {showSearchResults && searchQuery.trim() && searchResults.length === 0 && (
+                <div style={{
+                  position: "absolute",
+                  top: "100%",
+                  left: 0,
+                  right: 0,
+                  backgroundColor: "#1a1f2e",
+                  border: "1px solid #2a3447",
+                  borderRadius: "0 0 6px 6px",
+                  padding: "0.75rem 1rem",
+                  color: "#7a8294",
+                  fontSize: "0.875rem",
+                  zIndex: 200,
+                }}>
+                  No results found
+                </div>
+              )}
             </div>
 
             <button style={{

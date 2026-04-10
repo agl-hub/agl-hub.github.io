@@ -74,7 +74,7 @@ body {
   font-size: 9.5pt;
   background: var(--bg);
   color: var(--text);
-  min-height: 100vh;
+  min-height: 100dvh;
   overflow-x: hidden;
   line-height: 1.55;
   letter-spacing: 0.01em;
@@ -677,6 +677,16 @@ textarea.form-control { resize: vertical; min-height: 70px; }
   .kpi-card .kpi-value { font-size: 12px; }
   table { width: 100%; min-width: 500px; }
   .form-row { grid-template-columns: 1fr; gap: 8px; }
+  .main {
+    min-height: calc(100dvh - 60px);
+  }
+  .filter-bar .filter-label {
+    font-size: 10px;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    max-width: 80px;
+  }
 }
 
 /* ── Print Styles ── */
