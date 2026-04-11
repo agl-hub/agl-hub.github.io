@@ -1,13 +1,10 @@
-import { google } from "googleapis";
+import * as XLSX from "xlsx";
+import * as fs from "fs";
+import * as path from "path";
 import { ENV } from "./_core/env";
 
-const SPREADSHEET_ID = "1pFBk2xCbILKxVSgwACQIrIscEimonnnyJNBKoiAVZ7U";
-
-// Initialize Google Sheets API with API key
-const sheets = google.sheets({
-  version: "v4",
-  auth: ENV.forgeApiKey, // Using Manus built-in API key
-});
+// Path to the Excel file (.xlsx or .xlsm with VBA macros)
+const EXCEL_FILE_PATH = process.env.EXCEL_FILE_PATH || path.join(process.cwd(), "data.xlsm");
 
 export interface SheetData {
   range: string;
@@ -18,40 +15,57 @@ export interface SheetData {
 const CACHE_TTL_MS = 60_000; // 1 minute
 const sheetCache = new Map<string, { data: SheetData; expiresAt: number }>();
 
+// Cached workbook
+let cachedWorkbook: XLSX.WorkBook | null = null;
+let workbookCacheTime: number = 0;
+const WORKBOOK_CACHE_TTL_MS = 30_000; // 30 seconds
+
 export function clearSheetCache(key?: string) {
   if (key) sheetCache.delete(key);
-  else sheetCache.clear();
-}
-
-async function withRetry<T>(fn: () => Promise<T>, attempts = 3, baseDelayMs = 300): Promise<T> {
-  let lastErr: unknown;
-  for (let i = 0; i < attempts; i++) {
-    try {
-      return await fn();
-    } catch (err: any) {
-      lastErr = err;
-      const status = err?.code || err?.response?.status;
-      // Don't retry on auth/permission/not-found
-      if ([400, 401, 403, 404].includes(Number(status))) break;
-      if (i < attempts - 1) {
-        const delay = baseDelayMs * Math.pow(2, i);
-        await new Promise((r) => setTimeout(r, delay));
-      }
-    }
+  else {
+    sheetCache.clear();
+    cachedWorkbook = null;
+    workbookCacheTime = 0;
   }
-  throw lastErr;
 }
 
 /**
- * Fetch data from a specific sheet (with cache + retry)
+ * Load workbook from Excel file with caching
+ */
+function loadWorkbook(): XLSX.WorkBook | null {
+  const now = Date.now();
+  
+  // Return cached workbook if still valid
+  if (cachedWorkbook && now - workbookCacheTime < WORKBOOK_CACHE_TTL_MS) {
+    return cachedWorkbook;
+  }
+
+  try {
+    if (!fs.existsSync(EXCEL_FILE_PATH)) {
+      console.error(`Excel file not found: ${EXCEL_FILE_PATH}`);
+      return null;
+    }
+
+    const buffer = fs.readFileSync(EXCEL_FILE_PATH);
+    const workbook = XLSX.read(buffer, { type: "buffer", cellStyles: true, cellDates: true });
+    cachedWorkbook = workbook;
+    workbookCacheTime = now;
+    return workbook;
+  } catch (error) {
+    console.error("Error loading Excel file:", error);
+    return null;
+  }
+}
+
+/**
+ * Fetch data from a specific sheet
  */
 export async function getSheetData(
   sheetName: string,
   range?: string,
   opts: { force?: boolean } = {},
 ): Promise<SheetData | null> {
-  const fullRange = range ? `${sheetName}!${range}` : `${sheetName}`;
-  const cacheKey = fullRange;
+  const cacheKey = `${sheetName}${range ? "!" + range : ""}`;
 
   if (!opts.force) {
     const cached = sheetCache.get(cacheKey);
@@ -61,17 +75,25 @@ export async function getSheetData(
   }
 
   try {
-    const response = await withRetry(() =>
-      sheets.spreadsheets.values.get({
-        spreadsheetId: SPREADSHEET_ID,
-        range: fullRange,
-      }),
-    );
+    const workbook = loadWorkbook();
+    if (!workbook) {
+      return null;
+    }
 
+    const worksheet = workbook.Sheets[sheetName];
+    if (!worksheet) {
+      console.error(`Sheet "${sheetName}" not found in Excel file`);
+      return null;
+    }
+
+    // Convert sheet to JSON array
+    const values = XLSX.utils.sheet_to_json<any[]>(worksheet, { header: 1 });
+    
     const data: SheetData = {
-      range: response.data.range || fullRange,
-      values: response.data.values || [],
+      range: range || sheetName,
+      values: values as any[][],
     };
+    
     sheetCache.set(cacheKey, { data, expiresAt: Date.now() + CACHE_TTL_MS });
     return data;
   } catch (error) {
@@ -141,158 +163,4 @@ export async function parseWorkshopLog() {
  * Parse Staff Clock-In sheet
  */
 export async function parseStaffClockIn() {
-  const data = await getSheetData("Staff Clock-In");
-  if (!data || !data.values || data.values.length === 0) return null;
-
-  const headers = data.values[0];
-  const rows = data.values.slice(1);
-
-  return rows.map((row) => {
-    const obj: any = {};
-    headers.forEach((header, index) => {
-      obj[header] = row[index];
-    });
-    return obj;
-  });
-}
-
-/**
- * Parse Expense Log sheet
- */
-export async function parseExpenseLog() {
-  const data = await getSheetData("Expense Log");
-  if (!data || !data.values || data.values.length === 0) return null;
-
-  const headers = data.values[0];
-  const rows = data.values.slice(1);
-
-  return rows.map((row) => {
-    const obj: any = {};
-    headers.forEach((header, index) => {
-      obj[header] = row[index];
-    });
-    return obj;
-  });
-}
-
-/**
- * Parse Purchase Orders sheet
- */
-export async function parsePurchaseOrders() {
-  const data = await getSheetData("Purchase Orders");
-  if (!data || !data.values || data.values.length === 0) return null;
-
-  const headers = data.values[0];
-  const rows = data.values.slice(1);
-
-  return rows.map((row) => {
-    const obj: any = {};
-    headers.forEach((header, index) => {
-      obj[header] = row[index];
-    });
-    return obj;
-  });
-}
-
-// Sync status (in-memory)
-export interface SyncStatus {
-  lastSyncedAt: Date | null;
-  lastSuccessAt: Date | null;
-  lastError: string | null;
-  inProgress: boolean;
-  totalSyncs: number;
-  totalFailures: number;
-}
-
-const syncStatus: SyncStatus = {
-  lastSyncedAt: null,
-  lastSuccessAt: null,
-  lastError: null,
-  inProgress: false,
-  totalSyncs: 0,
-  totalFailures: 0,
-};
-
-export function getSyncStatus(): SyncStatus {
-  return { ...syncStatus };
-}
-
-/**
- * Sync all data from Google Sheets
- */
-export async function syncAllSheetData(opts: { force?: boolean } = {}) {
-  if (opts.force) clearSheetCache();
-  syncStatus.inProgress = true;
-  syncStatus.lastSyncedAt = new Date();
-  syncStatus.totalSyncs += 1;
-  try {
-    const [monthlySummary, sales, workshop, staff, expenses, purchaseOrders] = await Promise.all([
-      parseMonthlySummary(),
-      parseSalesLog(),
-      parseWorkshopLog(),
-      parseStaffClockIn(),
-      parseExpenseLog(),
-      parsePurchaseOrders(),
-    ]);
-
-    syncStatus.lastSuccessAt = new Date();
-    syncStatus.lastError = null;
-    syncStatus.inProgress = false;
-    return {
-      monthlySummary,
-      sales,
-      workshop,
-      staff,
-      expenses,
-      purchaseOrders,
-      syncedAt: new Date(),
-    };
-  } catch (error) {
-    syncStatus.lastError = (error as Error).message;
-    syncStatus.totalFailures += 1;
-    syncStatus.inProgress = false;
-    console.error("Error syncing sheet data:", error);
-    throw error;
-  }
-}
-
-// Auto-refresh: pre-warm cache every 5 minutes
-const AUTO_REFRESH_MS = 5 * 60_000;
-let autoRefreshTimer: NodeJS.Timeout | null = null;
-
-export function startAutoRefresh() {
-  if (autoRefreshTimer) return;
-  autoRefreshTimer = setInterval(() => {
-    syncAllSheetData({ force: true }).catch((e) =>
-      console.error("Auto-refresh failed:", e),
-    );
-  }, AUTO_REFRESH_MS);
-}
-
-export function stopAutoRefresh() {
-  if (autoRefreshTimer) {
-    clearInterval(autoRefreshTimer);
-    autoRefreshTimer = null;
-  }
-}
-
-/**
- * Get sheet metadata (list of all sheets)
- */
-export async function getSheetMetadata() {
-  try {
-    const response = await sheets.spreadsheets.get({
-      spreadsheetId: SPREADSHEET_ID,
-    });
-
-    return response.data.sheets?.map((sheet) => ({
-      title: sheet.properties?.title,
-      sheetId: sheet.properties?.sheetId,
-      index: sheet.properties?.index,
-      gridProperties: sheet.properties?.gridProperties,
-    }));
-  } catch (error) {
-    console.error("Error fetching sheet metadata:", error);
-    return null;
-  }
-}
+  const data = await g
