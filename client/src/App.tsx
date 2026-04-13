@@ -18,7 +18,7 @@ import Training from "./pages/Training";
 import Inventory from "./pages/Inventory";
 import Reports from "./pages/Reports";
 import Creditors from "./pages/Creditors";
-import GoogleSheets from "./pages/GoogleSheets";
+import ExcelImport from "./pages/GoogleSheets";
 import PublicDashboard from "./pages/PublicDashboard";
 import MechanicTracker from "./pages/MechanicTracker";
 import AuditLog from "./pages/AuditLog";
@@ -60,7 +60,7 @@ function Router() {
         <Route path="/inventory" component={Inventory} />
         <Route path="/reports" component={Reports} />
         <Route path="/creditors" component={Creditors} />
-        <Route path="/sheets" component={GoogleSheets} />
+        <Route path="/import" component={ExcelImport} />
         <Route path="/audit" component={AuditLog} />
         <Route path="/settings" component={Settings} />
         <Route path="/share" component={ShareLinks} />

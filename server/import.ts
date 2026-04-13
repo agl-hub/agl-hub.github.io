@@ -19,6 +19,13 @@ export async function importExcelData(filePath: string) {
       throw new Error('Database connection failed');
     }
 
+    let summaryCount = 0;
+    let salesCount = 0;
+    let workshopCount = 0;
+    let staffCount = 0;
+    let expenseCount = 0;
+    let poCount = 0;
+
     // Import Monthly Summary
     if (workbook.SheetNames.includes('Monthly Summary')) {
       const summarySheet = workbook.Sheets['Monthly Summary'];
@@ -40,6 +47,7 @@ export async function importExcelData(filePath: string) {
             netPosition: parseFloat(data['Net Position'] || 0) as any,
           }
         });
+        summaryCount++;
       }
     }
 
@@ -73,6 +81,7 @@ export async function importExcelData(filePath: string) {
             totalAmount: parseFloat(data['Total Amount'] || 0) as any,
           }
         });
+        salesCount++;
       }
     }
 
@@ -96,6 +105,7 @@ export async function importExcelData(filePath: string) {
             status: (data['Status'] || 'Pending') as any,
           }
         });
+        workshopCount++;
       }
     }
 
@@ -121,6 +131,7 @@ export async function importExcelData(filePath: string) {
             hoursWorked: data['Hours Worked'] ? (parseFloat(data['Hours Worked']) as any) : undefined,
           }
         });
+        staffCount++;
       }
     }
 
@@ -143,6 +154,7 @@ export async function importExcelData(filePath: string) {
             amount: parseFloat(data['Amount'] || 0) as any,
           }
         });
+        expenseCount++;
       }
     }
 
@@ -169,10 +181,21 @@ export async function importExcelData(filePath: string) {
             description: data['Description'] || data['Item'] || '',
           }
         });
+        poCount++;
       }
     }
 
-    return { success: true, message: 'Data imported successfully' };
+    // Count imported records for stats
+    const stats: Record<string, number> = {
+      monthlySummary: summaryCount || 0,
+      salesCustomerLog: salesCount || 0,
+      workshopDailyLog: workshopCount || 0,
+      staffClockIn: staffCount || 0,
+      expenseLog: expenseCount || 0,
+      purchaseOrders: poCount || 0,
+    };
+
+    return { success: true, message: 'Data imported successfully', stats };
   } catch (error) {
     console.error('Import error:', error);
     throw error;

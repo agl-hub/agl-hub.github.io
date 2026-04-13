@@ -10,6 +10,7 @@ import { shareRouter } from "./routers/share";
 import { schedulesRouter } from "./routers/schedules";
 import { publicProcedure, router, protectedProcedure } from "./_core/trpc";
 import { aiRouter } from "./routers/ai";
+import { importExcelData } from "./import";
 import {
   getSalesTransactions,
   getWorkshopJobs,
@@ -310,6 +311,55 @@ export const appRouter = router({
 
   // AI Chat
   ai: aiRouter,
+
+  // Import Excel Data
+  import: router({
+    processExcel: publicProcedure
+      .input(
+        z.object({
+          fileContent: z.string(),
+          filename: z.string(),
+        })
+      )
+      .mutation(async ({ input }) => {
+        try {
+          // Create a temporary file from base64 content
+          const path = require('path');
+          const fs = require('fs');
+          const os = require('os');
+          
+          const tempDir = os.tmpdir();
+          const tempFilePath = path.join(tempDir, `excel-import-${Date.now()}-${Math.random().toString(36).slice(2)}.xlsx`);
+          
+          // Decode base64 and write to temp file
+          const buffer = Buffer.from(input.fileContent, 'base64');
+          fs.writeFileSync(tempFilePath, buffer);
+          
+          // Process the Excel file
+          const result = await importExcelData(tempFilePath);
+          
+          // Clean up temp file
+          try {
+            fs.unlinkSync(tempFilePath);
+          } catch (e) {
+            console.error('Failed to clean up temp file:', e);
+          }
+          
+          return {
+            success: true,
+            message: 'Import completed successfully',
+            stats: result.stats || {},
+          };
+        } catch (error: any) {
+          console.error('Import error:', error);
+          return {
+            success: false,
+            message: error.message || 'Failed to process Excel file',
+            stats: {},
+          };
+        }
+      }),
+  }),
 });
 
 export type AppRouter = typeof appRouter;
