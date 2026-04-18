@@ -1,17 +1,435 @@
-// schema placeholder
-{
-  "response": {
-    "generations": [
-      [
-        {
-          "text": "# FixNotify Enhanced — System Architecture Specification\n\n## Version 2.0 | Architectural Blueprint\n\n---\n\n## Table of Contents\n\n1. [Executive Summary](#1-executive-summary)\n2. [System Overview & Design Philosophy](#2-system-overview--design-philosophy)\n3. [High-Level Architecture](#3-high-level-architecture)\n4. [Microservices Breakdown](#4-microservices-breakdown)\n5. [Database Schema & ERD](#5-database-schema--erd)\n6. [API Gateway Design](#6-api-gateway-design)\n7. [Event-Driven Architecture](#7-event-driven-architecture)\n8. [Security Architecture](#8-security-architecture)\n9. [AI/ML Pipeline Architecture](#9-aiml-pipeline-architecture)\n10. [Infrastructure & Deployment](#10-infrastructure--deployment)\n11. [Scalability Strategy](#11-scalability-strategy)\n12. [Observability & Monitoring](#12-observability--monitoring)\n13. [Disaster Recovery & Data Integrity](#13-disaster-recovery--data-integrity)\n14. [Future Enhancement Pathways](#14-future-enhancement-pathways)\n\n---\n\n## 1. Executive Summary\n\nFixNotify Enhanced is a multi-tenant issue tracking, notification, and resolution platform designed for organizations managing infrastructure incidents, maintenance requests, and service disruptions. This document specifies a cloud-native, event-driven microservices architecture that prioritizes **horizontal scalability**, **zero-trust security**, **AI-augmented operations**, and **sub-second notification delivery**.\n\n### Key Architectural Decisions (ADRs)\n\n| ADR | Decision | Rationale |\n|-----|----------|-----------|\n| ADR-001 | Event-driven microservices | Loose coupling, independent scaling |\n| ADR-002 | PostgreSQL + Redis + TimescaleDB | Relational integrity + caching + time-series analytics |\n| ADR-003 | API Gateway with BFF pattern | Client-optimized responses, centralized cross-cutting concerns |\n| ADR-004 | CQRS for reporting services | Separate read/write optimization for high-throughput dashboards |\n| ADR-005 | Zero-trust security model | Every request authenticated and authorized at every boundary |\n| ADR-006 | Multi-tenant with schema isolation | Data isolation with shared infrastructure economics |\n\n---\n\n## 2. System Overview & Design Philosophy\n\n### Core Principles\n\n```\n┌─────────────────────────────────────────────────────────────┐\n│                    DESIGN PRINCIPLES                         │\n├─────────────────────────────────────────────────────────────┤\n│  1. Domain-Driven Design (DDD)                              │\n│     → Bounded contexts aligned with business capabilities   │\n│                                                             │\n│  2. Event Sourcing for Critical Paths                       │\n│     → Complete audit trail, temporal queries, replay        │\n│                                                             │\n│  3. Twelve-Factor App Methodology                           │\n│     → Config in env, stateless processes, disposability     │\n│                                                             │\n│  4. Defense in Depth                                        │\n│     → Multiple security layers, never trust a single gate  │\n│                                                             │\n│  5. Graceful Degradation                                    │\n│     → System remains functional when components fail        │\n│                                                             │\n│  6. Observable by Default                                   │\n│     → Every service emits structured logs, metrics, traces  │\n└─────────────────────────────────────────────────────────────┘\n```\n\n### Bounded Contexts (Strategic DDD)\n\n```\n┌──────────────────────────────────────────────────────────────────┐\n│                     BOUNDED CONTEXT MAP                          │\n│                                                                  │\n│  ┌─────────────┐  publishes   ┌──────────────────┐              │\n│  │   Identity   │────────────▶│  Issue Management │              │\n│  │   & Access   │             │    (Core Domain)  │              │\n│  └─────────────┘              └────────┬─────────┘              │\n│        │                           │        │                    │\n│        │ conformist            publishes  publishes              │\n│        ▼                           │        │                    │\n│  ┌─────────────┐              ┌────▼───┐ ┌──▼──────────────┐   │\n│  │  Tenant     │              │Notifi- │ │  Resolution &   │   │\n│  │  Management │              │cation  │ │  Workflow Engine │   │\n│  └─────────────┘              │Engine  │ └─────────────────┘   │\n│        │                      └────┬───┘         │              │\n│        │                           │          publishes          │\n│        │ shared kernel             │             │               │\n│        ▼                           ▼             ▼               │\n│  ┌─────────────┐         ┌─────────────┐  ┌──────────┐         │\n│  │  Billing &  │         │  Analytics  │  │  AI/ML   │         │\n│  │  Subscription│         │  & Reporting│  │  Pipeline│         │\n│  └─────────────┘         └─────────────┘  └──────────┘         │\n│                                                                  │\n│  ── Partnership ──  ── Customer/Supplier ──  ── Conformist ──   │\n└──────────────────────────────────────────────────────────────────┘\n```\n\n---\n\n## 3. High-Level Architecture\n\n### System Architecture Diagram\n\n```\n                              ┌─────────────────┐\n                              │   CDN (CloudFront│\n                              │   / Cloudflare)  │\n                              └────────┬────────┘\n                                       │\n                    ┌──────────────────┼──────────────────┐\n                    │            EDGE LAYER               │\n                    │  ┌─────────────────────────────┐   │\n                    │  │     WAF + DDoS Protection    │   │\n                    │  └──────────────┬──────────────┘   │\n                    │                 │                    │\n                    │  ┌──────────────▼──────────────┐   │\n                    │  │    Global Load Balancer      │   │\n                    │  │    (L7 - HTTPS Termination)  │   │\n                    │  └──────────────┬──────────────┘   │\n                    └─────────────────┼──────────────────┘\n                                      │\n                    ┌─────────────────┼──────────────────┐\n                    │          API GATEWAY LAYER          │\n                    │                                     │\n                    │  ┌──────────┐  ┌──────────┐       │\n                    │  │  Web BFF │  │Mobile BFF│       │\n                    │  └─────┬────┘  └────┬─────┘       │\n                    │        │            │              │\n                    │  ┌─────▼────────────▼─────┐       │\n                    │  │   Kong / Custom Gateway │       │\n                    │  │  ┌─────────────────┐   │       │\n                    │  │  │ Rate Limiting    │   │       │\n                    │  │  │ Auth Validation  │   │       │\n                    │  │  │ Request Transform│   │       │\n                    │  │  │ Circuit Breaker  │   │       │\n                    │  │  │ Request Logging  │   │       │\n                    │  │  └─────────────────┘   │       │\n                    │  └────────────┬────────────┘       │\n                    └──────────────┼─────────────────────┘\n                                   │\n              ┌────────────────────┼────────────────────────┐\n              │            SERVICE MESH (Istio/Linkerd)     │\n              │                    │                         │\n              │    ┌───────┬───────┼───────┬───────┐       │\n              │    ▼       ▼       ▼       ▼       ▼       │\n              │ ┌──────┐┌──────┐┌──────┐┌──────┐┌──────┐ │\n              │ │Auth  ││Issue ││Notif ││Work- ││Analyt│ │\n              │ │Svc   ││Svc   ││Svc   ││flow  ││ics   │ │\n              │ │      ││      ││      ││Svc   ││Svc   │ │\n              │ └──┬───┘└──┬───┘└──┬───┘└──┬───┘└──┬───┘ │\n              │    │       │       │       │       │      │\n              │    └───────┴───────┴───┬───┴───────┘      │\n              │                        │                   │\n              └────────────────────────┼───────────────────┘\n                                       │\n              ┌────────────────────────┼───────────────────┐\n              │          EVENT BUS (Apache Kafka)          │\n              │                                            │\n              │  Topics:                                   │\n              │  ├── issues.created                        │\n              │  ├── issues.updated                        │\n              │  ├── issues.resolved                       │\n              │  ├── notifications.requested               │\n              │  ├── notifications.delivered               │\n              │  ├── users.activity                        │\n              │  ├── workflow.state-changed                │\n              │  └── ai.prediction-requested               │\n              └────────────────────────┼───────────────────┘\n                                       │\n              ┌────────────────────────┼───────────────────┐\n              │            DATA LAYER                       │\n              │                                            │\n              │  ┌──────────┐ ┌───────────┐ ┌──────────┐ │\n              │  │PostgreSQL│ │TimescaleDB│ │Elastics- │ │\n              │  │(Primary) │ │(Metrics)  │ │earch     │ │\n              │  └──────────┘ └───────────┘ │(Search)  │ │\n              │                             └──────────┘ │\n              │  ┌──────────┐ ┌───────────┐ ┌──────────┐ │\n              │  │  Redis   │ │    S3     │ │ MongoDB  │ │\n              │  │ (Cache+  │ │(Artifacts)│ │(AI Model │ │\n              │  │  PubSub) │ │           │ │  Store)  │ │\n              │  └──────────┘ └───────────┘ └──────────┘ │\n              └────────────────────────────────────────────┘\n```\n\n### Technology Stack Summary\n\n| Layer | Technology | Purpose |\n|-------|-----------|---------|\n| Frontend | React 18 + TypeScript, Next.js | SSR, SPA, progressive enhancement |\n| Mobile | React Native | Cross-platform mobile |\n| API Gateway | Kong OSS / Custom Node.js Gateway | Routing, auth, rate limiting |\n| Service Mesh | Istio | mTLS, traffic management, observability |\n| Services | Node.js (TypeScript), Python (AI/ML) | Business logic |\n| Event Bus | Apache Kafka + Schema Registry | Async communication |\n| Primary DB | PostgreSQL 16 + Citus | Relational data, multi-tenant |\n| Time-Series | TimescaleDB | Metrics, SLA tracking |\n| Cache | Redis Cluster | Session, cache, real-time pubsub |\n| Search | Elasticsearch 8 | Full-text search, log aggregation |\n| Object Store | S3-compatible (MinIO for self-hosted) | Attachments, exports |\n| AI/ML | Python + FastAPI, TensorFlow/PyTorch | Predictions, NLP |\n| Container | Docker + Kubernetes (EKS/GKE) | Orchestration |\n| CI/CD | GitHub Actions + ArgoCD | GitOps deployment |\n| Monitoring | Prometheus + Grafana + Jaeger | Metrics, tracing |\n\n---\n\n## 4. Microservices Breakdown\n\n### Service Catalog\n\n```\n┌─────────────────────────────────────────────────────────────────┐\n│                     SERVICE CATALOG                              │\n├─────────────────────────────────────────────────────────────────┤\n│                                                                  │\n│  CORE SERVICES (Business-Critical)                              │\n│  ├── auth-service          Identity, authentication, tokens     │\n│  ├── tenant-service        Organization/tenant management       │\n│  ├── user-service          User profiles, preferences           │\n│  ├── issue-service         Issue CRUD, lifecycle management     │\n│  ├── notification-service  Multi-channel delivery engine        │\n│  └── workflow-service      State machines, SLA timers           │\n│                                                                  │\n│  SUPPORTING SERVICES                                            │\n│  ├── search-service        Full-text search, indexing           │\n│  ├── analytics-service     Dashboards, reports, CQRS reads     │\n│  ├── file-service          Attachment upload/download           │\n│  ├── audit-service         Immutable audit log                  │\n│  └── integration-service   Third-party webhooks, Slack, etc.   │\n│                                                                  │\n│  AI/ML SERVICES                                                 │\n│  ├── ai-classifier         Issue categorization, priority       │\n│  ├── ai-predictor          Resolution time, escalation predict  │\n│  ├── ai-nlp                Sentiment analysis, summarization    │\n│  └── ai-anomaly            Pattern detection, alerting          │\n│                                                                  │\n│  INFRASTRUCTURE SERVICES                                        │\n│  ├── config-service        Centralized configuration            │\n│  ├── scheduler-service     Cron jobs, deferred tasks            │\n│  └── gateway-service       API gateway + BFF                    │\n│                                                                  │\n└─────────────────────────────────────────────────────────────────┘\n```\n\n### Detailed Service Specifications\n\n#### 4.1 Auth Service\n\n```\n┌─────────────────────────────────────────────────────┐\n│                  AUTH SERVICE                         │\n├─────────────────────────────────────────────────────┤\n│  Responsibility:                                     │\n│  - User authentication (email/password, OAuth, SSO) │\n│  - JWT access + refresh token management            │\n│  - MFA (TOTP, SMS, WebAuthn)                        │\n│  - Session management                                │\n│  - API key management                                │\n│  - Password policies enforcement                     │\n│                                                      │\n│  Database: PostgreSQL (auth schema)                  │\n│  Cache: Redis (sessions, token blacklist)            │\n│                                                      │\n│  Endpoints:                                          │\n│  POST   /auth/register                               │\n│  POST   /auth/login                                  │\n│  POST   /auth/logout                                 │\n│  POST   /auth/refresh                                │\n│  POST   /auth/mfa/enable                             │\n│  POST   /auth/mfa/verify                             │\n│  POST   /auth/password/reset                         │\n│  POST   /auth/oauth/{provider}/callback              │\n│  GET    /auth/sessions                               │\n│  DELETE /auth/sessions/{sessionId}                   │\n│  POST   /auth/api-keys                               │\n│  GET    /auth/.well-known/jwks.json                  │\n│                                                      │\n│  Events Published:                                   │\n│  - user.registered                                   │\n│  - user.login.success                                │\n│  - user.login.failed                                 │\n│  - user.mfa.enabled                                  │\n│  - user.password.changed                             │\n│                                                      │\n│  Scaling: 2-10 replicas (CPU-bound for bcrypt)      │\n└─────────────────────────────────────────────────────┘\n```\n\n#### 4.2 Issue Service (Core Domain)\n\n```\n┌─────────────────────────────────────────────────────┐\n│                  ISSUE SERVICE                        │\n├─────────────────────────────────────────────────────┤\n│  Responsibility:                                     │\n│  - Issue lifecycle management (CRUD + state)        │\n│  - Category/tag management                           │\n│  - Comment threads                                   │\n│  - Attachment metadata                               │\n│  - Issue linking (duplicates, related, blocks)      │\n│  - SLA tracking triggers                            │\n│  - Event sourcing for issue state                   │\n│                                                      │\n│  Database: PostgreSQL (issues schema)                │\n│  Event Store: PostgreSQL (event_store schema)        │\n│  Cache: Redis (hot issues, view counts)             │\n│                                                      │\n│  Core Endpoints:                                     │\n│  POST   /issues                                      │\n│  GET    /issues                                      │\n│  GET    /issues/{id}                                 │\n│  PATCH  /issues/{id}                                 │\n│  DELETE /issues/{id}                                 │\n│  POST   /issues/{id}/comments                        │\n│  GET    /issues/{id}/comments                        │\n│  POST   /issues/{id}/attachments                     │\n│  PATCH  /issues/{id}/status                          │\n│  POST   /issues/{id}/assign                          │\n│  GET    /issues/{id}/timeline                        │\n│  POST   /issues/{id}/links                           │\n│  GET    /issues/{id}/related                         │\n│  POST   /issues/bulk-update                          │\n│                                                      │\n│  Events Published:                                   │\n│  - issue.created                                     │\n│  - issue.updated                                     │\n│  - issue.status_changed                              │\n│  - issue.assigned                                    │\n│  - issue.commented                                   │\n│  - issue.escalated                                   │\n│  - issue.resolved                                    │\n│  - issue.closed                                      │\n│  - issue.reopened                                    │\n│                                                      │\n│  Scaling: 3-20 replicas (highest traffic service)   │\n└─────────────────────────────────────────────────────┘\n```\n\n#### 4.3 Notification Service\n\n```\n┌─────────────────────────────────────────────────────┐\n│              NOTIFICATION SERVICE                     │\n├─────────────────────────────────────────────────────┤\n│  Responsibility:                                     │\n│  - Multi-channel delivery (email, SMS, push,        │\n│    in-app, Slack, Teams, webhook)                   │\n│  - Template management (Handlebars/Liquid)          │\n│  - Delivery scheduling & batching                   │\n│  - Preference-aware routing                         │\n│  - Retry with exponential backoff                   │\n│  - Delivery tracking & analytics                    │\n│                                                      │\n│  Architecture: Internal pipeline pattern             │\n│                                                      │\n│  ┌─────────┐  ┌──────────┐  ┌──────────┐          │\n│  │ Ingress │→ │ Router & │→ │ Channel  │          │\n│  │ Queue   │  │ Template │  │ Adapters │          │\n│  └─────────┘  └──────────┘  └──────────┘          │\n│                                                      │\n│  Channel Adapters:                                   │\n│  ├── EmailAdapter (SES/SendGrid)                    │\n│  ├── SMSAdapter (Twilio/SNS)                        │\n│  ├── PushAdapter (FCM/APNs)                         │\n│  ├── InAppAdapter (WebSocket/SSE)                   │\n│  ├── SlackAdapter (Slack API)                       │\n│  ├── TeamsAdapter (MS Teams API)                    │\n│  └── WebhookAdapter (generic HTTP)                  │\n│                                                      │\n│  Endpoints:                                          │\n│  POST   /notifications/send                          │\n│  POST   /notifications/send-bulk                     │\n│  GET    /notifications/user/{userId}                 │\n│  PATCH  /notifications/{id}/read                     │\n│  GET    /notifications/preferences                   │\n│  PUT    /notifications/preferences                   │\n│  GET    /notifications/templates                     │\n│  POST   /notifications/templates                     │\n│  GET    /notifications/{id}/delivery-status          │\n│                                                      │\n│  Events Consumed:                                    │\n│  - issue.* (all issue events)                       │\n│  - workflow.sla_breached                            │\n│  - user.mentioned                                   │\n│                                                      │\n│  Events Published:                                   │\n│  - notification.sent                                │\n│  - notification.delivered                            │\n│  - notification.failed                               │\n│  - notification.read                                 │\n│                                                      │\n│  Scaling: 5-50 replicas (I/O bound, burst capable) │\n└─────────────────────────────────────────────────────┘\n```\n\n#### 4.4 Workflow Service\n\n```\n┌─────────────────────────────────────────────────────┐\n│               WORKFLOW SERVICE                        │\n├─────────────────────────────────────────────────────┤\n│  Responsibility:                                     │\n│  - Configurable state machine engine                │\n│  - SLA timer management                             │\n│  - Auto-escalation rules                            │\n│  - Workflow template CRUD                           │\n│  - Approval chains                                  │\n│  - Custom trigger/action rules                      │\n│                                                      │\n│  State Machine Example:                              │\n│                                                      │\n│  [New] → [Triaged] → [In Progress] → [Resolved]    │\n│    │         │             │              │          │\n│    │         │             ▼              ▼          │\n│    │         │        [Escalated]    [Verified]     │\n│    │         │             │              │          │\n│    │         ▼             ▼              ▼          │\n│    └───► [Rejected]  [In Progress]   [Closed]       │\n│                                          │          │\n│                                     [Reopened] ──┐  │\n│                                          ▲       │  │\n│                                          └───────┘  │\n│                                                      │\n│  Database: PostgreSQL (workflows schema)             │\n│  Timer Store: Redis (sorted sets for SLA timers)    │\n│                                                      │\n│  Endpoints:                                          │\n│  POST   /workflows/templates                         │\n│  GET    /workflows/templates                         │\n│  POST   /workflows/instances                         │\n│  GET    /workflows/instances/{id}                    │\n│  POST   /workflows/instances/{id}/transition         │\n│  GET    /workflows/sla/breaches                      │\n│  POST   /workflows/rules                             │\n│                                                      │\n│  Events Published:                                   │\n│  - workflow.state_changed                            │\n│  - workflow.sla_warning (80% threshold)             │\n│  - workflow.sla_breached                            │\n│  - workflow.escalation_triggered                     │\n│                                                      │\n│  Scaling: 2-8 replicas + dedicated timer workers    │\n└─────────────────────────────────────────────────────┘\n```\n\n#### 4.5 Analytics Service (CQRS Read Side)\n\n```\n┌─────────────────────────────────────────────────────┐\n│              ANALYTICS SERVICE                        │\n├─────────────────────────────────────────────────────┤\n│  Responsibility:                                     │\n│  - Materialized views from event streams            │\n│  - Dashboard data aggregation                       │\n│  - Report generation (PDF/CSV)                      │\n│  - SLA compliance metrics                           │\n│  - Trend analysis                                   │\n│  - Custom query builder                             │\n│                                                      │\n│  Pattern: CQRS Read Model                           │\n│                                                      │\n│  ┌──────────┐    ┌────────────┐   ┌────────────┐  │\n│  │  Kafka   │ →  │ Projection │ → │ Read Store │  │\n│  │ Consumer │    │  Handlers  │   │(TimescaleDB│  │\n│  └──────────┘    └────────────┘   │ + PG views)│  │\n│                                    └────────────┘  │\n│                                                      │\n│  Database: TimescaleDB (time-series metrics)        │\n│            PostgreSQL (materialized views)           │\n│  Cache: Redis (dashboard cache, 30s TTL)            │\n│                                                      │\n│  Endpoints:                                          │\n│  GET    /analytics/dashboard                         │\n│  GET    /analytics/issues/trends                     │\n│  GET    /analytics/sla/compliance                    │\n│  GET    /analytics/resolution/times                  │\n│  GET    /analytics/team/performance                  │\n│  POST   /analytics/reports/generate                  │\n│  GET    /analytics/reports/{id}/download             │\n│  POST   /analytics/query                             │\n│                                                      │\n│  Scaling: 2-6 replicas (CPU for aggregations)       │\n└─────────────────────────────────────────────────────┘\n```\n\n---\n\n## 5. Database Schema & ERD\n\n### 5.1 Entity Relationship Diagram\n\n```\n┌─────────────────────────────────────────────────────────────────────┐\n│                    ENTITY RELATIONSHIP DIAGRAM                       │\n│                                                                      │\n│  ┌──────────────┐         ┌───────────────────┐                     │\n│  │   tenants     │────┐    │  tenant_settings   │                    │\n│  ├──────────────┤    │    ├───────────────────┤                     │\n│  │ id (PK)      │    │    │ id (PK)           │                     │\n│  │ name         │    │    │ tenant_id (FK)    │                     │\n│  │ slug         │    │    │ key               │                     │\n│  │ plan         │    │    │ value (JSONB)     │                     │\n│  │ status       │    │    │ created_at        │                     │\n│  │ settings     │    │    └───────────────────┘                     │\n│  │ created_at   │    │                                              │\n│  │ updated_at   │    │    ┌───────────────────┐                     │\n│  └──────────────┘    ├───▶│  subscription     │                     │\n│         │            │    ├───────────────────┤                     │\n│         │            │    │ id (PK)           │                     │\n│         │            │    │ tenant_id (FK)    │                     │\n│         │            │    │ plan_id (FK)      │                     │\n│         │            │    │ status            │                     │\n│         │            │    │ current_period_end│                     │\n│         │            │    │ stripe_sub_id     │                     │\n│         │            │    └───────────────────┘                     │\n│  ┌──────▼───────┐    │                                              │\n│  │    users      │◄───┘                                             │\n│  ├──────────────┤         ┌───────────────────┐                     │\n│  │ id (PK)      │────────▶│  user_preferences │                     │\n│  │ tenant_id(FK)│         ├───────────────────┤                     │\n│  │ email        │         │ id (PK)           │                     │\n│  │ password_hash│         │ user_id (FK)      │                     │\n│  │ first_name   │         │ notification_email│                     │\n│  │ last_name    │         │ notification_sms  │                     │\n│  │ role         │         │ notification_push │                     │\n│  │ avatar_url   │         │ notification_slack│                     │\n│  │ status       │         │ digest_frequency  │                     │\n│  │ mfa_enabled  │         │ timezone          │                     │\n│  │ last_login   │         │ language          │                     │\n│  │ created_at   │         └───────────────────┘                     │\n│  │ updated_at   │                                                   │\n│  └──────┬───────┘                                                   │\n│         │                                                           │\n│         │  ┌─────────────────────────┐                              │\n│         │  │      team_members       │                              │\n│         │  ├─────────────────────────┤                              │\n│         ├─▶│ id (PK)                 │                              │\n│         │  │ user_id (FK)            │◄─────┐                      │\n│         │  │ team_id (FK)            │      │                      │\n│         │  │ role                    │      │                      │\n│         │  └─────────────────────────┘      │                      │\n│         │                                    │                      │\n│         │  ┌────────────────┐          ┌────┴────────┐             │\n│         │  │    teams        │          │ team_id(FK) │             │\n│         │  ├────────────────┤          └─────────────┘             │\n│         │  │ id (PK)        │                                      │\n│         │  │ tenant_id (FK) │                                      │\n│         │  │ name           │                                      │\n│         │  │ description    │                                      │\n│         │  │ created_at     │                                      │\n│         │  └────────────────┘                                      │\n│         │                                                           │\n│         │         ┌──────────────────────────────────┐             │\n│         │         │            issues                 │             │\n│         │         ├──────────────────────────────────┤             │\n│         ├────────▶│ id (PK)                          │             │\n│         │(creator)│ tenant_id (FK)                   │             │\n│         │         │ external_id (unique per tenant)  │             │\n│         ├────────▶│ reporter_id (FK → users)         │             │\n│         │(assignee│ assignee_id (FK → users)         │             │\n│         │         │ team_id (FK → teams)             │             │\n│         │         │ category_id (FK → categories)    │             │\n│         │         │ parent_issue_id (FK → issues)    │◄──┐        │\n│         │         │ title                            │   │self-ref│\n│         │         │ description (TEXT)               │───┘        │\n│         │         │ status (ENUM)                    │             │\n│         │         │ priority (ENUM)                  │             │\n│         │         │ severity (ENUM)                  │             │\n│         │         │ type (ENUM)                      │             │\n│         │         │ source (ENUM)                    │             │\n│         │         │ location (JSONB)                 │             │\n│         │         │ metadata (JSONB)                 │             │\n│         │         │ ai_classification (JSONB)        │             │\n│         │         │ s"
-        }
-      ]
-    ]
-  },
-  "tokenUsage": {
-    "completionTokens": 8192,
-    "promptTokens": 133,
-    "totalTokens": 8325
-  }
-}
+# FixNotify Enhanced — Architectural Specification Document
+
+**Version:** 1.0.0
+**Author:** Claude Opus 4.6, System Architect
+**Date:** January 2025
+**Status:** Living Document — Approved for Implementation
+
+---
+
+## Table of Contents
+
+1. [Executive Summary](#1-executive-summary)
+2. [System Overview & Design Philosophy](#2-system-overview--design-philosophy)
+3. [High-Level Architecture](#3-high-level-architecture)
+4. [Microservices Breakdown](#4-microservices-breakdown)
+5. [Database Schema & ERD](#5-database-schema--erd)
+6. [API Gateway Design](#6-api-gateway-design)
+7. [Event-Driven Architecture](#7-event-driven-architecture)
+8. [Security Architecture](#8-security-architecture)
+9. [AI/ML Pipeline Architecture](#9-aiml-pipeline-architecture)
+10. [Infrastructure & Deployment](#10-infrastructure--deployment)
+11. [Scalability Strategy](#11-scalability-strategy)
+12. [Observability & Monitoring](#12-observability--monitoring)
+13. [Disaster Recovery & Business Continuity](#13-disaster-recovery--business-continuity)
+14. [Future Enhancement Roadmap](#14-future-enhancement-roadmap)
+15. [Appendices](#15-appendices)
+
+---
+
+## 1. Executive Summary
+
+FixNotify Enhanced is a multi-tenant issue reporting and civic notification platform enabling citizens to report infrastructure problems (potholes, broken streetlights, graffiti, etc.), track resolution progress, and receive intelligent notifications. The system extends a basic FixNotify clone with AI-powered categorization, predictive maintenance, real-time collaboration, and advanced analytics.
+
+### Key Design Objectives
+
+| Objective | Target |
+|-----------|--------|
+| Availability | 99.95% uptime (≤ 22 min/month downtime) |
+| Latency (P95) | < 200ms for API responses |
+| Throughput | 10,000 concurrent users, 500 req/s sustained |
+| Data Durability | 99.999999999% (11 nines) |
+| Time-to-Recovery | RTO: 15 min, RPO: 1 min |
+| Scale Ceiling | 50M reports/year, 1M registered users |
+
+---
+
+## 2. System Overview & Design Philosophy
+
+### 2.1 Architectural Principles
+
+```
+┌─────────────────────────────────────────────────────────────────┐
+│                    DESIGN PRINCIPLES                            │
+├─────────────────────────────────────────────────────────────────┤
+│                                                                 │
+│  1. Domain-Driven Design (DDD)                                  │
+│     → Bounded contexts align with business capabilities         │
+│                                                                 │
+│  2. Event Sourcing for Core Domains                             │
+│     → Complete audit trail, temporal queries, replay            │
+│                                                                 │
+│  3. CQRS (Command Query Responsibility Segregation)             │
+│     → Separate read/write models for performance                │
+│                                                                 │
+│  4. Zero-Trust Security                                         │
+│     → Never trust, always verify, least privilege               │
+│                                                                 │
+│  5. API-First Design                                            │
+│     → OpenAPI 3.1 contracts before implementation               │
+│                                                                 │
+│  6. Twelve-Factor App Compliance                                │
+│     → Cloud-native, portable, scalable                          │
+│                                                                 │
+│  7. Graceful Degradation                                        │
+│     → Core functionality survives component failures            │
+│                                                                 │
+│  8. Data Sovereignty & Privacy by Design                        │
+│     → GDPR/CCPA compliance baked into architecture              │
+│                                                                 │
+└─────────────────────────────────────────────────────────────────┘
+```
+
+### 2.2 Bounded Contexts (Domain-Driven Design)
+
+```
+┌──────────────────────────────────────────────────────────────────────┐
+│                     BOUNDED CONTEXT MAP                              │
+│                                                                      │
+│  ┌──────────────┐    ┌──────────────┐    ┌───────────────┐          │
+│  │   Identity   │───▶│   Reporting  │───▶│  Resolution   │          │
+│  │   Context    │    │   Context    │    │   Context     │          │
+│  │              │    │              │    │               │          │
+│  │ • Users      │    │ • Issues     │    │ • Assignments │          │
+│  │ • Orgs       │    │ • Categories │    │ • Workflows   │          │
+│  │ • Roles      │    │ • Media      │    │ • SLAs        │          │
+│  │ • Auth       │    │ • Locations  │    │ • Comments    │          │
+│  └──────┬───────┘    └──────┬───────┘    └───────┬───────┘          │
+│         │                   │                    │                   │
+│         │            ┌──────▼───────┐            │                   │
+│         │            │ Notification │◀───────────┘                   │
+│         └───────────▶│   Context    │                                │
+│                      │              │    ┌───────────────┐           │
+│                      │ • Channels   │    │  Analytics    │           │
+│                      │ • Templates  │───▶│  Context      │           │
+│                      │ • Prefs      │    │               │           │
+│                      │ • Delivery   │    │ • Metrics     │           │
+│                      └──────────────┘    │ • Reports     │           │
+│                                          │ • Predictions │           │
+│  ┌──────────────┐    ┌──────────────┐    │ • Dashboards  │           │
+│  │     AI       │───▶│   Geospatial │    └───────────────┘           │
+│  │   Context    │    │   Context    │                                │
+│  │              │    │              │                                │
+│  │ • Classify   │    │ • Maps       │                                │
+│  │ • Predict    │    │ • Zones      │                                │
+│  │ • NLP        │    │ • Routing    │                                │
+│  │ • Vision     │    │ • Geocoding  │                                │
+│  └──────────────┘    └──────────────┘                                │
+└──────────────────────────────────────────────────────────────────────┘
+
+Legend:  ───▶  Upstream/Downstream dependency
+        Context boundaries enforce data ownership
+```
+
+---
+
+## 3. High-Level Architecture
+
+### 3.1 System Architecture Diagram
+
+```
+┌─────────────────────────────────────────────────────────────────────────────┐
+│                              CLIENTS                                        │
+│                                                                             │
+│  ┌─────────┐  ┌─────────┐  ┌──────────┐  ┌───────────┐  ┌─────────────┐  │
+│  │  React  │  │ React   │  │  Mobile  │  │  3rd Party│  │   IoT       │  │
+│  │  SPA    │  │ Native  │  │  PWA     │  │  Webhooks │  │   Sensors   │  │
+│  │(Citizen)│  │  Apps   │  │         │  │           │  │             │  │
+│  └────┬────┘  └────┬────┘  └────┬─────┘  └─────┬─────┘  └──────┬──────┘  │
+│       │            │            │              │               │          │
+└───────┼────────────┼────────────┼──────────────┼───────────────┼──────────┘
+        │            │            │              │               │
+        └────────────┴────────────┴──────┬───────┴───────────────┘
+                                         │
+                                    ┌────▼─────┐
+                                    │   CDN    │  (CloudFront/Fastly)
+                                    │  + WAF   │
+                                    └────┬─────┘
+                                         │
+                              ┌──────────▼──────────┐
+                              │    LOAD BALANCER     │  (ALB / NLB)
+                              │   (Layer 7 / TLS)   │
+                              └──────────┬──────────┘
+                                         │
+┌────────────────────────────────────────┼────────────────────────────────────┐
+│                              API LAYER │                                    │
+│                                        │                                    │
+│  ┌─────────────────────────────────────▼──────────────────────────────┐    │
+│  │                      API GATEWAY (Kong/AWS API GW)                 │    │
+│  │                                                                     │    │
+│  │  ┌──────────┐ ┌───────────┐ ┌──────────┐ ┌──────────┐ ┌────────┐ │    │
+│  │  │  Rate    │ │  Auth     │ │ Request  │ │  API     │ │ Circuit│ │    │
+│  │  │  Limiter │ │  (JWT +   │ │ Validator│ │ Version  │ │ Breaker│ │    │
+│  │  │          │ │  OAuth2)  │ │ (Schema) │ │ Router   │ │        │ │    │
+│  │  └──────────┘ └───────────┘ └──────────┘ └──────────┘ └────────┘ │    │
+│  └─────────┬───────────┬──────────┬──────────┬──────────┬────────────┘    │
+│            │           │          │          │          │                   │
+│  ┌─────────▼──┐  ┌─────▼────┐ ┌──▼─────┐ ┌─▼────────┐│  ┌────────────┐  │
+│  │  GraphQL   │  │  REST    │ │  gRPC  │ │ WebSocket ││  │  Async     │  │
+│  │  Gateway   │  │  APIs    │ │  (Int) │ │  Gateway  ││  │  Ingress   │  │
+│  │  (Apollo)  │  │  v1/v2   │ │        │ │           ││  │  (Webhook) │  │
+│  └─────┬──────┘  └────┬─────┘ └───┬────┘ └────┬─────┘│  └─────┬──────┘  │
+│        │              │           │           │      │        │          │
+└────────┼──────────────┼───────────┼───────────┼──────┼────────┼──────────┘
+         │              │           │           │      │        │
+         └──────────────┴───────────┴─────┬─────┴──────┘        │
+                                          │                     │
+┌─────────────────────────────────────────┼─────────────────────┼──────────┐
+│                         SERVICE MESH    │  (Istio/Linkerd)    │          │
+│                                         │                     │          │
+│  ┌─────────────┐  ┌─────────────┐  ┌───▼─────────┐  ┌───────▼───────┐  │
+│  │  Identity   │  │  Issue      │  │  Resolution │  │  Notification │  │
+│  │  Service    │  │  Service    │  │  Service    │  │  Service      │  │
+│  │             │  │             │  │             │  │               │  │
+│  │  Port:3001  │  │  Port:3002  │  │  Port:3003  │  │  Port:3004    │  │
+│  └──────┬──────┘  └──────┬──────┘  └──────┬──────┘  └───────┬───────┘  │
+│         │                │                │                  │          │
+│  ┌──────┴──────┐  ┌──────┴──────┐  ┌──────┴──────┐  ┌───────┴───────┐  │
+│  │  Media      │  │  Geospatial │  │  Analytics  │  │  AI/ML        │  │
+│  │  Service    │  │  Service    │  │  Service    │  │  Service      │  │
+│  │             │  │             │  │             │  │               │  │
+│  │  Port:3005  │  │  Port:3006  │  │  Port:3007  │  │  Port:3008    │  │
+│  └──────┬──────┘  └──────┬──────┘  └──────┬──────┘  └───────┬───────┘  │
+│         │                │                │                  │          │
+│  ┌──────┴──────┐  ┌──────┴──────────────────────────────────┴───────┐  │
+│  │  Workflow   │  │                SAGA ORCHESTRATOR                 │  │
+│  │  Engine     │  │              (Temporal / Conductor)              │  │
+│  │  Port:3009  │  └─────────────────────────────────────────────────┘  │
+│  └─────────────┘                                                       │
+│                                                                         │
+└───────────────────────────────────┬─────────────────────────────────────┘
+                                    │
+┌───────────────────────────────────┼─────────────────────────────────────┐
+│                    EVENT BUS &    │  MESSAGE BROKER                     │
+│                                   │                                     │
+│  ┌────────────────────────────────▼────────────────────────────────┐   │
+│  │              Apache Kafka / Amazon EventBridge                   │   │
+│  │                                                                  │   │
+│  │  Topics:                                                         │   │
+│  │  ├── issue.created    ├── issue.updated    ├── issue.resolved   │   │
+│  │  ├── user.registered  ├── user.verified    ├── assignment.made  │   │
+│  │  ├── notification.send├── media.processed  ├── ai.classified    │   │
+│  │  ├── sla.breached     ├── analytics.event  ├── geo.updated      │   │
+│  │  └── workflow.step    └── audit.log        └── system.health    │   │
+│  └──────────────────────────────────────────────────────────────────┘   │
+│                                                                         │
+│  ┌──────────────────┐  ┌──────────────────┐  ┌──────────────────────┐  │
+│  │  Redis Streams   │  │  Dead Letter     │  │  Schema Registry     │  │
+│  │  (Real-time)     │  │  Queue (DLQ)     │  │  (Avro/Protobuf)     │  │
+│  └──────────────────┘  └──────────────────┘  └──────────────────────┘  │
+└─────────────────────────────────────────────────────────────────────────┘
+                                    │
+┌───────────────────────────────────┼─────────────────────────────────────┐
+│                    DATA LAYER     │                                     │
+│                                   │                                     │
+│  ┌────────────┐  ┌────────────┐  ┌▼───────────┐  ┌──────────────────┐ │
+│  │ PostgreSQL │  │ PostgreSQL │  │   Redis    │  │   Elasticsearch  │ │
+│  │  (Primary) │  │ (Read      │  │  Cluster   │  │   (Search &      │ │
+│  │            │  │  Replicas) │  │            │  │    Analytics)    │ │
+│  │ • Issues   │  │            │  │ • Sessions │  │                  │ │
+│  │ • Users    │  │ • Queries  │  │ • Cache    │  │ • Full-text      │ │
+│  │ • Events   │  │ • Reports  │  │ • Pub/Sub  │  │ • Geo queries    │ │
+│  │ • Tenants  │  │ • Analytics│  │ • Rate Lim │  │ • Aggregations   │ │
+│  └────────────┘  └────────────┘  └────────────┘  └──────────────────┘ │
+│                                                                        │
+│  ┌────────────┐  ┌────────────┐  ┌─────────────┐  ┌────────────────┐ │
+│  │  PostGIS   │  │ Amazon S3  │  │ TimescaleDB │  │  Vector DB     │ │
+│  │ (Geospatial│  │ / Minio    │  │ (Time-series│  │  (pgvector /   │ │
+│  │  Extension)│  │            │  │  metrics)   │  │   Pinecone)    │ │
+│  │            │  │ • Images   │  │             │  │                │ │
+│  │ • Geometry │  │ • Videos   │  │ • IoT data  │  │ • Embeddings   │ │
+│  │ • Spatial  │  │ • Documents│  │ • SLA track │  │ • Similarity   │ │
+│  │   Indexes  │  │ • Backups  │  │ • Perf mon  │  │   Search       │ │
+│  └────────────┘  └────────────┘  └─────────────┘  └────────────────┘ │
+│                                                                        │
+└────────────────────────────────────────────────────────────────────────┘
+```
+
+### 3.2 Network Topology
+
+```
+┌─────────────────────────────────────────────────────────────────────┐
+│                        VPC: 10.0.0.0/16                             │
+│                                                                     │
+│  ┌───────────────────────────────────────────────────────────────┐  │
+│  │  PUBLIC SUBNET: 10.0.1.0/24          AZ-a                    │  │
+│  │  ┌──────────┐  ┌──────────┐  ┌──────────┐                   │  │
+│  │  │   ALB    │  │   NAT    │  │  Bastion │                   │  │
+│  │  │          │  │  Gateway │  │   Host   │                   │  │
+│  │  └──────────┘  └──────────┘  └──────────┘                   │  │
+│  └───────────────────────────────────────────────────────────────┘  │
+│                                                                     │
+│  ┌───────────────────────────────────────────────────────────────┐  │
+│  │  PRIVATE SUBNET (App): 10.0.10.0/24  AZ-a                   │  │
+│  │  ┌──────────────────────────────────────────────────────┐    │  │
+│  │  │  EKS/ECS Cluster                                     │    │  │
+│  │  │  ┌─────────┐ ┌─────────┐ ┌─────────┐ ┌─────────┐   │    │  │
+│  │  │  │ Identity│ │  Issue  │ │  Notif  │ │   AI    │   │    │  │
+│  │  │  │  Pods   │ │  Pods   │ │  Pods   │ │  Pods   │   │    │  │
+│  │  │  └─────────┘ └─────────┘ └─────────┘ └─────────┘   │    │  │
+│  │  │  ┌─────────┐ ┌─────────┐ ┌─────────┐ ┌─────────┐   │    │  │
+│  │  │  │  Geo    │ │ Resolve │ │ Analytic│ │  Media  │   │    │  │
+│  │  │  │  Pods   │ │  Pods   │ │  Pods   │ │  Pods   │   │    │  │
+│  │  │  └─────────┘ └─────────┘ └─────────┘ └─────────┘   │    │  │
+│  │  └──────────────────────────────────────────────────────┘    │  │
+│  └───────────────────────────────────────────────────────────────┘  │
+│                                                                     │
+│  ┌───────────────────────────────────────────────────────────────┐  │
+│  │  PRIVATE SUBNET (Data): 10.0.20.0/24  AZ-a + AZ-b           │  │
+│  │  ┌──────────┐ ┌──────────┐ ┌──────────┐ ┌──────────────┐    │  │
+│  │  │PostgreSQL│ │  Redis   │ │  Kafka   │ │Elasticsearch │    │  │
+│  │  │ Primary  │ │ Primary  │ │ Broker-1 │ │   Node-1     │    │  │
+│  │  └──────────┘ └──────────┘ └──────────┘ └──────────────┘    │  │
+│  │  ┌──────────┐ ┌──────────┐ ┌──────────┐ ┌──────────────┐    │  │
+│  │  │PostgreSQL│ │  Redis   │ │  Kafka   │ │Elasticsearch │    │  │
+│  │  │ Replica  │ │ Replica  │ │ Broker-2 │ │   Node-2     │    │  │
+│  │  └──────────┘ └──────────┘ └──────────┘ └──────────────┘    │  │
+│  └───────────────────────────────────────────────────────────────┘  │
+│                                                                     │
+└─────────────────────────────────────────────────────────────────────┘
+```
+
+---
+
+## 4. Microservices Breakdown
+
+### 4.1 Service Inventory
+
+```
+┌──────────────────────────────────────────────────────────────────────────┐
+│                        SERVICE CATALOG                                   │
+├──────────────┬──────────┬──────────────┬──────────────┬─────────────────┤
+│   Service    │  Tech    │   Database   │  Event Bus   │   Criticality   │
+├──────────────┼──────────┼──────────────┼──────────────┼─────────────────┤
+│ Identity     │ Node/TS  │ PostgreSQL   │ Producer     │ ██████ Critical │
+│ Issue        │ Node/TS  │ PG + PostGIS │ Prod+Cons    │ ██████ Critical │
+│ Resolution   │ Node/TS  │ PostgreSQL   │ Prod+Cons    │ █████░ High     │
+│ Notification │ Node/TS  │ PG + Redis   │ Consumer     │ █████░ High     │
+│ Media        │ Node/TS  │ S3 + PG      │ Prod+Cons    │ ████░░ Medium  │
+│ Geospatial   │ Python   │ PostGIS + ES │ Prod+Cons    │ ████░░ Medium  │
+│ Analytics    │ Python   │ TimescaleDB  │ Consumer     │ ███░░░ Low     │
+│ AI/ML        │ Python   │ VectorDB+PG  │ Prod+Cons    │ ███░░░ Low     │
+│ Workflow     │ Node/TS  │ PostgreSQL   │ Prod+Cons    │ █████░ High     │
+│ API Gateway  │ Kong     │ —            │ —            │ ██████ Critical │
+└──────────────┴──────────┴──────────────┴──────────────┴─────────────────┘
+```
+
+### 4.2 Service Interaction Diagram
+
+```
+                           ┌──────────────────┐
+                           │   API Gateway    │
+                           └────────┬─────────┘
+                                    │
+              ┌─────────┬───────────┼───────────┬──────────┐
+              │         │           │           │          │
+        ┌─────▼───┐ ┌───▼─────┐ ┌──▼──────┐ ┌─▼────────┐│ ┌──────────┐
+        │Identity │ │  Issue  │ │Resolut. │ │  Notif.  ││ │  Media   │
+        │Service  │ │ Service │ │Service  │ │ Service  ││ │ Service  │
+        └────┬────┘ └───┬─────┘ └────┬────┘ └────┬─────┘│ └────┬─────┘
+             │          │            │           │      │      │
+             │     ┌────▼────┐       │           │      │      │
+             │     │Geospatl.│       │           │      │      │
+             │     │Service  │       │           │      │      │
+             │     └────┬────┘       │           │      │      │
+             │          │            │           │      │      │
+        ─────┴──────────┴────────────┴───────────┴──────┴──────┴─────
+        ░░░░░░░░░░░░░░░░░░░  EVENT BUS (Kafka)  ░░░░░░░░░░░░░░░░░░░
+        ─────┬──────────┬────────────┬───────────┬──────┬──────┬─────
+             │          │            │           │      │      │
+        ┌────▼────┐ ┌───▼─────┐ ┌───▼────┐ ┌───▼────┐ │ ┌────▼─────┐
+        │Analytics│ │  AI/ML  │ │Workflow│ │  Audit │ │ │  Search  │
+        │Service  │ │ Service │ │Engine  │ │  Log   │ │ │  Index   │
+        └─────────┘ └─────────┘ └────────┘ └────────┘ │ └──────────┘
+                                                       │
+                                               ┌───────▼────────┐
+                                               │    SAGA        │
+                                               │  Orchestrator  │
+                                               │  (Temporal)    │
+                                               └────────────────┘
+```
+
+### 4.3 Detailed Service Specifications
+
+#### 4.3.1 Identity Service
+
+```
+┌─────────────────────────────────────────────────────────────┐
+│                    IDENTITY SERVICE                          │
+├─────────────────────────────────────────────────────────────┤
+│                                                             │
+│  Responsibilities:                                          │
+│  • User registration & lifecycle management                 │
+│  • Authentication (OAuth2 + OIDC + MFA)                     │
+│  • Authorization (RBAC + ABAC)                              │
+│  • Organization/Tenant management                           │
+│  • API key management                                       │
+│  • Session management                                       │
+│                                                             │
+│  API Endpoints:                                             │
+│  POST   /auth/register                                      │
+│  POST   /auth/login                                         │
+│  POST   /auth/refresh                                       │
+│  POST   /auth/logout                                        │
+│  POST   /auth/mfa/enable                                    │
+│  POST   /auth/mfa/verify                                    │
+│  POST   /auth/password/reset                                │
+│  GET    /users/:id                                          │
+│  PUT    /users/:id                                          │
+│  DELETE /users/:id        (GDPR right-to-erasure)           │
+│  GET    /users/:id/profile                                  │
+│  PUT    /users/:id/preferences                              │
+│  POST   /organizations                                      │
+│  GET    /organizations/:id/members                          │
+│  POST   /organizations/:id/invite                           │
+│  GET    /roles                                              │
+│  POST   /roles                                              │
+│  PUT    /roles/:id/permissions                              │
+│  POST   /api-keys                                           │
+│  DELETE /api-keys/:id                                       │
+│                                                             │
+│  Events Produced:                                           │
+│  • user.registered                                          │
+│  • user.verified                                            │
+│  • user.profile_updated                                     │
+│  • user.deleted (GDPR)                                      │
+│  • org.created                                              │
+│  • role.assigned                                            │
+│                                                             │
+│  Tech Stack:                                                │
+│  • Node.js + TypeScript + Fastify                           │
+│  • PostgreSQL (users, orgs, roles)                          │
+│  • Redis (sessions, rate limiting, token blacklist)         │
+│  • bcrypt + argon2 (password hashing)                       │
+│  • jose (JWT handling)                                      │
+│                                                             │
+└─────────────────────────────────────────────────────────────┘
+```
+
+#### 4.3.2 Issue Service
+
+```
+┌─────────────────────────────────────────────────────────────┐
+│                      ISSUE SERVICE                          │
+├─────────────────────────────────────────────────────────────┤
+│                                                             │
+│  Responsibilities:                                          │
+│  • Issue CRUD with event sourcing                           │
+│  • Category management (hierarchical)                       │
+│  • Status lifecycle management                              │
+│  • Issue deduplication (AI-assisted)                        │
+│  • Voting/upvoting on issues                                │
+│  • Location association                                     │
+│                                                             │
+│  API Endpoints:                                             │
+│  POST   /issues                                             │
+│  GET    /issues/:id                                         │
+│  PUT    /issues/:id                                         │
+│  PATCH  /issues/:id/status                                  │
+│  DELETE /issues/:id                                         │
+│  GET    /issues                    (paginated, filtered)    │
+│  GET    /issues/search             (full-text + geo)        │
+│  GET    /issues/nearby             (geo-radius query)       │
+│  POST   /issues/:id/vote                                    │
+│  DELETE /issues/:id/vote                                    │
+│  GET    /issues
