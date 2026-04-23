@@ -1,55 +1,55 @@
 ```
 # Dependencies
 node_modules/
-client/node_modules/
-server/node_modules/
-
-# Build outputs
-client/dist/
-client/build/
-server/dist/
-server/build/
-build/
-dist/
 
 # Environment variables
 .env
 .env.local
-*.env
-
-# IDE files
-.vscode/
-.idea/
-*.swp
-*.swo
+.env.*
 
 # Logs
 *.log
 
-# Python cache (if any Python files exist in server)
+# Editor/IDE files
+.vscode/
+.idea/
+*.swp
+*.swo
+*.tmp
+
+# Build artifacts
+dist/
+build/
+target/
+
+# Python
 __pycache__/
 *.pyc
 *.pyo
+*.pyd
 .Python
+*.so
 
-# Temporary files
-*.tmp
-*.temp
+# Compiled files
+*.o
+*.obj
+*.exe
+*.dll
+*.so
+*.a
+*.out
 
-# OS generated files
+# System files
 .DS_Store
 Thumbs.db
 
-# Coverage reports
+# Coverage
 coverage/
 htmlcov/
 .coverage
 
-# TypeScript/JavaScript build artifacts
-*.js.map
-*.tsbuildinfo
-
-# Local configuration that might be generated
-client/.env
-server/.env
+# Cache
+.mypy_cache/
+.pytest_cache/
+.gradle/
 ```
