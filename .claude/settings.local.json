@@ -3,7 +3,10 @@
     "allow": [
       "Bash(npx pnpm@10.4.1 install --prefer-offline)",
       "Bash(npx pnpm@10.4.1 check)",
-      "Bash(npx pnpm@10.4.1 build)"
+      "Bash(npx pnpm@10.4.1 build)",
+      "Bash(npx drizzle-kit *)",
+      "Bash(npm run *)",
+      "Bash(node -e \"console.log\\(require\\('./node_modules/recharts/package.json'\\).version\\)\")"
     ]
   }
 }

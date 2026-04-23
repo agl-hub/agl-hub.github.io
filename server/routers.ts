@@ -10,6 +10,13 @@ import { shareRouter } from "./routers/share";
 import { schedulesRouter } from "./routers/schedules";
 import { publicProcedure, router, protectedProcedure } from "./_core/trpc";
 import { aiRouter } from "./routers/ai";
+import { customersRouter } from "./routers/customers";
+import { appointmentsRouter } from "./routers/appointments";
+import { notifyRouter } from "./routers/notify";
+import { tenantsRouter } from "./routers/tenants";
+import { staffRouter } from "./routers/staff";
+import { transactionsRouter } from "./routers/transactions";
+import { subscriptionsRouter } from "./routers/subscription";
 import { importExcelData } from "./import";
 import {
   getSalesTransactions,
@@ -308,6 +315,17 @@ export const appRouter = router({
         return await insertNotification(input);
       }),
   }),
+
+  // Customers, Appointments & Notifications
+  customers: customersRouter,
+  appointments: appointmentsRouter,
+  notify: notifyRouter,
+
+  // Multi-tenant & new modules
+  tenants: tenantsRouter,
+  staffManagement: staffRouter,
+  transactions: transactionsRouter,
+  subscriptions: subscriptionsRouter,
 
   // AI Chat
   ai: aiRouter,

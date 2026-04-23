@@ -8,6 +8,8 @@ const t = initTRPC.context<TrpcContext>().create({
   transformer: superjson,
 });
 
+export { t };
+
 export const router = t.router;
 export const publicProcedure = t.procedure;
 

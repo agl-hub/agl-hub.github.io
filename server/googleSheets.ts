@@ -163,4 +163,107 @@ export async function parseWorkshopLog() {
  * Parse Staff Clock-In sheet
  */
 export async function parseStaffClockIn() {
-  const data = await g
+  const data = await getSheetData("Staff Clock-In");
+  if (!data || !data.values || data.values.length === 0) return null;
+
+  const headers = data.values[0];
+  const rows = data.values.slice(1);
+
+  return rows.map((row) => {
+    const obj: any = {};
+    headers.forEach((header, index) => {
+      obj[header] = row[index];
+    });
+    return obj;
+  });
+}
+
+let refreshTimer: NodeJS.Timeout | null = null;
+
+export function startAutoRefresh(intervalMs = 5 * 60 * 1000) {
+  if (refreshTimer) return;
+  refreshTimer = setInterval(() => {
+    syncAllSheetData({ force: true }).catch((e) =>
+      console.error("[googleSheets] auto-refresh failed:", e),
+    );
+  }, intervalMs);
+  console.log("[googleSheets] auto-refresh started");
+}
+
+export function stopAutoRefresh() {
+  if (refreshTimer) {
+    clearInterval(refreshTimer);
+    refreshTimer = null;
+  }
+}
+
+let lastSyncAt: Date | null = null;
+let lastSyncError: string | null = null;
+
+export function getSyncStatus() {
+  return {
+    lastSyncAt,
+    lastSyncError,
+    cacheSize: sheetCache.size,
+  };
+}
+
+export async function getSheetMetadata() {
+  const workbook = loadWorkbook();
+  if (!workbook) return [];
+  return workbook.SheetNames.map((name) => ({
+    name,
+    rowCount: workbook.Sheets[name] ? XLSX.utils.sheet_to_json(workbook.Sheets[name], { header: 1 }).length : 0,
+  }));
+}
+
+export async function syncAllSheetData(opts: { force?: boolean } = {}) {
+  try {
+    if (opts.force) clearSheetCache();
+    const [monthlySummary, sales, workshop, staff, expenses, purchaseOrders] = await Promise.all([
+      parseMonthlySummary(),
+      parseSalesLog(),
+      parseWorkshopLog(),
+      parseStaffClockIn(),
+      parseExpenses(),
+      parsePurchaseOrders(),
+    ]);
+    lastSyncAt = new Date();
+    lastSyncError = null;
+    return {
+      monthlySummary: monthlySummary ?? [],
+      sales: sales ?? [],
+      workshop: workshop ?? [],
+      staff: staff ?? [],
+      expenses: expenses ?? [],
+      purchaseOrders: purchaseOrders ?? [],
+    };
+  } catch (error) {
+    lastSyncError = (error as Error).message;
+    throw error;
+  }
+}
+
+async function parseExpenses() {
+  const data = await getSheetData("Expense Log");
+  if (!data || !data.values || data.values.length === 0) return null;
+  const headers = data.values[0];
+  const rows = data.values.slice(1);
+  return rows.map((row) => {
+    const obj: any = {};
+    headers.forEach((header, index) => { obj[header] = row[index]; });
+    return obj;
+  });
+}
+
+async function parsePurchaseOrders() {
+  const data = await getSheetData("Purchase Orders");
+  if (!data || !data.values || data.values.length === 0) return null;
+  const headers = data.values[0];
+  const rows = data.values.slice(1);
+  return rows.map((row) => {
+    const obj: any = {};
+    headers.forEach((header, index) => { obj[header] = row[index]; });
+    return obj;
+  });
+}

@@ -15,6 +15,9 @@ import {
 } from "../drizzle/schema";
 import { ENV } from "./_core/env";
 
+// Synchronous client for use in router files (lazy connection, safe at module load)
+export const db = drizzle(process.env.DATABASE_URL ?? "");
+
 let _db: ReturnType<typeof drizzle> | null = null;
 
 export async function getDb() {
