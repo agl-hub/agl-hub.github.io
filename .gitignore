@@ -2,68 +2,32 @@
 # Dependencies
 node_modules/
 
-# Build artifacts
+# Build outputs
 dist/
 build/
-*.js
-*.ts
-*.tsx
-
-# Environment
-.env
-.env.local
-.env.*
-
-# Editors
-.vscode/
-.idea/
+target/
 
 # Logs
 *.log
 
-# Python cache (if any Python files exist in project)
+# Environment variables
+.env
+.env.local
+*.env.*
+
+# IDE specific
+.vscode/
+.idea/
+*.swp
+*.swo
+
+# Python
 __pycache__/
 *.pyc
 *.pyo
 *.pyd
-
-# Coverage reports
-coverage/
-htmlcov/
-.coverage
-
-# Temporary files
-*.tmp
-*.swp
-*.swo
-
-# OS generated files
-.DS_Store
-Thumbs.db
-
-# Testing
-.nyc_output/
-coverage.xml
-*.lcov
-
-# Distribution / packaging
-*.tar.gz
-*.egg-info/
-pip-log.txt
-pip-delete-this-directory.txt
-
-# IDE specific
-.vs/
-*.sublime-project
-*.sublime-workspace
-
-# Node.js
-npm-debug.log*
-yarn-debug.log*
-yarn-error.log*
-
-# TypeScript
-*.tsbuildinfo
-.next/
-.nuxt/
+.Python
+venv/
+.venv/
+.env
 ```
